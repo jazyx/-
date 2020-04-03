@@ -5,7 +5,10 @@
 
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components'
-import { shuffle } from '../core/utilities'
+import { shuffle
+       , getPageXY
+       , setTrackedEvents
+       } from '../core/utilities'
 import Sampler from '../core/sampler'
 
 
@@ -46,6 +49,7 @@ const StyledFrame = styled.div`
   justify-content: start;
   align-items: center;
   float: left;
+  // background: #ccc;
 
   @media (min-aspect-ratio: 3/5) {
     height: 42vh;
@@ -103,10 +107,10 @@ const StyledName = styled.p`
   font-size: 2.5vh;
   margin: 0.15em 0 0;
   ${props => props.show
-    ? `border: none;
-       opacity: 1;`
-    : `border: 2px dashed #999;
-       color: #fff;`
+           ? `border: none;
+              opacity: 1;`
+           : `border: 0.05em dashed #999;
+              color: #fff;`
   };
 
   @media (min-aspect-ratio: 3/5) {
@@ -130,8 +134,6 @@ const StyledNames = styled.div`
   text-align: center;
 
   & p {
-    height: 3.5vh;
-    margin: 0;
   }
 
   /// 2 x 2 LAYOUT ///
@@ -181,7 +183,23 @@ const StyledNames = styled.div`
     }
   }
 }
+`
 
+const StyledDraggable = styled.p`
+  position: relative;
+  margin: 0.05em 0.3em;
+  box-sizing: border-box;
+  border: 0.05em dashed #888;
+  cursor: pointer;             
+
+   &.drag {
+     background: rgba(255, 0, 0, 0.5);
+     color: #fff;
+   }
+
+   &.dropped {
+     opacity: 0;
+   }
 `
 
 
@@ -199,10 +217,15 @@ export default class Game extends Component {
     , turn: 0
     }
 
+    this._startDrag = this._startDrag.bind(this)
     this.resize = this.resize.bind(this)
     window.addEventListener("resize", this.resize, false) 
 
-
+    // Disable the context menu
+    document.body.addEventListener("contextmenu", (event) => {
+      // event.preventDefault()
+      return false
+    }, false)
   }
 
 
@@ -268,18 +291,85 @@ export default class Game extends Component {
   }
 
 
+  _startDrag(event) {
+    const target = event.target
+    if (target.tagName !== "P") {
+      return
+    }
+
+    switch (event.type) {
+      case "touchstart":
+        this.touch = + new Date()
+      break
+      case "mousedown":
+        if ((+ new Date() - this.touch) < 100) {
+          return
+        }
+    }
+
+    target.classList.add("drag")
+
+    const { x: startX, y: startY } = getPageXY(event)
+    console.log("startX:", startX, "startY:", startY)
+    const drag = (event) => {
+      const { x, y } = getPageXY(event)
+      target.style.left = (x - startX) + "px"
+      target.style.top = (y - startY) + "px"
+
+      this.lastX = x
+      this.lastY = y
+    }
+
+    const drop = (event) => {
+      const elements = document.elementsFromPoint(
+        this.lastX
+      , this.lastY
+      )
+      if (elements.length < 3) {
+        return
+      }
+
+      const dragName = elements[0].innerHTML
+      const className = this._hyphenate(dragName)
+      const onTarget = elements[2].classList.contains(className)
+
+      target.style.removeProperty("left")
+      target.style.removeProperty("top")
+
+      if (onTarget) {
+        target.classList.add("dropped")
+
+        const show = this.state.show
+        show[dragName] = true
+        this.setState({ show })
+
+      } else {
+      }
+
+      setTrackedEvents(cancel)
+      target.classList.remove("drag")
+    }
+
+    const cancel = setTrackedEvents({ event, drag, drop })
+  }
+
+
+  _hyphenate(expression) {
+    return expression.replace(/ /g, "-")
+  }
+
+
   render() {
     const layout = this.state.layouts[this.state.count]
-    console.log(this.state.show)
-
     const images = layout.images.map((item, index) => {
       const src = data.folder + item + data.type
       const hint = layout.hints[index]
       const show = this.state.show[hint]
-      console.log("hint:", hint, "show:", show)
+      const className = this._hyphenate(hint)
 
       return <StyledFrame
         key={"frame"+index}
+        className={className}
       >
         <StyledSquare
           key={item}
@@ -295,17 +385,24 @@ export default class Game extends Component {
     })
 
     const names = layout.names.map((name, index) => {
-      return <p
-        key={index}
+      const show = !this.state.show[name]
+
+      return <StyledDraggable
+        key={index+"-"+name}
+        show={show}
       >
         {name}
-      </p>
+      </StyledDraggable>
     })
 
     return (
-      <div className="IMAGES">
+      <div id="game-layout">
         {images}  
-        <StyledNames>
+        <StyledNames
+          className="no-select"
+          onMouseDown={this._startDrag}
+          onTouchStart={this._startDrag}
+        >
           {names}
         </StyledNames>
       </div>
