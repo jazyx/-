@@ -103,7 +103,7 @@ const StyledName = styled.p`
   margin: 0;
   text-align: center;
   box-sizing: border-box;
-  
+
   font-size: 2.5vh;
   margin: 0.15em 0 0;
   ${props => props.show
@@ -122,7 +122,7 @@ const StyledName = styled.p`
   }
 `
 
-const StyledNames = styled.div` 
+const StyledNames = styled.div`
   position: fixed;
   bottom: 0;
   display: grid;
@@ -143,11 +143,11 @@ const StyledNames = styled.div`
     height: 12vh;
     font-size: 4vh;
 
-    & p:nth-child(1), & p:nth-child(2) {   
+    & p:nth-child(1), & p:nth-child(2) {
       grid-row-start: 1;
     }
 
-    & p:nth-child(3), & p:nth-child(4) {   
+    & p:nth-child(3), & p:nth-child(4) {
       grid-row-start: 2;
     }
 
@@ -190,7 +190,7 @@ const StyledDraggable = styled.p`
   margin: 0.05em 0.3em;
   box-sizing: border-box;
   border: 0.05em dashed #888;
-  cursor: pointer;             
+  cursor: pointer;
 
    &.drag {
      background: rgba(255, 0, 0, 0.5);
@@ -199,7 +199,43 @@ const StyledDraggable = styled.p`
 
    &.dropped {
      opacity: 0;
+     cursor: default;
    }
+`
+
+
+const StyledMask = styled.div`
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  opacity: ${props => props.opacity};
+  transition: opacity 3s;
+
+  & h1 {
+    font-size: 12vw;
+    text-align: center;
+    color: #fff;
+  }
+
+  & button {
+    cursor: pointer;
+    font-size: 5vw;
+    padding: 0.25em;
+    border: 0.25em outset;
+    border-radius: 0.25em;
+
+    &:active {
+      border-style: inset;
+    }
+  }
 `
 
 
@@ -215,15 +251,18 @@ export default class Game extends Component {
     , show
     , count: this._itemCount()
     , turn: 0
+    , mask: 0
     }
 
     this._startDrag = this._startDrag.bind(this)
+    this._newDeal = this._newDeal.bind(this)
+    this._fadeMask = this._fadeMask.bind(this)
     this.resize = this.resize.bind(this)
-    window.addEventListener("resize", this.resize, false) 
+    window.addEventListener("resize", this.resize, false)
 
     // Disable the context menu
     document.body.addEventListener("contextmenu", (event) => {
-      // event.preventDefault()
+      event.preventDefault()
       return false
     }, false)
   }
@@ -243,12 +282,15 @@ export default class Game extends Component {
     const show  = {}
     layouts[6].hints.forEach(hint => { show[hint] = false })
 
-    if (startUp) {
+    if (startUp === true) {
       return { layouts, show }
     }
 
     const turn = this.state.turn + 1
-    this.setState({ layouts, show, turn })
+    const complete = 0
+    const mask = 0
+    this.setState({ layouts, show, turn, complete, mask })
+    this.timeOut = 0
   }
 
 
@@ -294,6 +336,10 @@ export default class Game extends Component {
   _startDrag(event) {
     const target = event.target
     if (target.tagName !== "P") {
+      return
+    } else if (this.state.complete) {
+      return
+    } else if (target.classList.contains("dropped")) {
       return
     }
 
@@ -341,9 +387,8 @@ export default class Game extends Component {
 
         const show = this.state.show
         show[dragName] = true
-        this.setState({ show })
-
-      } else {
+        const complete = this._turnComplete(show)
+        this.setState({ show, complete })
       }
 
       setTrackedEvents(cancel)
@@ -354,14 +399,25 @@ export default class Game extends Component {
   }
 
 
+  _turnComplete(show) {
+    const keys = Object.keys(show)
+    const complete = keys.reduce(
+      (counter, key) => counter + show[key]
+    , 0) + "" === this.state.count
+
+    return complete
+         ? + new Date()
+         : 0
+  }
+
+
   _hyphenate(expression) {
     return expression.replace(/ /g, "-")
   }
 
 
-  render() {
-    const layout = this.state.layouts[this.state.count]
-    const images = layout.images.map((item, index) => {
+  _getFrames(layout) {
+    const frames = layout.images.map((item, index) => {
       const src = data.folder + item + data.type
       const hint = layout.hints[index]
       const show = this.state.show[hint]
@@ -384,6 +440,11 @@ export default class Game extends Component {
       </StyledFrame>
     })
 
+    return frames
+  }
+
+
+  _getNames(layout) {
     const names = layout.names.map((name, index) => {
       const show = !this.state.show[name]
 
@@ -395,9 +456,47 @@ export default class Game extends Component {
       </StyledDraggable>
     })
 
+    return names
+  }
+
+
+  _fadeMask() {
+    this.setState({ mask: 1 })
+  }
+
+
+  _newGame() {
+    if (this.state.complete) {
+      if (!this.timeOut) {
+        this.timeOut = setTimeout(this._fadeMask, 0)
+      }
+
+      return <StyledMask
+        opacity={this.state.mask}
+      >
+        <h1>Congratulations!</h1>
+        <button
+          onMouseUp={this._newDeal}
+        >
+          Play again
+        </button>
+      </StyledMask>
+
+    } else {
+      return ""
+    }
+  }
+
+
+  render() {
+    const layout = this.state.layouts[this.state.count]
+    const frames = this._getFrames(layout)
+    const names = this._getNames(layout)
+    const newGame = this._newGame()
+
     return (
       <div id="game-layout">
-        {images}  
+        {frames}
         <StyledNames
           className="no-select"
           onMouseDown={this._startDrag}
@@ -405,6 +504,7 @@ export default class Game extends Component {
         >
           {names}
         </StyledNames>
+        {newGame}
       </div>
     )
   }
