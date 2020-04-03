@@ -190,10 +190,7 @@ export default class Game extends Component {
     super(props)
 
     this.sampler = new Sampler({ array: data.items, sampleSize: 6 })
-    const layouts = this._newDeal(true)
-
-    const show  = Array(6).fill(true) //{}
-    layouts[6].hints.forEach(hint => { show[hint] = true })
+    const { layouts, show } = this._newDeal(true)
 
     this.state = {
       layouts
@@ -204,6 +201,8 @@ export default class Game extends Component {
 
     this.resize = this.resize.bind(this)
     window.addEventListener("resize", this.resize, false) 
+
+
   }
 
 
@@ -218,13 +217,15 @@ export default class Game extends Component {
   _newDeal(startUp) {
     const items = this.sampler.getSample()
     const layouts = this._getLayouts(items)
+    const show  = {}
+    layouts[6].hints.forEach(hint => { show[hint] = false })
 
     if (startUp) {
-      return layouts
+      return { layouts, show }
     }
 
     const turn = this.state.turn + 1
-    this.setState({ layouts, turn })
+    this.setState({ layouts, show, turn })
   }
 
 
@@ -269,10 +270,13 @@ export default class Game extends Component {
 
   render() {
     const layout = this.state.layouts[this.state.count]
+    console.log(this.state.show)
+
     const images = layout.images.map((item, index) => {
       const src = data.folder + item + data.type
       const hint = layout.hints[index]
       const show = this.state.show[hint]
+      console.log("hint:", hint, "show:", show)
 
       return <StyledFrame
         key={"frame"+index}

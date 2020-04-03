@@ -26,7 +26,6 @@ class Sampler {
     this._recycleCurrentSample()
 
     this.sample = this.array.splice(0, sampleSize)
-    console.log(this.sample)
 
     return this.sample.slice(0)
   }
