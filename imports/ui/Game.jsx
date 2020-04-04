@@ -282,6 +282,8 @@ export default class Game extends Component {
     const show  = {}
     layouts[6].hints.forEach(hint => { show[hint] = false })
 
+    console.log(items)
+
     if (startUp === true) {
       return { layouts, show }
     }
@@ -353,10 +355,11 @@ export default class Game extends Component {
         }
     }
 
+    // Highlight dragged element
     target.classList.add("drag")
 
     const { x: startX, y: startY } = getPageXY(event)
-    console.log("startX:", startX, "startY:", startY)
+
     const drag = (event) => {
       const { x, y } = getPageXY(event)
       target.style.left = (x - startX) + "px"
@@ -367,6 +370,9 @@ export default class Game extends Component {
     }
 
     const drop = (event) => {
+      setTrackedEvents(cancel)
+      target.classList.remove("drag")
+
       const elements = document.elementsFromPoint(
         this.lastX
       , this.lastY
@@ -390,9 +396,6 @@ export default class Game extends Component {
         const complete = this._turnComplete(show)
         this.setState({ show, complete })
       }
-
-      setTrackedEvents(cancel)
-      target.classList.remove("drag")
     }
 
     const cancel = setTrackedEvents({ event, drag, drop })
