@@ -5,40 +5,15 @@
 
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components'
+import { withTracker } from 'meteor/react-meteor-data'
+
+import { collections } from '../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
        } from '../core/utilities'
 import Sampler from '../core/sampler'
 
-
-const data = {
-  "folder": "/activities/drag/home/furniture/"
-, "type": ".jpg"
-, "items": [
-    "armchair"
-  , "bin"
-  , "bookcase"
-  , "chair"
-  , "chest_of_drawers"
-  , "clock"
-  , "cushions"
-  , "desk"
-  , "dishwasher"
-  , "fridge"
-  , "lamp"
-  , "microwave_oven"
-  , "mirror"
-  , "phone"
-  , "photo"
-  , "radiator"
-  , "sofa"
-  , "table"
-  , "television"
-  , "wardrobe"
-  , "washing_machine"
-  ]
-}
 
 
 const StyledFrame = styled.div`
@@ -49,7 +24,6 @@ const StyledFrame = styled.div`
   justify-content: start;
   align-items: center;
   float: left;
-  // background: #ccc;
 
   @media (min-aspect-ratio: 3/5) {
     height: 42vh;
@@ -60,7 +34,6 @@ const StyledFrame = styled.div`
   }
 
   @media (min-aspect-ratio: 5/4) {
-    // background-color: blue;
     width: 33.3333vw;
 
     &:nth-child(5), &:nth-child(6) {
@@ -104,7 +77,7 @@ const StyledName = styled.p`
   text-align: center;
   box-sizing: border-box;
 
-  font-size: 2.5vh;
+  font-size: 2vh;
   margin: 0.15em 0 0;
   ${props => props.show
            ? `border: none;
@@ -113,12 +86,14 @@ const StyledName = styled.p`
               color: #fff;`
   };
 
+  /// 2 x 2 LAYOUT ///
   @media (min-aspect-ratio: 3/5) {
-    font-size: 4vh;
+    font-size: 2.5vh;
   }
 
+  /// 3 x 1 LAYOUT ///
   @media (min-aspect-ratio: 3/2) {
-    font-size: 6vh;
+    font-size: 4.2vh;
   }
 `
 
@@ -132,16 +107,13 @@ const StyledNames = styled.div`
   grid-row-gap: 0px;
   width: 100%;
   text-align: center;
-
-  & p {
-  }
+  font-size: 2vh;
 
   /// 2 x 2 LAYOUT ///
   @media (min-aspect-ratio: 3/5) {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    height: 12vh;
-    font-size: 4vh;
+    font-size: 2.5vh;
 
     & p:nth-child(1), & p:nth-child(2) {
       grid-row-start: 1;
@@ -170,8 +142,7 @@ const StyledNames = styled.div`
   @media (min-aspect-ratio: 3/2) {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(1, 1fr);
-    height: 10vh;
-    font-size: 6vh;
+    font-size: 4.2vh;
 
     & p:nth-child(4), & p:nth-child(5), & p:nth-child(6) {
       display: none;
@@ -182,7 +153,6 @@ const StyledNames = styled.div`
       grid-row-start: 1;
     }
   }
-}
 `
 
 const StyledDraggable = styled.p`
@@ -202,7 +172,6 @@ const StyledDraggable = styled.p`
      cursor: default;
    }
 `
-
 
 const StyledMask = styled.div`
   position: fixed;
@@ -239,11 +208,21 @@ const StyledMask = styled.div`
 `
 
 
-export default class Game extends Component {
+class Game extends Component {
   constructor(props) {
     super(props)
 
-    this.sampler = new Sampler({ array: data.items, sampleSize: 6 })
+    // console.log(props)
+    // { children: []
+    // , setView:  <function>
+    // , images:   <[[<image>, <name>], ...]>
+    // , folder :  <string>
+    // }
+
+    this.sampler = new Sampler({
+      array: props.images
+    , sampleSize: 6
+    })
     const { layouts, show } = this._newDeal(true)
 
     this.state = {
@@ -299,11 +278,13 @@ export default class Game extends Component {
     const counts = Object.keys(layouts)
 
     counts.forEach(count => {
-      let names = items.slice(0, count) // The first 3 are always shown
-      const images = shuffle(names.slice(0))
+      // The first 3 are always shown
+      let names = items.slice(0, count) // [[image, name], ...]
+      let images = shuffle(names.slice(0))
 
-      const hints = images.map(name => name.replace(/_/g, " "))
-      names       = names .map(name => name.replace(/_/g, " "))
+      const hints = images.map(item => item[1])
+      images      = images.map(item => item[0])
+      names       = names .map(item => item[1])
 
       layouts[count] = {
         images
@@ -419,7 +400,7 @@ export default class Game extends Component {
 
   _getFrames(layout) {
     const frames = layout.images.map((item, index) => {
-      const src = data.folder + item + data.type
+      const src = this.props.folder + item
       const hint = layout.hints[index]
       const show = this.state.show[hint]
       const className = this._hyphenate(hint)
@@ -510,3 +491,25 @@ export default class Game extends Component {
     )
   }
 }
+
+
+export default withTracker(() => {
+  // Read from the Drag collection...
+  const key         = "furniture"
+  const code        = "ru"
+  const imageQuery  = { type: { $eq: key }}
+  const folderQuery = { key:  { $eq: key }}
+  const items = collections["Drag"].find(imageQuery).fetch()
+
+  const images = items.map(document => [ document.file
+                                       , document.text[code]
+                                       ]
+                           )
+  const folder = collections["Drag"].findOne(folderQuery).folder
+
+  // ... and add the extracted data to the Game instance's this.props
+  return {
+    images
+  , folder
+  }
+})(Game)

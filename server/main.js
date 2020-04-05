@@ -7,20 +7,19 @@ const path = require('path')
 
 
 /**
+ * @class  CollectJSON (name)
+ *
  * A CollectJSON instance expects to receive a relative path to
  * a file in the AppName/private/ folder. This path should lead to a
  * JSON file, with the format shown in the _treatJSON method.
- * 
- * • The value of collection should be one of the capitalized 
+ *
+ * • The value of collection should be one of the capitalized
  *   collection names defined in AppName/imports/api/collection.js
  * • An as_is object with at least a version number must be included
  * • If the version indicated in the `as_is` entry is greater than the
  *   version number currently stored in the given collection, all the
- *   existing values will be removed and will be replaced by the 
+ *   existing values will be removed and will be replaced by the
  *   new ones.
- * 
- *
- * @class      CollectJSON (name)
  */
 class CollectJSON {
   constructor (jsonFile) {
@@ -30,32 +29,31 @@ class CollectJSON {
     Assets.getText(jsonFile, this._treatJSON)
   }
 
-
   _treatJSON(error, data) {
     if (error) {
       return console.log("_treatJSON", error)
     }
-    
+
     let json
     try {
-      json = JSON.parse(data) 
+      json = JSON.parse(data)
     } catch(error) {
       return console.log("JSON.parse\n", this.jsonFile, "\n", error)
     }
 
     // console.log(json)
     // { "collection": "Collection" // target for new documents
-    // 
+    //
     // , "as_is": { // document will be added as is
     //     "version": <number>
     // [ , "key": "<type of documents to be added>" ]
     //   , ...
     //   }
-    // 
+    //
     //   // CAUTION: these entries cannot be updated automatically
     // , "<key>": "<value>" // will be added as { <key>: <value> }
-    // 
-    // , "<type>: [         // each entry will be added as a separate 
+    //
+    // , "<type>: [         // each entry will be added as a separate
     //                      // document with the type "<type>" and
     //                      // the version <as_is.version>
     //     { "<key>": "<value>"
@@ -93,7 +91,7 @@ class CollectJSON {
     } else if (!(version = as_is.version)) {
       return false
     }
-  
+
     let versionQuery = { version: { $exists: true }}
     if (key = as_is.key) {
       versionQuery = {
@@ -113,12 +111,12 @@ class CollectJSON {
         console.log(
           "Older version", document.version
         , "of", key||collection._name, "is about to be removed"
-        , "and replaced with version", version) 
+        , "and replaced with version", version)
       }
     }
 
     return version
-  } 
+  }
 
 
   _deleteOlderItems(collection, key, version) {
@@ -181,11 +179,11 @@ class CollectJSON {
  *                                with a dot
  * @param      {array}   list     An (empty) array
  * @return     {Array}            The input list, now populated with
- *                                absolute paths to files of the 
+ *                                absolute paths to files of the
  *                                given type
  */
 const crawl = ({ folder, type, list }) => {
-  const addToList = (contents) => {    
+  const addToList = (contents) => {
     contents.forEach(item => {
       const itemPath = path.join(folder, item)
       if (path.extname(itemPath) === type) {

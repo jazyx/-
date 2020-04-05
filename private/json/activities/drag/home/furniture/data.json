@@ -2,17 +2,17 @@
 
 , "as_is": {
     "key": "furniture"
-  , "version": 3
+  , "version": 6
   , "parent": "home"
   , "root": "drag"
   , "name": {
       "en": "Furniture"
     , "fr": "Mobilier"
     , "ru": "Мебль"
-  , "folder": "activities/drag/home/furniture"
+    }
+  , "folder": "activities/drag/home/furniture/"
   , "icon": "icon.jpg"
   }
-}
 
 , "furniture": [
     { "file": "armchair.jpg"
@@ -45,7 +45,7 @@
     }
   , { "file": "chest_of_drawers.jpg"
     , "text": {
-        "en": "chest_of_drawers"
+        "en": "chest of drawers"
       , "fr": "commode"
       , "ru": "комод"
       }
