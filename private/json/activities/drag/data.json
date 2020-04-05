@@ -1,0 +1,15 @@
+{
+  "collection": "Activities"
+
+, "as_is": {
+    "key": "drag"
+  , "version": 1
+  , "name": {
+      "en": "Drag"
+    , "fr": "Glisser"
+    , "ru": "Перетащить"
+    }
+  , "folder": "activities/drag"
+  , "icon": "icon.jpg"
+  }
+}

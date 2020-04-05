@@ -1,0 +1,166 @@
+{ "collection": "Drag"
+
+, "as_is": {
+    "key": "furniture"
+  , "version": 3
+  , "parent": "home"
+  , "root": "drag"
+  , "name": {
+      "en": "Furniture"
+    , "fr": "Mobilier"
+    , "ru": "Мебль"
+  , "folder": "activities/drag/home/furniture"
+  , "icon": "icon.jpg"
+  }
+}
+
+, "furniture": [
+    { "file": "armchair.jpg"
+    , "text": {
+        "en": "armchair"
+      , "fr": "fauteil"
+      , "ru": "кресло"
+      }
+    }
+  , { "file": "bin.jpg"
+    , "text": {
+        "en": "bin"
+      , "fr": "poubelle"
+      , "ru": "ведро"
+      }
+    }
+  , { "file": "bookcase.jpg"
+    , "text": {
+        "en": "bookcase"
+      , "fr": "bibliothèque"
+      , "ru": "книжный шкаф"
+      }
+    }
+  , { "file": "chair.jpg"
+    , "text": {
+        "en": "chair"
+      , "fr": "chaise"
+      , "ru": "стул"
+      }
+    }
+  , { "file": "chest_of_drawers.jpg"
+    , "text": {
+        "en": "chest_of_drawers"
+      , "fr": "commode"
+      , "ru": "комод"
+      }
+    }
+  , { "file": "clock.jpg"
+    , "text": {
+        "en": "clock"
+      , "fr": "horloge"
+      , "ru": "часы"
+      }
+    }
+  , { "file": "cushions.jpg"
+    , "text": {
+        "en": "cushions"
+      , "fr": "coussins"
+      , "ru": "подушки"
+      }
+    }
+  , { "file": "desk.jpg"
+    , "text": {
+        "en": "desk"
+      , "fr": "bureau"
+      , "ru": "стол письменный"
+      }
+    }
+  , { "file": "dishwasher.jpg"
+    , "text": {
+        "en": "dishwasher"
+      , "fr": "lave-vaisselle"
+      , "ru": "посудомоечная машина"
+      }
+    }
+  , { "file": "fridge.jpg"
+    , "text": {
+        "en": "fridge"
+      , "fr": "refrigérateur"
+      , "ru": "холодильник"
+      }
+    }
+  , { "file": "lamp.jpg"
+    , "text": {
+        "en": "lamp"
+      , "fr": "lampe"
+      , "ru": "лампа"
+      }
+    }
+  , { "file": "microwave_oven.jpg"
+    , "text": {
+        "en": "microwave oven"
+      , "fr": "four micro-ondes"
+      , "ru": "микроволновая печь"
+      }
+    }
+  , { "file": "mirror.jpg"
+    , "text": {
+        "en": "mirror"
+      , "fr": "mirroir"
+      , "ru": "зеркало"
+      }
+    }
+  , { "file": "phone.jpg"
+    , "text": {
+        "en": "phone"
+      , "fr": "téléphone"
+      , "ru": "телефон"
+      }
+    }
+  , { "file": "photo.jpg"
+    , "text": {
+        "en": "photo"
+      , "fr": "photo"
+      , "ru": "фото"
+      }
+    }
+  , { "file": "radiator.jpg"
+    , "text": {
+        "en": "radiator"
+      , "fr": "radiateur"
+      , "ru": "радиатор"
+      }
+    }
+  , { "file": "sofa.jpg"
+    , "text": {
+        "en": "sofa"
+      , "fr": "canapé"
+      , "ru": "диван"
+      }
+    }
+  , { "file": "table.jpg"
+    , "text": {
+        "en": "table"
+      , "fr": "table"
+      , "ru": "стол"
+      }
+    }
+  , { "file": "television.jpg"
+    , "text": {
+        "en": "television"
+      , "fr": "télévision"
+      , "ru": "телевизор"
+      }
+    }
+  , { "file": "wardrobe.jpg"
+    , "text": {
+        "en": "wardrobe"
+      , "fr": "garderobe"
+      , "ru": "гардероб"
+      }
+    }
+  , { "file": "washing_machine.jpg"
+    , "text": {
+        "en": "washing machine"
+      , "fr": "machine à laver"
+      , "ru": "стиральная машина"
+      }
+    }
+  ]
+}

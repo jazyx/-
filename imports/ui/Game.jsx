@@ -13,7 +13,7 @@ import Sampler from '../core/sampler'
 
 
 const data = {
-  "folder": "/img/items/"
+  "folder": "/activities/drag/home/furniture/"
 , "type": ".jpg"
 , "items": [
     "armchair"
@@ -281,8 +281,6 @@ export default class Game extends Component {
     const layouts = this._getLayouts(items)
     const show  = {}
     layouts[6].hints.forEach(hint => { show[hint] = false })
-
-    console.log(items)
 
     if (startUp === true) {
       return { layouts, show }

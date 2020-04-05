@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components'
+// import { withTracker } from 'meteor/react-meteor-data';
+ 
+// import { L10n } from '../api/l10n.js';
+import Native  from './connect/Native.jsx';
 
 
 export default class Connect extends Component {
   render() {
     return <div>
-      <h1>Connect</h1>
+      <Native />
       <button
         onMouseUp={() => this.props.setView("Game")}
       >
@@ -14,3 +17,10 @@ export default class Connect extends Component {
     </div>
   }
 }
+
+
+// export default withTracker(() => {
+//   return {
+//     l10n: L10n.find({}).fetch(),
+//   };
+// })(Connect);

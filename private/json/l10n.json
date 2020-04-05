@@ -1,0 +1,50 @@
+{ "collection": "L10n"
+
+, "as_is": {
+    "version": 1
+  }
+
+, "phrase": [
+    { "cue ": "native_language"
+    , "ru": "Выберите свой родной язык"
+    , "en": "Select your native language"
+    , "fr": "Choisissez votre langue maternelle"
+    }
+  , { "cue ": "enter_name"
+    , "ru": "Введите ваше имя"
+    , "en": "Enter your name"
+    , "fr": "Saisissez votre nom"
+    }
+  , { "cue ": "choose_teacher"
+    , "ru": "Выберите своего учителя языка"
+    , "en": "Select your language teacher"
+    , "fr": "Choisissez votre professeur"
+    }
+  , { "cue ": "russian"
+    , "ru": "Русский"
+    , "en": "Russian"
+    , "fr": "Russe"
+    }
+  , { "cue ": "english"
+    , "ru": "Английский"
+    , "en": "English"
+    , "fr": "Anglais"
+    }
+  , { "cue ": "xxxx"
+    , "ru": "Французский"
+    , "en": "French"
+    , "fr": "Français"
+    }
+    
+  , { "cue ": "xxxx"
+    , "ru": "xxxx"
+    , "en": "xxxx"
+    , "fr": "xxxx"
+    }
+  , { "cue ": "xxxx"
+    , "ru": "xxxx"
+    , "en": "xxxx"
+    , "fr": "xxxx"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{ "collection": "Drag"
+
+, "as_is": {
+    "key": "kitchen"
+  , "version": 5
+  , "parent": "home"
+  , "root": "drag"
+  , "name": {
+      "en": "Kitchen"
+    , "fr": "Cuisine"
+    , "ru": "Кухня"
+  , "folder": "activities/drag/home/furniture"
+  , "icon": "icon.jpg"
+  }
+}
+
+, "kitchen": [
+    { "file": "chair.jpg"
+    , "text": {
+        "en": "chair"
+      , "fr": "chaise"
+      , "ru": "стул"
+      }
+    }
+  , { "file": "dishwasher.jpg"
+    , "text": {
+        "en": "dishwasher"
+      , "fr": "lave-vaisselle"
+      , "ru": "посудомоечная машина"
+      }
+    }
+  , { "file": "fridge.jpg"
+    , "text": {
+        "en": "fridge"
+      , "fr": "refrigérateur"
+      , "ru": "холодильник"
+      }
+    }
+  , { "file": "microwave_oven.jpg"
+    , "text": {
+        "en": "microwave oven"
+      , "fr": "four micro-ondes"
+      , "ru": "микроволновая печь"
+      }
+    }
+  , { "file": "table.jpg"
+    , "text": {
+        "en": "table"
+      , "fr": "table"
+      , "ru": "стол"
+      }
+    }
+  , { "file": "washing_machine.jpg"
+    , "text": {
+        "en": "washing machine"
+      , "fr": "machine à laver"
+      , "ru": "стиральная машина"
+      }
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Connect from './Connect.jsx';
 import Game from './Game.jsx';
 
+
 export class App extends Component {
   constructor(props) {
     super(props)
