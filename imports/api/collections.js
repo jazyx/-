@@ -9,4 +9,18 @@ const collections = {
 , Drag:       new Mongo.Collection('drag')
 }
 
+
+if (Meteor.isServer) {
+  for (name in collections) {
+    const collection = collections[name]
+    name = collection._name // name.toLowerCase()
+
+    Meteor.publish(name, () => {
+      console.log(name, collection.find({}).count())
+      return collection.find({})
+    })
+  }
+}
+
+
 export default collections

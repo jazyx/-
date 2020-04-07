@@ -494,18 +494,20 @@ class Game extends Component {
 
 
 export default withTracker(() => {
-  // Read from the Drag collection...
+  const collection  = collections["Drag"]
+  Meteor.subscribe(collection._name)
+
   const key         = "furniture"
   const code        = "en"
   const imageQuery  = { type: { $eq: key }}
   const folderQuery = { key:  { $eq: key }}
-  const items = collections["Drag"].find(imageQuery).fetch()
+  const items = collection.find(imageQuery).fetch()
 
   const images = items.map(document => [ document.file
                                        , document.text[code]
                                        ]
                            )
-  const folder = collections["Drag"].findOne(folderQuery).folder
+  const folder = collection.findOne(folderQuery).folder
 
   // ... and add the extracted data to the Game instance's this.props
   return {

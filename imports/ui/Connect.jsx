@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import Splash  from './connect/Splash.jsx';
-import Native  from './connect/Native.jsx';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import Splash  from './connect/Splash.jsx'
+import Native  from './connect/Native.jsx'
 import collections from '../api/collections'
-
 
 
 
@@ -47,7 +47,22 @@ export default class Connect extends Component {
         , count: 4
         }
       ]
+    , "Drag": [
+        { query: { folder: { $exists: true } }
+        , count: 1
+        }
+      , { query: { file: { $exists: true} }
+        , count: 6
+        }
+      ]
     }
+
+    // Subscribe to the required collections
+    for (let collectionName in this.requiredQueries) {
+      const collection = collections[collectionName]
+      Meteor.subscribe(collection._name)
+    }
+
     this._checkForCollections()
   }
 
@@ -59,6 +74,7 @@ export default class Connect extends Component {
     const ready = collectionNames.every(collectionName => {
       const collection = collections[collectionName]
       const checks     = this.requiredQueries[collectionName] || basic
+
       const checked    = checks.every(check => {
         const query    = check.query || {}
         const count    = check.count || 1

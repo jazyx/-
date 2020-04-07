@@ -327,8 +327,9 @@ class Native extends Component {
 
 
 export default withTracker(() => {
-  // Read from the Drag collection...
   const collection  = collections["L10n"]
+  Meteor.subscribe(collection._name)
+  
   const key         = "phrase"
   const flagsQuery  = { $and: [
                           { file: { $exists: true } }
