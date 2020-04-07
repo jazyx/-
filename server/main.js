@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { collections } from '../imports/api/collections.js';
+import collections from '../imports/api/collections.js';
 
 // Required by CollectJSON
 const fs = require('fs')
@@ -135,7 +135,8 @@ class CollectJSON {
       }
     }
 
-    const callback = (e, d) => this._checkResult(e, d, key)
+    const collectionName = key || collection._name
+    const callback = (e, d) => this._checkResult(e, d, collectionName)
     collection.remove(deleteQuery, callback)
   }
 

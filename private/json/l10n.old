@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 41
+    "version": 40
   , "folder": "img/flags/"
   }
 
@@ -73,6 +73,37 @@
     , "en": "American English"
     , "fr": "Anglais des EU"
     , "file": "en-US.png"
+    }
+  , { "cue": "ja"
+    , "ru": "ja - ru - xxxx"
+    , "en": "ja - en - xxxx"
+    , "fr": "ja - fr - xxxx"
+    , "file": "ja.png"
+    }
+  , { "cue": "ko"
+    , "ru": "ko - ru - xxxx"
+    , "en": "ko - en - xxxx"
+    , "fr": "ko - fr - xxxx"
+    , "file": "ko.png"
+    }
+  , { "cue": "th"
+    , "ru": "th - ru - xxxx"
+    , "en": "th - en - xxxx"
+    , "fr": "th - fr - xxxx"
+    , "file": "th.png"
+    }
+  , { "cue": "zh"
+    , "ru": "zh - ru - xxxx"
+    , "en": "zh - en - xxxx"
+    , "fr": "zh - fr - xxxx"
+    , "file": "zh.png"
+    }
+
+  , { "cue": "xxxx"
+    , "ru": "xxxx - ru - xxxx"
+    , "en": "xxxx - en - xxxx"
+    , "fr": "xxxx - fr - xxxx"
+    , "file": "xxxx"
     }
   ]
 }

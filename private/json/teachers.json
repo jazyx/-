@@ -3,7 +3,7 @@
   
 , "as_is": {
     "folder": "img/teachers"
-  , "version": 1.2
+  , "version": 3
   }
 
 , "script": [
@@ -22,32 +22,38 @@
   ]
 
 , "profile": [
-    { "file": "АА.jpg"
+    { "file": "aa.jpg"
+    , "code": "aa"  
     , "name": {  
          "cyrl": "Анастасия"
        , "latn": "Anastacia"
        }
+    , "with": "Учить русский с Анастасией"
     , "language": "ru"
     , "script": "cyrl"
-    , "version": 3333
     }
   , { "file": "jn.jpg"
+    , "code": "jn"  
     , "name": {  
          "latn": "James"
        , "cyrl": "Джеймс"
        }
+    , "with": "Learn English with James"
     , "language": "en-gb"
     , "script": "latn"
     }
   , { "file": "ml.jpg"
+    , "code": "ml"  
     , "name": {  
-         "latn": "Michael"
+         "latn": "Michaël"
        , "cyrl": "Михаэль"
        }
+    , "with": "Apprendre le français avec Michaël"
     , "language": "fr"
     , "script": "latn"
     }
   , { "file": "xxxx"
+    , "code": "aa"  
     , "name": {  
          "xxxx": "xxxx"
        , "xxxx": "xxxx"

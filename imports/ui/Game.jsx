@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
 
-import { collections } from '../api/collections'
+import collections from '../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
@@ -241,7 +241,7 @@ class Game extends Component {
 
     // Disable the context menu
     document.body.addEventListener("contextmenu", (event) => {
-      event.preventDefault()
+      // event.preventDefault()
       return false
     }, false)
   }
@@ -414,8 +414,9 @@ class Game extends Component {
           src={src}
         />
         <StyledName
+          className="can-select"
           show={show}
-          key={hint + "hint"}
+          key={hint}
         >
           {hint}
         </StyledName>
@@ -480,7 +481,6 @@ class Game extends Component {
       <div id="game-layout">
         {frames}
         <StyledNames
-          className="no-select"
           onMouseDown={this._startDrag}
           onTouchStart={this._startDrag}
         >
@@ -496,7 +496,7 @@ class Game extends Component {
 export default withTracker(() => {
   // Read from the Drag collection...
   const key         = "furniture"
-  const code        = "ru"
+  const code        = "en"
   const imageQuery  = { type: { $eq: key }}
   const folderQuery = { key:  { $eq: key }}
   const items = collections["Drag"].find(imageQuery).fetch()
