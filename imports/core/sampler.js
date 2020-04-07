@@ -1,5 +1,5 @@
 /**
- * sample_array.js
+ * sampler.js
  * 
  * Use an instance of this class to retrieve a random set of items
  * from an array, with the items being randomly recycled for reuse.

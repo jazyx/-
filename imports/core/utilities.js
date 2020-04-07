@@ -521,3 +521,25 @@ export const trimImage = (image) => {
 }
 
 window.trimImage = trimImage
+
+
+export const localize = (cue, code, corpus) => {
+  let phrase = corpus.find(phrase => (
+    phrase.cue === cue
+  ))[code]
+
+  if (!phrase) {
+    // Check if there is a more generic phrase without the region
+    code = code.replace(/-\w+/, "") // en | ru
+    phrase = corpus.find(phrase => (
+      phrase.cue === cue
+    ))[code]
+  }
+
+  if (!phrase) {
+    phrase = "***" + cue * "***"
+  }
+
+  return phrase
+
+}

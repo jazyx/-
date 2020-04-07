@@ -1,120 +1,26 @@
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components'
+
 import { withTracker } from 'meteor/react-meteor-data'
+import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
-import { tweenColor } from '../../core/utilities'
+import { localize } from '../../core/utilities'
 
-
-const colours = {
-  background: "#003"
-}
-colours.active = tweenColor(colours.background, "#fff", 0.1)
-
-
-// On Android, the page may be shown full screen but with the address
-// bar covering the top part of the page. For this reason, the prompt
-// header is given a top margin of 10vh, so that it is visible at all
-// times.
-
-const StyledNative = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  height: 100vh;
-  background-color: ${colours.background};
-`
-
-const StyledPrompt = styled.h1`
-  display: flex;
-  align-items: center;
-  height: 20vw;
-  font-size: 8vw;
-  text-align: center;
-  margin: 10vh 0 2vh;
-  color: #fff;
-
-  @media (min-aspect-ratio: 1/1) {
-    height: 20vh;
-    font-size: 8vh;
-  }
-`
-
-const StyledFlags = styled.ul`
-  list-style-type: none;
-  width: 100%;
-  height: calc(88vh - 35vw);
-  padding: 0;
-  margin: 0;
-  text-align: center;
-  overflow-y: auto;
-
-  @media (min-aspect-ratio: 1/1) {
-    height: 53vh;
-    white-space: nowrap;
-  }
-`
-
-const StyledLI = styled.li`
-  & img {
-    width: 30vw;
-    opacity: ${props => props.selected
-                      ? 1
-                      : 0.25
-              };
-  }
-
-  &:hover img {
-    opacity: ${props => props.selected
-                      ? 1
-                      : 0.5
-              };
-  }
-
-  &:hover {
-    background-color: ${colours.active};
-  }
-
-  @media (min-aspect-ratio: 1/1) {
-    display: inline-block;
-    clear: both;
-    height: calc(53vh - 20px);
-
-    & img {
-      position: relative;
-      top: 10vh;
-      width: 33vh;
-    }
-  }
-`
-
-const StyledButton = styled.button`
-  background: transparent;
-  border-radius: 10vh;
-  padding: 0.1em 1em;
-  color: #fff;
-  height: 15vw;
-  width: 80vw;
-  max-width: 80vh;
-  font-size: 6vw;
-
-  &:active {
-    background: ${colours.active};
-  }
-
-  @media (min-aspect-ratio: 1/1) {
-    height: 15vh;
-    font-size: 6vh;
-  }
-`
+import { StyledProfile
+       , StyledPrompt
+       , StyledFlags
+       , StyledLI
+       , StyledButton
+       , StyledNavArrow
+       , StyledButtonBar
+       } from './Styles'
 
 
 class Native extends Component {
   constructor(props) {
     super(props)
     const codes = this.codes = this.props.flags.map(flag => flag.cue)
-    const code  = this._getDefaultLanguageCode()
+    const code  = Session.get("native") || this._getDefaultCode()
     const selected = codes.indexOf(code)
 
     this.scrollTo = React.createRef()
@@ -126,11 +32,13 @@ class Native extends Component {
     this.mouseLeave         = this.mouseLeave.bind(this)
     this.scrollFlagIntoView = this.scrollFlagIntoView.bind(this)
 
+    // Allow Enter to accept the default/current language
+    document.addEventListener("keydown", this.selectLanguage, false)
     window.addEventListener("resize", this.scrollFlagIntoView, false)
   }
 
 
-  _getDefaultLanguageCode() {
+  _getDefaultCode() {
     let code = navigator.language        // "co-DE"
     let index = this.codes.indexOf(code)
 
@@ -147,9 +55,15 @@ class Native extends Component {
   }
 
 
-  selectLanguage() {
+  selectLanguage(event) {
+    if (event && event.type === "keydown" && event.key !== "Enter") {
+      return
+    }
+
     const code = this.codes[this.state.selected]
-    console.log("Language selected:", code)
+    Session.set("native", code)
+
+    this.props.setView("Name")
   }
 
 
@@ -221,10 +135,13 @@ class Native extends Component {
 
 
   getPrompt(selected) {
+    const cue  = "native_language"
     const code = this.codes[selected]
-    const prompt = (this.props.phrases.find(phrase => (
-      phrase.cue === "native_language"
-    )))[code]
+
+    // const prompt = (this.props.phrases.find(phrase => (
+    //   phrase.cue === "native_language"
+    // )))[code]
+    const prompt = localize(cue, code, this.props.phrases)
 
     return <StyledPrompt>
       {prompt}
@@ -263,17 +180,31 @@ class Native extends Component {
   }
 
 
-  getButton(selected) {
+  getButtonBar(selected) {
     const code = this.codes[selected]
     const prompt = (this.props.phrases.find(phrase => (
       phrase.cue === "choose_language"
     )))[code]
+    const disabled = !Session.get("username")
 
-    return <StyledButton
-      onMouseUp={this.selectLanguage}
-    >
-      {prompt}
-    </StyledButton>
+    console.log("Native > Name disabled", disabled, "name:", Session.get("username"))
+
+    return <StyledButtonBar>
+      <StyledNavArrow
+        invisible={true}
+      />
+      <StyledButton
+        onMouseUp={this.selectLanguage}
+        onKeyUp={this.selectLanguage}
+      >
+        {prompt}
+      </StyledButton>
+      <StyledNavArrow
+        way="forward"
+        disabled={disabled}
+        onMouseUp={() => this.props.setView("Name")}
+      />
+    </StyledButtonBar>
   }
 
 
@@ -287,9 +218,9 @@ class Native extends Component {
     const hover  = this.getHover()
     const prompt = this.getPrompt(hover)
     const flags  = this.getFlags(hover)
-    const button = this.getButton(selected)
+    const buttonBar = this.getButtonBar(selected)
 
-    return <StyledNative
+    return <StyledProfile
       id="native-language"
     >
       <button
@@ -304,8 +235,8 @@ class Native extends Component {
       </button>
       {prompt}
       {flags}
-      {button}
-    </StyledNative>
+      {buttonBar}
+    </StyledProfile>
   }
 
 
@@ -322,6 +253,12 @@ class Native extends Component {
       this.scrollFlag = false
     }
   }
+
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.scrollFlagIntoView, false)
+    document.removeEventListener("keydown", this.selectLanguage, false)
+  }
 }
 
 
@@ -329,7 +266,7 @@ class Native extends Component {
 export default withTracker(() => {
   const collection  = collections["L10n"]
   Meteor.subscribe(collection._name)
-  
+
   const key         = "phrase"
   const flagsQuery  = { $and: [
                           { file: { $exists: true } }

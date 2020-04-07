@@ -1,15 +1,14 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 41
+    "version": 57
   , "folder": "img/flags/"
   }
 
 , "phrase": [
     { "cue": "native_language"
     , "ru": "Выберите свой родной язык"
-    , "en-GB": "Select your native language"
-    , "en-US": "Select your native language"
+    , "en": "Select your native language"
     , "fr": "Choisissez votre langue maternelle"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
@@ -28,9 +27,44 @@
     }
   , { "cue": "enter_name"
     , "ru": "Введите ваше имя"
-    , "en-GB": "Enter your name"
-    , "en-US": "Enter your name"
+    , "en": "Enter your name"
     , "fr": "Saisissez votre nom"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "username"
+    , "ru": "Имя пользователя"
+    , "en": "Username"
+    , "fr": "Nom d'utilisateur"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "next"
+    , "ru": "ок"
+    , "en": "Next"
+    , "fr": "Suivant"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "ok"
+    , "ru": "ок"
+    , "en": "ok"
+    , "fr": "Confirmer"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "which_language"
+    , "ru": "На каком языке Вы учитеся?"
+    , "en": "What language are you learning?"
+    , "fr": "Quelle langue apprenez‑vous ?"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"
@@ -38,9 +72,17 @@
     }
   , { "cue": "choose_teacher"
     , "ru": "Выберите своего учителя"
-    , "en-GB": "Select your language teacher"
-    , "en-US": "Select your language teacher"
+    , "en": "Choose your teacher"
     , "fr": "Choisissez votre professeur"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "solo"
+    , "ru": "Учись самостоятельно"
+    , "en": "Learn on your own"
+    , "fr": "Apprendre seul(e)"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"

@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
-import Splash  from './connect/Splash.jsx'
-import Native  from './connect/Native.jsx'
+import Splash   from './connect/Splash.jsx'
+import Native   from './connect/Native.jsx'
+import Name     from './connect/Name.jsx'
+import Learning from './connect/Learning.jsx'
+import Teacher  from './connect/Teacher.jsx'
 import collections from '../api/collections'
 
 
@@ -22,6 +25,9 @@ export default class Connect extends Component {
     this.views = {
       Splash
     , Native
+    , Name
+    , Learning
+    , Teacher
     }
     this.setView = this.setView.bind(this)
     this._checkForCollections = this._checkForCollections.bind(this)
@@ -105,14 +111,11 @@ export default class Connect extends Component {
     } else if (view === "Game") {
       this.props.setView(view)
 
-
-    } else if (this.views.indexOf(view) < 0 ) {
+    } else if (!this.views[view] ) {
       console.log("Unexpected view in Connect:", view)
 
     } else {
-      this.setState({
-        view
-      })
+      this.setState({ view })
     }
   }
 
