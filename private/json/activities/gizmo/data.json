@@ -1,0 +1,20 @@
+{
+  "collection": "Activities"
+
+, "as_is": {
+    "key": "gizmo"
+  , "version": 4
+  , "name": {
+      "en": "Idioms"
+    , "fr": "Expressions idiomatiques"
+    , "ru": "Фразеологизмы"
+    }
+  , "description": {
+      "en": "English idioms"
+    , "fr": "Expressions idiomatiques en français"
+    , "ru": "Фразеологизмы... i tutti quanti"
+    }
+  , "folder": "activities/gizmo/"
+  , "icon": "icon.jpg"
+  }
+}

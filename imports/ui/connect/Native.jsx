@@ -105,6 +105,12 @@ class Native extends Component {
   }
 
 
+  getPhrase(cue, index) {
+    const code = this.codes[index]
+    return localize(cue, code, this.props.phrases)
+  }
+
+
   getSelected() {
     const flags = this.props.flags
     if (flags.length) {
@@ -122,9 +128,7 @@ class Native extends Component {
 
 
   getPrompt(selected) {
-    const cue  = "native_language"
-    const code = this.codes[selected]
-    const prompt = localize(cue, code, this.props.phrases)
+    const prompt = this.getPhrase("native_language", selected)
 
     return <StyledPrompt>
       {prompt}
@@ -164,9 +168,7 @@ class Native extends Component {
 
 
   getButtonBar(selected) {
-    const cue = "choose_language"
-    const code = this.codes[selected]
-    const prompt = localize(cue, code, this.props.phrases)
+    const prompt = this.getPhrase("choose_language", selected)
     const disabled = !Session.get("username")
 
     return <StyledButtonBar>

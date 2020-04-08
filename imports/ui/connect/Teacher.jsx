@@ -65,6 +65,12 @@ class Teacher extends Component {
   }
 
 
+  getPhrase(cue) {
+    const code = Session.get("native")
+    return localize(cue, code, this.props.phrases)
+  }
+
+
   getProfile() {
     return this.props.teachers.find(profile => (
       profile.id === this.state.selected
@@ -81,9 +87,7 @@ class Teacher extends Component {
 
 
   getPrompt() {
-    const cue = "choose_teacher"
-    const code = Session.get("native")
-    const prompt = localize(cue, code, this.props.phrases)
+    const prompt = this.getPhrase("choose_teacher")
 
     return <StyledPrompt>
       {prompt}
@@ -132,9 +136,7 @@ class Teacher extends Component {
       prompt = profile.with
 
     } else {
-      const cue = "next"
-      const code = Session.get("native")
-      prompt = localize(cue, code, this.props.phrases)
+      prompt = this.getPhrase("next")
     }
 
     return prompt

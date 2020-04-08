@@ -3,13 +3,18 @@
 
 , "as_is": {
     "key": "drag"
-  , "version": 1
+  , "version": 3
   , "name": {
       "en": "Drag"
     , "fr": "Glisser"
     , "ru": "Перетащить"
     }
-  , "folder": "activities/drag"
+  , "description": {
+      "en": "Drag words onto pictures to learn vocabulary"
+    , "fr": "Glisser des mots sur des images pour apprendre du vocabulaire"
+    , "ru": "Перетащить... i tutti quanti"
+    }
+  , "folder": "activities/drag/"
   , "icon": "icon.jpg"
   }
 }

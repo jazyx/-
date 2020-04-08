@@ -56,7 +56,7 @@ export const StyledUL = styled.ul`
   }
 `
 
-export const StyledTeacher = styled.div`
+export const StyledTeacher = styled.li`
   position: relative;
   width: 50vmin;
   height: 50vmin;

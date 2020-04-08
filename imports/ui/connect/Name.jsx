@@ -54,10 +54,14 @@ class Name extends Component {
   }
 
 
-  getPrompt() {
-    const cue = "enter_name"
+  getPhrase(cue) {
     const code = Session.get("native")
-    const prompt = localize(cue, code, this.props.phrases)
+    return localize(cue, code, this.props.phrases)
+  }
+
+
+  getPrompt() {
+    const prompt = this.getPhrase("enter_name")
 
     return <StyledPrompt>
       {prompt}
@@ -66,9 +70,7 @@ class Name extends Component {
 
 
   getInput() {
-    const cue = "username"
-    const code = Session.get("native")
-    const placeholder = localize(cue, code, this.props.phrases)
+    const placeholder = this.getPhrase("username")
 
     return <StyledInput
       type="text"
@@ -83,9 +85,7 @@ class Name extends Component {
 
 
   getButtonBar() {
-    const cue = "next"
-    const code = Session.get("native")
-    const prompt = localize(cue, code, this.props.phrases)
+    const prompt = this.getPhrase("next")
     const disabled = !Session.get("teacher")
 
     return <StyledButtonBar>

@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 64
+    "version": 66
   , "folder": "img/flags/"
   }
 
@@ -109,7 +109,25 @@
   , { "cue": "save_failed"
     , "ru": "Ваши данные не были сохранены"
     , "en": "Data not saved to localStorage"
-    , "fr": "Vosdonnées n'ont pas pu être sauvegardées"
+    , "fr": "Vos données n'ont pas pu être sauvegardées"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "activities"
+    , "ru": "Деятельности"
+    , "en": "Activities"
+    , "fr": "Les activités"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "start"
+    , "ru": "Начать"
+    , "en": "Start"
+    , "fr": "Démarrer"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"

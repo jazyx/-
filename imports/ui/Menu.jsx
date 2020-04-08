@@ -9,7 +9,7 @@ const StyledMenu = styled.div`
   width: 25vmin;
   height: 100vh;
   background-color: #fff;
-  opacity: 0.1;
+  opacity: 0.01;
 
   pointer-events: none;
 `

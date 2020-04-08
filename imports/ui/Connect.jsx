@@ -97,6 +97,11 @@ export default class Connect extends Component {
         , count: 3
         }
       ]
+    , "Activities": [
+        { query: {}
+        , count: 1
+        }
+      ]
     }
 
     // Subscribe to the required collections
