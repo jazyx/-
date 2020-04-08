@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 58
+    "version": 64
   , "folder": "img/flags/"
   }
 
@@ -83,6 +83,33 @@
     , "ru": "Учись самостоятельно"
     , "en": "Learn on your own"
     , "fr": "Apprendre seul(e)"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "saving"
+    , "ru": "Сохранение..."
+    , "en": "Saving..."
+    , "fr": "Sauvegarde en cours..."
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "save_successful"
+    , "ru": "Успех! Ваши данные были сохранены."
+    , "en": "Success! Your data have been saved."
+    , "fr": "Succès! Vos données ont été sauvegardées."
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "save_failed"
+    , "ru": "Ваши данные не были сохранены"
+    , "en": "Data not saved to localStorage"
+    , "fr": "Vosdonnées n'ont pas pu être sauvegardées"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"

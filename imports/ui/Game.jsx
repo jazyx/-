@@ -24,6 +24,7 @@ const StyledFrame = styled.div`
   justify-content: start;
   align-items: center;
   float: left;
+  background: #fff;
 
   @media (min-aspect-ratio: 3/5) {
     height: 42vh;
@@ -81,9 +82,12 @@ const StyledName = styled.p`
   margin: 0.15em 0 0;
   ${props => props.show
            ? `border: none;
-              opacity: 1;`
+              opacity: 1;
+              color: #000;
+             `
            : `border: 0.05em dashed #999;
-              color: #fff;`
+              color: #fff;
+             `
   };
 
   /// 2 x 2 LAYOUT ///

@@ -1,10 +1,15 @@
-import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
+
+import { Meteor } from 'meteor/meteor'
+import { Session } from 'meteor/session'
+
 import Splash   from './connect/Splash.jsx'
 import Native   from './connect/Native.jsx'
 import Name     from './connect/Name.jsx'
 import Learning from './connect/Learning.jsx'
 import Teacher  from './connect/Teacher.jsx'
+import Submit   from './connect/Submit.jsx'
+
 import collections from '../api/collections'
 
 
@@ -16,18 +21,41 @@ export default class Connect extends Component {
     /// <<< HARD-CODED minimum time (ms) to show the Splash screen
     const splashDelay = 1000
     /// HARD-CODED >>>
-    
+   
     this.state = {
       view: "Splash"
     , showSplash: + new Date() + splashDelay
     }
 
+    this.connectToRemoteDB()
+    this.storedData = this.readFromLocalStorage()
+  }
+
+
+  readFromLocalStorage() {
+    if ("localStorage" in window) {
+      try {
+        const noviceString = localStorage.getItem("vdvoyom_profile")
+        const noviceData = JSON.parse(noviceString)
+        const keys = Object.keys(noviceData)
+
+        keys.forEach(key => {
+          Session.set(key, noviceData[key]) // TEMPORARY COMMENT
+        })
+        
+      } catch(error) { }
+    }
+  }
+
+
+  connectToRemoteDB() {
     this.views = {
       Splash
     , Native
     , Name
     , Learning
     , Teacher
+    , Submit
     }
     this.setView = this.setView.bind(this)
     this._checkForCollections = this._checkForCollections.bind(this)
@@ -101,9 +129,22 @@ export default class Connect extends Component {
     })
 
     if (ready && (+ new Date() > this.state.showSplash)) {
-      this.setState({ showSplash: 0, view: "Native" })
+      this.hideSplash()
+
     } else {
       setTimeout(this._checkForCollections, 100)
+    }
+  }
+
+
+  hideSplash() {
+    if (Session.get("user_id")) {
+      // Jump straight to the Activity view
+      this.props.setView("Activity")
+
+    } else {
+      // Step through the profiling procedure for first-time visitors
+      this.setState({ showSplash: 0, view: "Native" })
     }
   }
 
@@ -115,9 +156,6 @@ export default class Connect extends Component {
       , showSplash: + new Date()
       })
       this._checkForCollections()
-
-    } else if (view === "Game") {
-      this.props.setView(view)
 
     } else if (!this.views[view] ) {
       // Move back up the hierarchy

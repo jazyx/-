@@ -24,6 +24,8 @@ export class App extends Component {
   setView(view) {
     if (this.views[view]) {
       this.setState({ view })
+    } else {
+      console.log("Unknown view:", view)
     }
   }
 

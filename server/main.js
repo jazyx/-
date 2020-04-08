@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import collections from '../imports/api/collections.js';
+import createNovice from '../imports/core/methods.js';
 
 // Required by CollectJSON
 const fs = require('fs')

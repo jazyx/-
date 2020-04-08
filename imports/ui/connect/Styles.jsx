@@ -200,3 +200,12 @@ export const StyledButtonBar = styled.div`
     height: 15vh;  
   }
 `
+
+export const StyledCentred = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+`

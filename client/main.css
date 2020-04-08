@@ -1,7 +1,13 @@
- 
-body, div#react-target {
+html,
+body,
+div#react-target,
+div#wrapper {
   height: 100vh;
-  overflow: hidden;
+  /*overflow: hidden;*/ /* Does this affect full-screen on Android? */
+}n
+
+div#react-target{
+  overflow: hidden; /* Needed to place drag game images correctly */
 }
 
 body {
@@ -12,13 +18,13 @@ body {
 }
 
 * {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none;   /* Safari */
-  -khtml-user-select: none;    /* Konqueror HTML */
-  -moz-user-select: none;      /* Firefox */
-  -ms-user-select: none;       /* Internet Explorer/Edge */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;     
-} 
+}
 
 .can-select{
   -webkit-touch-callout: text; /* iOS Safari */

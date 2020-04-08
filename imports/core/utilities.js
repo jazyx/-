@@ -35,7 +35,7 @@ export const tweenColor = (color1, color2, ratio) => {
   const hex = rgb1.map((value, index) => {
     value = Math.round(value - (value - rgb2[index]) * ratio)
     value = Math.max(0, Math.min(value, 255))
-    
+
     return ((value < 16) ? "0" : "") + value.toString(16)
   })
 
@@ -465,7 +465,7 @@ export const trimImage = (image) => {
   let ii
     , x
     , y
- 
+
   // Iterate over every pixel to find the highest
   // and where it ends on every axis ()
   for (ii = 0; ii < l; ii += 4) {
@@ -496,7 +496,7 @@ export const trimImage = (image) => {
           }
       }
   }
-  
+
   // Calculate the height and width of the content
   const trimHeight = bound.bottom - bound.top
   const trimWidth = bound.right - bound.left
@@ -513,7 +513,7 @@ export const trimImage = (image) => {
   copy.canvas.height = trimHeight
   copy.putImageData(trimmed, 0, 0)
 
-  // Return an image 
+  // Return an image
   const trimmedImage = new Image()
   trimmedImage.src =copy.canvas.toDataURL()
 
@@ -527,24 +527,31 @@ window.trimImage = trimImage
 // STRINGS //
 
 export const localize = (cue, code, corpus) => {
-  let phrase = corpus.find(phrase => (
-    phrase.cue === cue
-  ))[code]
+  let phrase
 
-  if (!phrase) {
-    // Check if there is a more generic phrase without the region
-    code = code.replace(/-\w+/, "") // en | ru
-    phrase = corpus.find(phrase => (
-      phrase.cue === cue
-    ))[code]
+  const phraseData = corpus.find(phrase => (
+    phrase.cue === cue
+  ))
+
+  if (phraseData) {
+    phrase = phraseData[code]
+
+    if (!phrase) {
+      // Check if there is a more generic phrase without the region
+      code = code.replace(/-\w+/, "") // en | ru
+      phrase = phraseData[code]
+    }
   }
 
   if (!phrase) {
-    phrase = "***" + cue * "***"
+    console.log( "Not found — cue:", cue
+               , "code:", code
+               , "phraseData:", phraseData
+               )
+    phrase = "***" + cue + "***"
   }
 
   return phrase
-
 }
 
 

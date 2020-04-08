@@ -1,6 +1,6 @@
 
 { "collection": "Teachers"
-  
+
 , "as_is": {
     "folder": "img/teachers/"
   , "version": 8
@@ -20,8 +20,8 @@
 
 , "profile": [
     { "file": "aa.jpg"
-    , "id": "aa"  
-    , "name": {  
+    , "id": "aa"
+    , "name": {
          "cyrl": "Анастасия"
        , "latn": "Anastacia"
        }
@@ -30,8 +30,8 @@
     , "script": "cyrl"
     }
   , { "file": "jn.jpg"
-    , "id": "jn"  
-    , "name": {  
+    , "id": "jn"
+    , "name": {
          "latn": "James"
        , "cyrl": "Джеймс"
        }
@@ -40,8 +40,8 @@
     , "script": "latn"
     }
   , { "file": "ml.jpg"
-    , "id": "ml"  
-    , "name": {  
+    , "id": "ml"
+    , "name": {
          "latn": "Michaël"
        , "cyrl": "Михаэль"
        }
@@ -50,8 +50,8 @@
     , "script": "latn"
     }
   , { "file": "xxxx"
-    , "id": "xxxx"  
-    , "name": {  
+    , "id": "xxxx"
+    , "name": {
          "xxxx": "xxxx"
        , "xxxx": "xxxx"
        }

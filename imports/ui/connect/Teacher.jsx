@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
+import User from '../../api/User'
 import collections from '../../api/collections'
 import { localize
        , getElementIndex
@@ -44,9 +45,11 @@ class Teacher extends Component {
       return
     }
 
+    const profile = this.getProfile()
+    Session.set("language", profile.language)
     Session.set("teacher", this.state.selected)
 
-    this.props.setView("Activity")
+    this.props.setView("Submit")
   }
 
 
@@ -59,6 +62,13 @@ class Teacher extends Component {
 
     this.setState({ selected })
     this.scrollFlag = true // move fully onscreen if necessary
+  }
+
+
+  getProfile() {
+    return this.props.teachers.find(profile => (
+      profile.id === this.state.selected
+    ))
   }
 
 
@@ -116,11 +126,9 @@ class Teacher extends Component {
 
 
   getButtonPrompt() {
-    let prompt 
+    let prompt
     if (this.state.selected) {
-      const profile = this.props.teachers.find(profile => (
-        profile.id == this.state.selected
-      ))
+      const profile = this.getProfile()
       prompt = profile.with
 
     } else {
@@ -224,7 +232,7 @@ export default withTracker(() => {
       { type: { $eq: "profile" }}
     , { file: { $ne: "xxxx" }}
     ]
-  } 
+  }
   const teachers = collection.find(teacherQuery).fetch()
   const teachersFolder = collection.findOne(folderQuery)
 
