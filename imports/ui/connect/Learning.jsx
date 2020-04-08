@@ -4,6 +4,7 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
+import { localize } from '../../core/utilities'
 
 import { StyledProfile
        , StyledPrompt
@@ -23,30 +24,10 @@ class Learning extends Component {
   }
 
 
-  getPhrase(cue) {
-    let code = Session.get("native") // en-GB | ru
-    let phrase = this.props.phrases.find(phrase => (
-      phrase.cue === cue
-    ))[code]
-
-    if (!phrase) {
-      // Check if there is a more generic phrase without the region
-      code = code.replace(/-\w+/, "") // en | ru
-      phrase = this.props.phrases.find(phrase => (
-        phrase.cue === cue
-      ))[code]
-    }
-
-    if (!phrase) {
-      phrase = "***" + cue * "***"
-    }
-
-    return phrase
-  }
-
-
   getPrompt() {
-    const prompt = this.getPhrase("which_language")
+    const cue = "which_language"
+    const code = Session.get("native")
+    const prompt = localize(cue, code, this.props.phrases)
 
     return <StyledPrompt>
       {prompt}
@@ -55,7 +36,9 @@ class Learning extends Component {
 
 
   getButtonBar() {
-    const prompt = this.getPhrase("next")
+    const cue = "next"
+    const code = Session.get("native")
+    const prompt = localize(cue, code, this.props.phrases)
     const disabled = !Session.get("teacher")
 
     return <StyledButtonBar>

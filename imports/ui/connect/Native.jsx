@@ -137,10 +137,6 @@ class Native extends Component {
   getPrompt(selected) {
     const cue  = "native_language"
     const code = this.codes[selected]
-
-    // const prompt = (this.props.phrases.find(phrase => (
-    //   phrase.cue === "native_language"
-    // )))[code]
     const prompt = localize(cue, code, this.props.phrases)
 
     return <StyledPrompt>
@@ -181,10 +177,9 @@ class Native extends Component {
 
 
   getButtonBar(selected) {
+    const cue = "choose_language"
     const code = this.codes[selected]
-    const prompt = (this.props.phrases.find(phrase => (
-      phrase.cue === "choose_language"
-    )))[code]
+    const prompt = localize(cue, code, this.props.phrases)
     const disabled = !Session.get("username")
 
     console.log("Native > Name disabled", disabled, "name:", Session.get("username"))
