@@ -6,6 +6,7 @@
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
+import { Session } from 'meteor/session'
 
 import collections from '../api/collections'
 import { shuffle
@@ -212,7 +213,7 @@ const StyledMask = styled.div`
 `
 
 
-class Game extends Component {
+class Drag extends Component {
   constructor(props) {
     super(props)
 
@@ -502,7 +503,7 @@ export default withTracker(() => {
   Meteor.subscribe(collection._name)
 
   const key         = "furniture"
-  const code        = "en"
+  const code        = Session.get("language").replace(/-\w*/, "")
   const imageQuery  = { type: { $eq: key }}
   const folderQuery = { key:  { $eq: key }}
   const items = collection.find(imageQuery).fetch()
@@ -518,4 +519,4 @@ export default withTracker(() => {
     images
   , folder
   }
-})(Game)
+})(Drag)

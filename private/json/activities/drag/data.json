@@ -2,8 +2,8 @@
   "collection": "Activities"
 
 , "as_is": {
-    "key": "drag"
-  , "version": 3
+    "key": "Drag"
+  , "version": 1
   , "name": {
       "en": "Drag"
     , "fr": "Glisser"

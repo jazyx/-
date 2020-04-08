@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Connect from './Connect.jsx';
 import Activity from './Activity.jsx';
 import Menu from './Menu.jsx';
-import Game from './Game.jsx';
+import Drag from './Drag.jsx';
 
 
 export class App extends Component {
@@ -12,7 +12,7 @@ export class App extends Component {
     this.views = {
        Connect
     ,  Activity
-    ,  Game
+    ,  Drag
     }
 
     this.state = { view: "Connect" }

@@ -37,19 +37,33 @@ class Activity extends Component {
   selectActivity(event) {
     const element = event.target
     const selected = getElementIndex(element, "UL")
+    if (selected === this.state.selected) {
+      return this.goActivity()
+    }
+
     this.setState({ selected })
     this.scrollFlag = true // move fully onscreen if necessary
   }
 
 
-  goActivity() {
+  goActivity(event) {
+    if (event && event.type === "keydown" && event.key !== "Enter") {
+      return
+    }
 
+    const activity = this.props.activities[this.state.selected]
+    if (activity) {
+      const view = activity.key
+      this.props.setView(view)
+    }
   }
 
 
   scrollIntoView() {
     const element = this.scrollTo.current
-    element.scrollIntoView({behavior: 'smooth'})
+    if (element) {
+      element.scrollIntoView({behavior: 'smooth'})
+    }
   }
 
 
@@ -91,7 +105,6 @@ class Activity extends Component {
       const ref         = selected
                         ? this.scrollTo
                         : ""
-
       return <StyledActivity
         key={name}
         src={src}

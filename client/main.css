@@ -4,7 +4,7 @@ div#react-target,
 div#wrapper {
   height: 100vh;
   /*overflow: hidden;*/ /* Does this affect full-screen on Android? */
-}n
+}
 
 div#react-target{
   overflow: hidden; /* Needed to place drag game images correctly */
