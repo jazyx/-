@@ -111,7 +111,7 @@ export const StyledLI = styled.li`
     width: 30vw;
     opacity: ${props => props.selected
                       ? 1
-                      : 0.25
+                      : 0.3333
               };
   }
 

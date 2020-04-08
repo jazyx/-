@@ -64,14 +64,22 @@ export const StyledActivity = styled.li`
   position: relative;
   width: calc(50vw - 10px);
   height: calc(50vw - 10px);
+
   background-image: url(${props => props.src});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: ${props => props.selected
-                    ? 1
-                    : 0.3333
-            };
+
+  cursor: pointer;
+  ${props => props.disabled
+           ? `opacity: 0.1333;
+              pointer-events: none;
+              cursor: default;
+             `
+           : props.selected
+             ? `opacity: 1`
+             : `opacity: 0.6667`
+   };
   & p {
     position: absolute;
     background: rgba(0,0,0,0.25);

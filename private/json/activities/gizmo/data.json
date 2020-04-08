@@ -3,7 +3,7 @@
 
 , "as_is": {
     "key": "gizmo"
-  , "version": 4
+  , "version": 5
   , "name": {
       "en": "Idioms"
     , "fr": "Expressions idiomatiques"
@@ -16,5 +16,6 @@
     }
   , "folder": "activities/gizmo/"
   , "icon": "icon.jpg"
+  , "disabled": true
   }
 }

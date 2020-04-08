@@ -4,7 +4,8 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../api/collections'
-import { localize } from '../core/utilities'
+import { localize
+       , getElementIndex } from '../core/utilities'
 
 import { StyledProfile
        , StyledPrompt
@@ -20,13 +21,35 @@ class Activity extends Component {
   constructor(props) {
     super(props)
 
-    this.state = { selected: 3 }
+    this.state = { selected: -1 }
     this.goActivity = this.goActivity.bind(this)
+    this.selectActivity = this.selectActivity.bind(this)
+    this.scrollIntoView = this.scrollIntoView.bind(this)
+
+    this.scrollTo = React.createRef()
+
+    // Allow Enter to accept the default/current language
+    document.addEventListener("keydown", this.goActivity, false)
+    window.addEventListener("resize", this.scrollIntoView, false)
+  }
+
+
+  selectActivity(event) {
+    const element = event.target
+    const selected = getElementIndex(element, "UL")
+    this.setState({ selected })
+    this.scrollFlag = true // move fully onscreen if necessary
   }
 
 
   goActivity() {
 
+  }
+
+
+  scrollIntoView() {
+    const element = this.scrollTo.current
+    element.scrollIntoView({behavior: 'smooth'})
   }
 
 
@@ -59,16 +82,23 @@ class Activity extends Component {
 
 
   getActivities() {
-    const activities = this.props.activities.map(activity => {
+    const activities = this.props.activities.map((activity, index) => {
       const src         = activity.folder + activity.icon
       const name        = this.getPhrase("name", activity)
       const description = this.getPhrase("description", activity)
-
-      console.log(name)
+      const disabled    = !!activity.disabled
+      const selected    = this.state.selected === index
+      const ref         = selected
+                        ? this.scrollTo
+                        : ""
 
       return <StyledActivity
         key={name}
         src={src}
+        ref={ref}
+        disabled={disabled}
+        selected={selected}
+        onMouseUp={this.selectActivity}
       >
         <p>{name}</p>
       </StyledActivity>
@@ -79,7 +109,9 @@ class Activity extends Component {
 
   getDescription() {
     let description = ""
-    if (this.state.selected) {
+    if (this.state.selected < 0) {
+      // Nothing is selected
+    } else {
       const activity = this.props.activities[this.state.selected]
       description = this.getPhrase("description", activity) 
     }
@@ -91,7 +123,7 @@ class Activity extends Component {
 
 
   getButton() {
-    const disabled = false
+    const disabled = this.state.selected < 0
     const code = Session.get("native")
     const prompt = localize("start", code, this.props.phrases)
 
@@ -118,6 +150,20 @@ class Activity extends Component {
       {description}
       {button}
     </StyledProfile>
+  }
+
+
+  componentDidUpdate() {
+    if (this.scrollFlag) {
+      this.scrollIntoView()
+      this.scrollFlag = false
+    }
+  }
+
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.scrollIntoView, false)
+    document.removeEventListener("keydown", this.goActivity, false)
   }
 }
 

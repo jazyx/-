@@ -3,7 +3,7 @@
 
 , "as_is": {
     "key": "flash"
-  , "version": 4
+  , "version": 5
   , "name": {
       "en": "Flashcards"
     , "fr": "Flashcards"
@@ -16,5 +16,6 @@
     }
   , "folder": "activities/flash/"
   , "icon": "icon.jpg"
+  , "disabled": true
   }
 }
