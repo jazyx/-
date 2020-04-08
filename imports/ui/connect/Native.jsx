@@ -4,11 +4,13 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
-import { localize } from '../../core/utilities'
+import { localize
+       , getElementIndex
+       } from '../../core/utilities'
 
 import { StyledProfile
        , StyledPrompt
-       , StyledFlags
+       , StyledUL
        , StyledLI
        , StyledButton
        , StyledNavArrow
@@ -26,15 +28,15 @@ class Native extends Component {
     this.scrollTo = React.createRef()
     this.state = { selected, hover: -1 }
 
-    this.selectLanguage     = this.selectLanguage.bind(this)
-    this.selectFlag         = this.selectFlag.bind(this)
-    this.mouseEnter         = this.mouseEnter.bind(this)
-    this.mouseLeave         = this.mouseLeave.bind(this)
-    this.scrollFlagIntoView = this.scrollFlagIntoView.bind(this)
+    this.selectLanguage = this.selectLanguage.bind(this)
+    this.selectFlag     = this.selectFlag.bind(this)
+    this.mouseEnter     = this.mouseEnter.bind(this)
+    this.mouseLeave     = this.mouseLeave.bind(this)
+    this.scrollIntoView = this.scrollIntoView.bind(this)
 
     // Allow Enter to accept the default/current language
     document.addEventListener("keydown", this.selectLanguage, false)
-    window.addEventListener("resize", this.scrollFlagIntoView, false)
+    window.addEventListener("resize", this.scrollIntoView, false)
   }
 
 
@@ -68,18 +70,19 @@ class Native extends Component {
 
 
   selectFlag(event) {
-    const selected = this.getItemIndex(event.target)
+    const selected = getElementIndex(event.target, "UL")
     if (selected === this.state.selected) {
+      // A second click = selection
       return this.selectLanguage()
     }
-    this.setState({ selected })
 
-    this.scrollFlag = true // move onscreen if necessary
+    this.setState({ selected })
+    this.scrollFlag = true // move fully onscreen if necessary
   }
 
 
   mouseEnter(event) {
-    const hover = this.getItemIndex(event.target)
+    const hover = getElementIndex(event.target, "UL")
     this.setState({ hover })
   }
 
@@ -89,25 +92,9 @@ class Native extends Component {
   }
 
 
-  scrollFlagIntoView() {
+  scrollIntoView() {
     const element = this.scrollTo.current
     element.scrollIntoView({behavior: 'smooth'})
-  }
-
-
-  getItemIndex(element) {
-    let index = -1
-
-    while (element && element.tagName !== "LI") {
-      element = element.parentNode
-    }
-
-    if (element) {
-      const siblings = [].slice.call(element.parentNode.children)
-      index = siblings.indexOf(element)
-    }
-
-    return index
   }
 
 
@@ -172,7 +159,7 @@ class Native extends Component {
        </StyledLI>
     }) //.reverse()
 
-    return <StyledFlags>{flags}</StyledFlags>
+    return <StyledUL>{flags}</StyledUL>
   }
 
 
@@ -181,8 +168,6 @@ class Native extends Component {
     const code = this.codes[selected]
     const prompt = localize(cue, code, this.props.phrases)
     const disabled = !Session.get("username")
-
-    console.log("Native > Name disabled", disabled, "name:", Session.get("username"))
 
     return <StyledButtonBar>
       <StyledNavArrow
@@ -238,20 +223,20 @@ class Native extends Component {
   componentDidMount(delay) {
     // HACK: Not all images may have been loaded from MongoDB, so
     // let's wait a little before we scrollIntoView
-    setTimeout(this.scrollFlagIntoView, 200)
+    setTimeout(this.scrollIntoView, 200)
   }
 
 
   componentDidUpdate() {
     if (this.scrollFlag) {
-      this.scrollFlagIntoView()
+      this.scrollIntoView()
       this.scrollFlag = false
     }
   }
 
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.scrollFlagIntoView, false)
+    window.removeEventListener("resize", this.scrollIntoView, false)
     document.removeEventListener("keydown", this.selectLanguage, false)
   }
 }

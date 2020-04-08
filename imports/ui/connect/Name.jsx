@@ -50,7 +50,7 @@ class Name extends Component {
     event.preventDefault()
     Session.set("username", this.state.username)
 
-    this.props.setView("Learning")
+    this.props.setView("Teacher")
   }
 
 
@@ -86,9 +86,7 @@ class Name extends Component {
     const cue = "next"
     const code = Session.get("native")
     const prompt = localize(cue, code, this.props.phrases)
-    const disabled = !Session.get("learning")
-
-    console.log("Name > Learnig disabled", disabled, "learning:", Session.get("learning"))
+    const disabled = !Session.get("teacher")
 
     return <StyledButtonBar>
       <StyledNavArrow
@@ -105,7 +103,7 @@ class Name extends Component {
       <StyledNavArrow
         way="forward"
         disabled={disabled}
-        onMouseUp={() => this.props.setView("Learning")}
+        onMouseUp={() => this.props.setView("Teacher")}
       />
     </StyledButtonBar>
   }

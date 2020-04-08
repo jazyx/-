@@ -4,11 +4,14 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
-import { localize } from '../../core/utilities'
+import { localize
+       , getElementIndex
+       } from '../../core/utilities'
 
 import { StyledProfile
        , StyledPrompt
-       , StyledInput
+       , StyledTeacher
+       , StyledUL
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
@@ -21,7 +24,49 @@ class Teacher extends Component {
   constructor(props) {
     super(props)
 
-    this.state = { ready: false }
+    this.ids = this.props.teachers.map(profile => profile.id)
+    this.state = { selected: Session.get("teacher") }
+
+    this.scrollTo = React.createRef()
+
+    this.setTeacher = this.setTeacher.bind(this)
+    this.selectTeacher = this.selectTeacher.bind(this)
+    this.scrollIntoView = this.scrollIntoView.bind(this)
+
+    // Allow Enter to accept the default/current language
+    document.addEventListener("keydown", this.setTeacher, false)
+    window.addEventListener("resize", this.scrollIntoView, false)
+  }
+
+
+  setTeacher(event) {
+    if (event && event.type === "keydown" && event.key !== "Enter") {
+      return
+    }
+
+    Session.set("teacher", this.state.selected)
+
+    this.props.setView("Activity")
+  }
+
+
+  selectTeacher(event) {
+    const selected = event.target.id
+    if (selected === this.state.selected) {
+      // A second click = selection
+      return this.setTeacher()
+    }
+
+    this.setState({ selected })
+    this.scrollFlag = true // move fully onscreen if necessary
+  }
+
+
+  scrollIntoView() {
+    const element = this.scrollTo.current
+    if (element) {
+      element.scrollIntoView({behavior: 'smooth'})
+    }
   }
 
 
@@ -36,19 +81,70 @@ class Teacher extends Component {
   }
 
 
+  getProfileBlocks() {
+    const folders = this.props.folders
+    const flags   = this.props.flags
+
+    const blocks = this.props.teachers.map((profile, index) => {
+      const src = folders.teachers + profile.file
+
+      const code = profile.language
+      const flagData = flags.find(document => document.cue === code)
+      const flag = folders.flags + flagData.file
+
+      const name = profile.name[profile.script]
+      const id = profile.id
+      const selected = id === this.state.selected
+      const ref = selected ? this.scrollTo : null
+
+      return <StyledTeacher
+        id={id}
+        className="profile"
+        key={name}
+        ref={ref}
+        src={src}
+        selected={selected}
+        onMouseUp={this.selectTeacher}
+      >
+        <img src={flag} alt={code} className="flag" />
+        <p>{name}</p>
+      </StyledTeacher>
+    })
+
+    return <StyledUL>{blocks}</StyledUL>
+  }
+
+
+  getButtonPrompt() {
+    let prompt 
+    if (this.state.selected) {
+      const profile = this.props.teachers.find(profile => (
+        profile.id == this.state.selected
+      ))
+      prompt = profile.with
+
+    } else {
+      const cue = "next"
+      const code = Session.get("native")
+      prompt = localize(cue, code, this.props.phrases)
+    }
+
+    return prompt
+  }
+
+
   getButtonBar() {
-    const cue = "next"
-    const code = Session.get("native")
-    const prompt = localize(cue, code, this.props.phrases)
+    const prompt = this.getButtonPrompt()
+    const disabled = !this.state.selected
 
     return <StyledButtonBar>
       <StyledNavArrow
         way="back"
         disabled={false}
-        onMouseUp={() => this.props.setView("Learning")}
+        onMouseUp={() => this.props.setView("Name")}
       />
       <StyledButton
-        disabled={!this.state.ready}
+        disabled={disabled}
         onMouseUp={this.setTeacher}
       >
         {prompt}
@@ -62,33 +158,88 @@ class Teacher extends Component {
 
   render() {
     const prompt = this.getPrompt()
+    const blocks = this.getProfileBlocks()
     const buttonBar = this.getButtonBar()
 
     return <StyledProfile
       id="teacher"
     >
       {prompt}
+      {blocks}
       {buttonBar}
     </StyledProfile>
+  }
+
+
+  componentDidMount(delay) {
+    // HACK: Not all images may have been loaded from MongoDB, so
+    // let's wait a little before we scrollIntoView
+    setTimeout(this.scrollIntoView, 200)
+  }
+
+
+  componentDidUpdate() {
+    if (this.scrollFlag) {
+      this.scrollIntoView()
+      this.scrollFlag = false
+    }
+  }
+
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.scrollIntoView, false)
+    document.removeEventListener("keydown", this.setTeacher, false)
   }
 }
 
 
 
 export default withTracker(() => {
-  const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name)
+  // Phrases and flags
+  const l10n  = collections["L10n"]
+  Meteor.subscribe(l10n._name)
 
-  const key         = "phrase"
   const phraseQuery = {
     $and: [
-      { type: { $eq: key }}
+      { type: { $eq: "phrase" }}
     , { file: { $exists: false }}
     ]
   }
-  const phrases = collection.find(phraseQuery).fetch()
-
-  return {
-    phrases
+  const folderQuery = { folder: { $exists: 1 } }
+  const flagQuery  = {
+    $and: [
+      { file: { $exists: true } }
+    , { file: { $ne: "xxxx"} }
+    ]
   }
+  const flagProjection = { cue: 1, file: 1, _id: 0 }
+  const phrases = l10n.find(phraseQuery).fetch()
+  const flags = l10n.find(flagQuery, flagProjection).fetch()
+  const flagsFolder = l10n.findOne(folderQuery)
+
+  // Teacher profiles
+  const collection = collections["Teachers"]
+  const teacherQuery = {
+    $and: [
+      { type: { $eq: "profile" }}
+    , { file: { $ne: "xxxx" }}
+    ]
+  } 
+  const teachers = collection.find(teacherQuery).fetch()
+  const teachersFolder = collection.findOne(folderQuery)
+
+  // Folder paths
+  const folders = {
+    teachers: teachersFolder ? teachersFolder.folder : ""
+  , flags:    flagsFolder    ? flagsFolder.folder    : ""
+  }
+
+  const props = {
+    phrases
+  , flags
+  , teachers
+  , folders
+  }
+
+  return props
 })(Teacher)

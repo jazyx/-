@@ -10,7 +10,6 @@ const StyledSplash = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-color: #003;
 
   & .lds-ring {
     display: inline-block;

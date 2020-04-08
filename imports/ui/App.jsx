@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+
 import Connect from './Connect.jsx';
+import Activity from './Activity.jsx';
+import Menu from './Menu.jsx';
 import Game from './Game.jsx';
 
 
@@ -7,8 +10,9 @@ export class App extends Component {
   constructor(props) {
     super(props)
     this.views = {
-      "Connect": Connect
-    , "Game": Game
+       Connect
+    ,  Activity
+    ,  Game
     }
 
     this.state = { view: "Connect" }
@@ -25,14 +29,16 @@ export class App extends Component {
 
 
   render() {
-    const props = { setView: this.setView }
-    const children = []
-    const element = this.views[this.state.view]
+    const View = this.views[this.state.view]
 
-    return React.createElement(
-      element
-    , props
-    , children
-    )
+    return <div id="wrapper">
+      <View
+        setView={this.setView}
+      />
+      <Menu
+        hide={this.state.view === "Connect"}
+      />
+    </div>
+    
   }
 }

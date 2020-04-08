@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 57
+    "version": 58
   , "folder": "img/flags/"
   }
 
@@ -71,9 +71,9 @@
     , "zh": "zh - xxx"
     }
   , { "cue": "choose_teacher"
-    , "ru": "Выберите своего учителя"
-    , "en": "Choose your teacher"
-    , "fr": "Choisissez votre professeur"
+    , "ru": "Выберите своего учителя"
+    , "en": "Choose your teacher"
+    , "fr": "Choisissez votre professeur"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"

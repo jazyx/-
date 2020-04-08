@@ -61,6 +61,14 @@ export default class Connect extends Component {
         , count: 6
         }
       ]
+    , "Teachers": [
+        { query: { folder: { $exists: true } }
+        , count: 1
+        }
+      , { query: { file: { $exists: true} }
+        , count: 3
+        }
+      ]
     }
 
     // Subscribe to the required collections
@@ -112,7 +120,8 @@ export default class Connect extends Component {
       this.props.setView(view)
 
     } else if (!this.views[view] ) {
-      console.log("Unexpected view in Connect:", view)
+      // Move back up the hierarchy
+      this.props.setView(view)
 
     } else {
       this.setState({ view })

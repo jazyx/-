@@ -7,7 +7,7 @@ import styled, { css } from 'styled-components'
 import { tweenColor } from '../../core/utilities'
 
 const colours = {
-  background: "#003"
+  background: "#000"
 }
 colours.active = tweenColor(colours.background, "#fff", 0.1)
 
@@ -41,7 +41,7 @@ export const StyledPrompt = styled.h1`
   }
 `
 
-export const StyledFlags = styled.ul`
+export const StyledUL = styled.ul`
   list-style-type: none;
   width: 100%;
   height: calc(88vh - 35vw);
@@ -53,6 +53,56 @@ export const StyledFlags = styled.ul`
   @media (min-aspect-ratio: 1/1) {
     height: 53vh;
     white-space: nowrap;
+  }
+`
+
+export const StyledTeacher = styled.div`
+  position: relative;
+  width: 50vmin;
+  height: 50vmin;
+  margin: 0 25vmin;
+  background-image: url(${props => props.src});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: ${props => props.selected
+                    ? 1
+                    : 0.3333
+            };
+
+  & img {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10vmin!important;
+    opacity: 1!important;
+    ;
+  }
+
+  & p {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: #fff;
+    // text-shadow: 2px 2px 2px #000000, -2px -2px 2px #000000;
+    background: rgba(0,0,0,0.1);
+    text-align: center;
+    font-size: 7.5vmin;
+    margin: 0;
+  }
+
+  &:hover {
+    opacity: ${props => props.selected
+                      ? 1
+                      : 0.6667
+              };
+  }
+
+  @media (min-aspect-ratio: 1/1) {
+    display: inline-block;
+    clear: both;
+    margin: 0;
   }
 `
 
@@ -68,7 +118,7 @@ export const StyledLI = styled.li`
   &:hover img {
     opacity: ${props => props.selected
                       ? 1
-                      : 0.5
+                      : 0.6667
               };
   }
 
@@ -103,7 +153,12 @@ export const StyledButton = styled.button`
   width: 70vw;
   max-width: 70vh;
   font-size: 5.25vw;
-  cursor: pointer;
+  ${props => props.disabled
+           ? `opacity: 0.25;
+              pointer-events: none;
+             `
+           : `cursor: pointer;`
+   }
 
   &:active {
     background: ${colours.active};
@@ -118,10 +173,10 @@ export const StyledButton = styled.button`
 export const StyledNavArrow = styled.div`
   width: 15vw;
   height: 15vw;
-  background-color: #888;
+  background-color: #333;
 
   ${props => (props.disabled || props.invisible)
-           ? `opacity: ${props.invisible ? 0 : 0.25};
+           ? `opacity: ${props.invisible ? 0 : 0.5};
               pointer-events: none;
              `
            : `cursor: pointer;
@@ -134,7 +189,6 @@ export const StyledNavArrow = styled.div`
     height: 15vh;  
   }
 `
-
 
 export const StyledButtonBar = styled.div`
   display:flex;

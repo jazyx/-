@@ -2,16 +2,13 @@
 { "collection": "Teachers"
   
 , "as_is": {
-    "folder": "img/teachers"
-  , "version": 3
+    "folder": "img/teachers/"
+  , "version": 8
   }
 
 , "script": [
     { "lang": "ru"
     , "script": "cyrl"
-    }
-  , { "lang": "en-gb"
-    , "script": "latn"
     }
   , { "lang": "en"
     , "script": "latn"
@@ -23,37 +20,37 @@
 
 , "profile": [
     { "file": "aa.jpg"
-    , "code": "aa"  
+    , "id": "aa"  
     , "name": {  
          "cyrl": "Анастасия"
        , "latn": "Anastacia"
        }
-    , "with": "Учить русский с Анастасией"
+    , "with": "Учить русский с Анастасией"
     , "language": "ru"
     , "script": "cyrl"
     }
   , { "file": "jn.jpg"
-    , "code": "jn"  
+    , "id": "jn"  
     , "name": {  
          "latn": "James"
        , "cyrl": "Джеймс"
        }
-    , "with": "Learn English with James"
-    , "language": "en-gb"
+    , "with": "Learn English with James"
+    , "language": "en-GB"
     , "script": "latn"
     }
   , { "file": "ml.jpg"
-    , "code": "ml"  
+    , "id": "ml"  
     , "name": {  
          "latn": "Michaël"
        , "cyrl": "Михаэль"
        }
-    , "with": "Apprendre le français avec Michaël"
+    , "with": "Apprendre le français avec Michaël"
     , "language": "fr"
     , "script": "latn"
     }
   , { "file": "xxxx"
-    , "code": "aa"  
+    , "id": "xxxx"  
     , "name": {  
          "xxxx": "xxxx"
        , "xxxx": "xxxx"

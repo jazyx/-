@@ -523,6 +523,9 @@ export const trimImage = (image) => {
 window.trimImage = trimImage
 
 
+
+// STRINGS //
+
 export const localize = (cue, code, corpus) => {
   let phrase = corpus.find(phrase => (
     phrase.cue === cue
@@ -542,4 +545,29 @@ export const localize = (cue, code, corpus) => {
 
   return phrase
 
+}
+
+
+// HTML ELEMENTS //
+
+
+export const getElementIndex = (element, parentTag) => {
+  let index = -1
+
+  if (element instanceof HTMLElement) {
+    parentTag = typeof parentTag === "string"
+              ? parentTag.toUpperCase()
+              : "UL"
+
+    while (element && element.parentNode.tagName !== parentTag) {
+      element = element.parentNode
+    }
+
+    if (element) {
+      const siblings = [].slice.call(element.parentNode.children)
+      index = siblings.indexOf(element)
+    }
+  }
+
+  return index
 }
