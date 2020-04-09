@@ -32,13 +32,15 @@ if (Meteor.isServer) {
 
     name = collection._name // name.toLowerCase()
 
+    // console.log(name, collection.find().count())
+
     Meteor.publish(name, () => {
       const items = collection.find(query)
 
-      console.log(
-        "Request for", collection._name, query
-      , items.count(), "items served"
-      )
+      // console.log(
+      //   "Request for", collection._name, query
+      // , items.count(), "items served"
+      // )
 
       return items
     })

@@ -102,6 +102,11 @@ export default class Connect extends Component {
         , count: 1
         }
       ]
+    , "Users": [
+        { query: {}
+        , count: 1
+        }
+      ]
     }
 
     // Subscribe to the required collections
@@ -143,14 +148,14 @@ export default class Connect extends Component {
 
 
   hideSplash() {
-    if (Session.get("user_id")) {
-      // Jump straight to the Activity view
-      this.props.setView("Activity")
+    // if (Session.get("user_id")) {
+    //   // Jump straight to the Activity view
+    //   this.props.setView("Activity")
 
-    } else {
+    // } else {
       // Step through the profiling procedure for first-time visitors
       this.setState({ showSplash: 0, view: "Native" })
-    }
+    // }
   }
 
 

@@ -1,19 +1,32 @@
-import React, { Component } from 'react';
+/**
+ * methods.js
+ *
+ * Based on:
+ *
+ *   https://guide.meteor.com/methods.html#advanced-boilerplate
+ */
+
+import { Meteor } from 'meteor/meteor'
 import { Session } from 'meteor/session'
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from 'simpl-schema'
 
 import collections from '../api/collections'
+
+if (Meteor.isClient) {
+  for (let name in collections) {
+    Meteor.subscribe(collections[name]._name)
+  }
+}
 
 
 
 /**
- * { constant_description }
- *
  * Expects data with the format...
- * 
+ *
  *    { native, username, teacher, language }
- *    
- * ... where all the values are strings
+ *
+ * ... where all the values are strings. Throws an error if this is
+ * not the case.
  */
 export const createNovice = {
   name: 'vdvoyom.createNovice'
@@ -32,22 +45,27 @@ export const createNovice = {
   // Factor out Method body so that it can be called independently
 , run(noviceData) {
     const Users = collections["Users"]
-    const _id = Users.insert(noviceData)
-    // console.log("createNovice inserted doc with _id", _id)
+    // Allow only one user with a given name and native language
+    const { native, username } = noviceData
+    const existing = Users.findOne({ native, username })
 
-    if (Session) { // only on client
+    const _id = existing
+              ? existing._id
+              : Users.insert(noviceData)
+
+    if (Session) { // Meteor.isClient)
       Session.set("user_id", _id)
     }
   }
 
-  // Call Method by referencing the JS object (4)
-  // Also, this lets us specify Meteor.apply options once in
-  // the Method implementation, rather than requiring the caller
-  // to specify it at the call site.
+  // Call Method by referencing the JS object
+  // Also, this lets us specify Meteor.apply options once in the
+  // Method implementation, rather than requiring the caller to
+  // specify it at the call site.
 , call(noviceData, callback) {
     const options = {
-      returnStubValue: true,     // (5)
-      throwStubExceptions: true  // (6)
+      returnStubValue: true
+    , throwStubExceptions: true
     }
 
     Meteor.apply(this.name, [noviceData], options, callback)

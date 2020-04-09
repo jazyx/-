@@ -43,6 +43,8 @@ class Teacher extends Component {
   setTeacher(event) {
     if (event && event.type === "keydown" && event.key !== "Enter") {
       return
+    } else if (!this.state.selected) {
+      return
     }
 
     const profile = this.getProfile()
@@ -160,7 +162,9 @@ class Teacher extends Component {
         {prompt}
       </StyledButton>
       <StyledNavArrow
-        invisible={true}
+        way="forward"
+        disabled={false}
+        onMouseUp={() => this.props.setView("Activity")}
       />
     </StyledButtonBar>
   }
