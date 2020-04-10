@@ -233,12 +233,7 @@ export default withTracker(() => {
 
   // Teacher profiles
   const collection = collections["Teachers"]
-  const teacherQuery = {
-    $and: [
-      { type: { $eq: "profile" }}
-    , { file: { $ne: "xxxx" }}
-    ]
-  }
+  const teacherQuery = { type: { $eq: "profile" }}
   const teachers = collection.find(teacherQuery).fetch()
   const teachersFolder = collection.findOne(folderQuery)
 

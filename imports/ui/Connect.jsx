@@ -9,6 +9,7 @@ import Name     from './connect/Name.jsx'
 import Learning from './connect/Learning.jsx'
 import Teacher  from './connect/Teacher.jsx'
 import Submit   from './connect/Submit.jsx'
+import Teach   from './connect/Teach.jsx'
 
 import collections from '../api/collections'
 
@@ -56,6 +57,7 @@ export default class Connect extends Component {
     , Learning
     , Teacher
     , Submit
+    , Teach
     }
     this.setView = this.setView.bind(this)
     this._checkForCollections = this._checkForCollections.bind(this)
@@ -149,14 +151,47 @@ export default class Connect extends Component {
   }
 
 
+  _checkURLForTeacherName() {
+    const search = window.location.search
+    let teacher  = new URLSearchParams(search).keys().next().value
+
+    if (teacher) {
+      const query = { file: { $exists: 1 } }
+      const teachers = collections["Teachers"].find(query).fetch()
+
+      teacher = teachers.reduce((input, teacherData) => {
+        const name = teacherData.name[teacherData.script]
+        if (name === teacher) {
+          input = teacherData
+        }
+
+        return input
+      }, null)
+    }
+
+    return teacher
+  }
+
+
+
   hideSplash() {
+    let view = "Native"
+    const teacher = this._checkURLForTeacherName()
+    
+    if (teacher) {
+      Session.set("teacher",    teacher.name[teacher.script])
+      Session.set("teacher_id", teacher.id)
+      Session.set("native",     teacher.language)
+      view = "Teach"
+    }
+ 
     // if (Session.get("user_id")) {
     //   // Jump straight to the Activity view
     //   this.props.setView("Activity")
 
     // } else {
       // Step through the profiling procedure for first-time visitors
-      this.setState({ showSplash: 0, view: "Native" })
+      this.setState({ showSplash: 0, view })
     // }
   }
 

@@ -209,3 +209,27 @@ export const StyledCentred = styled.div`
   height: 100vh;
   text-align: center;
 `
+
+
+export const StyledLearner = styled.li`
+  border-width: 0.5vmin;
+  border-color: #888;
+
+  ${props => props.selected
+           ? `border-style: inset;
+              color: #fff;
+              background: #020;
+              border-color: #898;
+             `
+           : `border-style: outset;
+              color: #999;
+             `
+   }
+  border-radius: 10vmin;
+  box-sizing: border-box;
+  font-size: 8vmin;
+  padding: 1vmin;
+  width: 90vmin;
+  margin: auto;
+
+`

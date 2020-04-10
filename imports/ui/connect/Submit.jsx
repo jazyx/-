@@ -38,19 +38,22 @@ class Submit extends Component {
     if (error) {
       save = error // cannot be localized
       console.log(error)
-      // Swallow our pride and carry on
 
     } else {
-      // Everything is beautiful. Now save locally
       this.noviceData.user_id = Session.get("user_id")
+    }
 
-      if ("localStorage" in window) {
-        try {
-          const noviceData = JSON.stringify(this.noviceData)
-          localStorage.setItem("vdvoyom_profile", noviceData)
-          save = "save_successful"
+    if ("localStorage" in window) {
+      // Save locally, even if there has been a database error
+      try {
+        const noviceData = JSON.stringify(this.noviceData)
+        localStorage.setItem("vdvoyom_profile", noviceData)
 
-        } catch(error) { }
+        // Overwrite horrible database error
+        save = "save_successful"
+
+      } catch(error) {
+        // We'll see the horrible database error if localStorage fails
       }
     }
 

@@ -526,7 +526,7 @@ window.trimImage = trimImage
 
 // STRINGS //
 
-export const localize = (cue, code, corpus) => {
+export const localize = (cue, code, corpus, options) => {
   let phrase
 
   const phraseData = corpus.find(phrase => (
@@ -549,6 +549,19 @@ export const localize = (cue, code, corpus) => {
                , "phraseData:", phraseData
                )
     phrase = "***" + cue + "***"
+  }
+
+  if (options) {
+    if (typeof phrase === "object") {
+      phrase = phrase.replace
+    }
+
+    for (key in options) {
+      phrase = phrase.replace(key, options[key])
+    }
+    
+  } else if (typeof phrase === "object") {
+    phrase = phrase.simple
   }
 
   return phrase

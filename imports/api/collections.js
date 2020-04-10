@@ -1,8 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 
 const collections = {
-  Users:      new Mongo.Collection('users')
-, L10n:       new Mongo.Collection('l10n')
+  L10n:       new Mongo.Collection('l10n')
+, Users:      new Mongo.Collection('users')
+, Groups:     new Mongo.Collection('groups')
 , Teachers:   new Mongo.Collection('teachers')
 , Activities: new Mongo.Collection('activities')
 
@@ -11,9 +12,14 @@ const collections = {
 }
 
 const publishQueries = {
-  Users:      {}
-, L10n:       {}
-, Teachers:   {}
+  L10n:       {}
+, Users:      {}
+, Groups:     {}
+, Teachers:   { $or: [
+                  { file: { $exists: false } }
+                , { file: { $ne: "xxxx" } }
+                ]
+              }
 , Activities: {}
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...

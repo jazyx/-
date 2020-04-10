@@ -47,14 +47,26 @@ export const createNovice = {
     const Users = collections["Users"]
     // Allow only one user with a given name and native language
     const { native, username } = noviceData
-    const existing = Users.findOne({ native, username })
 
-    const _id = existing
-              ? existing._id
-              : Users.insert(noviceData)
+    let existing = Users.findOne({ native, username })
+    const user_id  = existing
+                   ? existing._id
+                   : Users.insert(noviceData)
+
+    const Groups = collections["Groups"]
+    const group = {
+      learner_id: user_id
+    , teacher_id: noviceData.teacher
+    }
+    
+    existing = Groups.findOne(group)
+    const group_id = existing
+                   ? existing._id
+                   : Groups.insert(group)
 
     if (Session) { // Meteor.isClient)
-      Session.set("user_id", _id)
+      Session.set("user_id", user_id)
+      Session.set("group_id", group_id)
     }
   }
 

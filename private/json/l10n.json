@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 66
+    "version": 70
   , "folder": "img/flags/"
   }
 
@@ -128,6 +128,30 @@
     , "ru": "Начать"
     , "en": "Start"
     , "fr": "Démarrer"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "select_students"
+    , "ru": "Выбор студентов"
+    , "en": "Select students"
+    , "fr": "Choix des élèves"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "share"
+    , "ru":  "Поделиться"
+    , "en": {
+        "simple": "Share"
+      , "replace": "Share with ^0"
+      }
+    , "fr": {
+        "simple": "Partager"
+      , "replace": "Partager avec ^0"
+      }
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"
