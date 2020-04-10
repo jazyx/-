@@ -104,7 +104,7 @@ export default class Connect extends Component {
       ]
     , "Users": [
         { query: {}
-        , count: 1
+        , count: 0
         }
       ]
     }
@@ -129,7 +129,9 @@ export default class Connect extends Component {
 
       const checked    = checks.every(check => {
         const query    = check.query || {}
-        const count    = check.count || 1
+        const count    = isNaN(check.count)
+                       ? 1
+                       : check.count
         const passed   = collection.find(query).count() >= count
 
         return passed

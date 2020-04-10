@@ -1,0 +1,56 @@
+[ N 2020-04-09 15:41:29.1447 8958/T1 age/Wat/WatchdogMain.cpp:1373 ]: Starting Passenger watchdog...
+[ N 2020-04-09 15:41:29.1701 8961/T1 age/Cor/CoreMain.cpp:1340 ]: Starting Passenger core...
+[ N 2020-04-09 15:41:29.1714 8961/T1 age/Cor/CoreMain.cpp:256 ]: Passenger core running in multi-application mode.
+[ N 2020-04-09 15:41:29.1860 8961/T1 age/Cor/CoreMain.cpp:1015 ]: Passenger core online, PID 8961
+App 9009 output: [[[[[ ~/Repos/jazyx/Activities/Drag ]]]]]
+App 9009 output: 
+App 9009 output: => Started proxy.
+[ N 2020-04-09 15:41:34.6359 8961/T5 age/Cor/SecurityUpdateChecker.h:519 ]: Security update check: no update found (next check in 24 hours)
+App 9009 output: => Started MongoDB.
+App 9009 output: => Started your app.
+App 9009 output: 
+App 9009 output: => App running at: http://localhost:4626/
+
+[ N 2020-04-09 15:43:06.4491 8961/T8 age/Cor/CoreMain.cpp:671 ]: Signal received. Gracefully shutting down... (send signal 2 more time(s) to force shutdown)
+[ N 2020-04-09 15:43:06.4492 8961/T1 age/Cor/CoreMain.cpp:1246 ]: Received command to shutdown gracefully. Waiting until all clients have disconnected...
+[ N 2020-04-09 15:43:06.4492 8961/T1 age/Cor/CoreMain.cpp:1147 ]: Checking whether to disconnect long-running connections for process 9009, application /home/blackslate/Repos/jazyx/Activities/Drag (development)
+[ N 2020-04-09 15:43:06.4493 8961/Ta Ser/Server.h:902 ]: [ServerThr.2] Freed 0 spare client objects
+[ N 2020-04-09 15:43:06.4493 8961/Td Ser/Server.h:902 ]: [ServerThr.3] Freed 0 spare client objects
+[ N 2020-04-09 15:43:06.4493 8961/Ta Ser/Server.h:558 ]: [ServerThr.2] Shutdown finished
+[ N 2020-04-09 15:43:06.4494 8961/Td Ser/Server.h:558 ]: [ServerThr.3] Shutdown finished
+[ N 2020-04-09 15:43:06.4494 8961/T8 Ser/Server.h:902 ]: [ServerThr.1] Freed 0 spare client objects
+[ N 2020-04-09 15:43:06.4495 8961/Tg Ser/Server.h:902 ]: [ApiServer] Freed 0 spare client objects
+[ N 2020-04-09 15:43:06.4495 8961/Tg Ser/Server.h:558 ]: [ApiServer] Shutdown finished
+[ N 2020-04-09 15:43:06.4495 8961/T8 Ser/Server.h:558 ]: [ServerThr.1] Shutdown finished
+[ N 2020-04-09 15:43:06.4496 8961/Te Ser/Server.h:902 ]: [ServerThr.4] Freed 0 spare client objects
+[ N 2020-04-09 15:43:06.4496 8961/Te Ser/Server.h:558 ]: [ServerThr.4] Shutdown finished
+[ N 2020-04-09 15:43:06.4499 8961/T1 age/Cor/CoreMain.cpp:1147 ]: Checking whether to disconnect long-running connections for process 9009, application /home/blackslate/Repos/jazyx/Activities/Drag (development)
+[ N 2020-04-09 15:43:06.9607 8961/T1 age/Cor/CoreMain.cpp:1325 ]: Passenger core shutdown finished
+[ N 2020-04-09 15:43:17.6648 9494/T1 age/Wat/WatchdogMain.cpp:1373 ]: Starting Passenger watchdog...
+[ N 2020-04-09 15:43:17.6901 9497/T1 age/Cor/CoreMain.cpp:1340 ]: Starting Passenger core...
+[ N 2020-04-09 15:43:17.6904 9497/T1 age/Cor/CoreMain.cpp:256 ]: Passenger core running in multi-application mode.
+[ N 2020-04-09 15:43:17.7050 9497/T1 age/Cor/CoreMain.cpp:1015 ]: Passenger core online, PID 9497
+[ N 2020-04-09 15:43:20.3804 9497/T5 age/Cor/SecurityUpdateChecker.h:519 ]: Security update check: no update found (next check in 24 hours)
+App 9545 output: [[[[[ ~/Repos/jazyx/Activities/Drag ]]]]]
+App 9545 output: 
+App 9545 output: => Started proxy.
+App 9545 output: => Started MongoDB.
+App 9545 output: => Started your app.
+App 9545 output: 
+App 9545 output: => App running at: http://localhost:10651/
+
+[ N 2020-04-09 18:32:49.6792 9497/T8 age/Cor/CoreMain.cpp:671 ]: Signal received. Gracefully shutting down... (send signal 2 more time(s) to force shutdown)
+[ N 2020-04-09 18:32:49.6793 9497/T1 age/Cor/CoreMain.cpp:1246 ]: Received command to shutdown gracefully. Waiting until all clients have disconnected...
+[ N 2020-04-09 18:32:49.6793 9497/T1 age/Cor/CoreMain.cpp:1147 ]: Checking whether to disconnect long-running connections for process 9545, application /home/blackslate/Repos/jazyx/Activities/Drag (development)
+[ N 2020-04-09 18:32:49.6794 9497/Ta Ser/Server.h:902 ]: [ServerThr.2] Freed 0 spare client objects
+[ N 2020-04-09 18:32:49.6795 9497/T8 Ser/Server.h:902 ]: [ServerThr.1] Freed 0 spare client objects
+[ N 2020-04-09 18:32:49.6795 9497/Te Ser/Server.h:902 ]: [ServerThr.4] Freed 0 spare client objects
+[ N 2020-04-09 18:32:49.6795 9497/Ta Ser/Server.h:558 ]: [ServerThr.2] Shutdown finished
+[ N 2020-04-09 18:32:49.6795 9497/T8 Ser/Server.h:558 ]: [ServerThr.1] Shutdown finished
+[ N 2020-04-09 18:32:49.6795 9497/Te Ser/Server.h:558 ]: [ServerThr.4] Shutdown finished
+[ N 2020-04-09 18:32:49.6795 9497/Tc Ser/Server.h:902 ]: [ServerThr.3] Freed 0 spare client objects
+[ N 2020-04-09 18:32:49.6796 9497/Tc Ser/Server.h:558 ]: [ServerThr.3] Shutdown finished
+[ N 2020-04-09 18:32:49.6796 9497/Tg Ser/Server.h:902 ]: [ApiServer] Freed 0 spare client objects
+[ N 2020-04-09 18:32:49.6797 9497/Tg Ser/Server.h:558 ]: [ApiServer] Shutdown finished
+[ N 2020-04-09 18:32:49.6805 9497/T1 age/Cor/CoreMain.cpp:1147 ]: Checking whether to disconnect long-running connections for process 9545, application /home/blackslate/Repos/jazyx/Activities/Drag (development)
+[ N 2020-04-09 18:32:50.1807 9497/T1 age/Cor/CoreMain.cpp:1325 ]: Passenger core shutdown finished
