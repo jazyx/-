@@ -67,7 +67,7 @@ class Teach extends Component {
   getPhrase(cue, name) {
     const code = Session.get("native")
     if (name) {
-      name = {"^0": name}
+      name = {"^0": name.replace(" ", "\xA0")} // non-breaking space
     }
     return localize(cue, code, this.props.phrases, name)
   }
@@ -190,10 +190,12 @@ export default withTracker(() => {
   Meteor.subscribe(groups._name)
 
   const groupQuery  = { teacher_id: Session.get("teacher_id") }
-  const projection  = { learner_id: 1, _id: 0 }
-  const learner_ids = groups.find(groupQuery)
-                           .fetch()
-                           .map(group => group.learner_id)
+  const projection  = { learner_ids: 1, _id: 0 }
+  const learner_ids = groups.find(groupQuery, projection)
+                            .fetch()
+                            .reduce((ids, group) => {
+                              return [...ids, ...group.learner_ids]
+                            }, [])
 
   // Learners
   const users  = collections["Users"]

@@ -151,22 +151,27 @@ export default class Connect extends Component {
   }
 
 
+  _getTeacher(id) {
+    id = decodeURI(id)
+         .toLowerCase()
+         .replace(/^аа$/, "aa") // Russian а to Latin a for Настя
+    return collections["Teachers"].findOne({ id })
+  }
+
+
   _checkURLForTeacherName() {
-    const search = window.location.search
-    let teacher  = new URLSearchParams(search).keys().next().value
+    // http://activities.jazyx.com/<teacher id>
+    // http://activities.jazyx.com/?teacher=<teacher id>
+    
+    let id = window.location.pathname.substring(1) // /id => id
+    let teacher = this._getTeacher(id)
 
-    if (teacher) {
-      const query = { file: { $exists: 1 } }
-      const teachers = collections["Teachers"].find(query).fetch()
-
-      teacher = teachers.reduce((input, teacherData) => {
-        const name = teacherData.name[teacherData.script]
-        if (name === teacher) {
-          input = teacherData
-        }
-
-        return input
-      }, null)
+    if (!teacher) {
+      const search = window.location.search
+      id = new URLSearchParams(search).get("teacher")
+      if (id) {
+        teacher = this._getTeacher(id)
+      }
     }
 
     return teacher
