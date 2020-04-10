@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
 import Connect from './Connect.jsx';
-import Activity from './Activity.jsx';
 import Menu from './Menu.jsx';
-import Drag from './Drag.jsx';
+import Activity from './activities/Activity.jsx';
+import Drag from './activities/Drag.jsx';
 
 
 export class App extends Component {

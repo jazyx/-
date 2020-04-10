@@ -206,16 +206,6 @@ class Native extends Component {
     return <StyledProfile
       id="native-language"
     >
-      <button
-        style={{
-          position:"fixed"
-        , top: 0
-        , left: 0
-        }}
-        onMouseUp={() => this.props.setView("Game")}
-      >
-        Start Game
-      </button>
       {prompt}
       {flags}
       {buttonBar}

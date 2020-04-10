@@ -6,10 +6,11 @@ import { Session } from 'meteor/session'
 import Splash   from './connect/Splash.jsx'
 import Native   from './connect/Native.jsx'
 import Name     from './connect/Name.jsx'
-import Learning from './connect/Learning.jsx'
 import Teacher  from './connect/Teacher.jsx'
 import Submit   from './connect/Submit.jsx'
-import Teach   from './connect/Teach.jsx'
+import Teach    from './connect/Teach.jsx'
+
+import Language from './connect/Language.jsx' // to be used later
 
 import collections from '../api/collections'
 
@@ -54,10 +55,10 @@ export default class Connect extends Component {
       Splash
     , Native
     , Name
-    , Learning
     , Teacher
     , Submit
     , Teach
+    , Language
     }
     this.setView = this.setView.bind(this)
     this._checkForCollections = this._checkForCollections.bind(this)
@@ -162,7 +163,7 @@ export default class Connect extends Component {
   _checkURLForTeacherName() {
     // http://activities.jazyx.com/<teacher id>
     // http://activities.jazyx.com/?teacher=<teacher id>
-    
+
     let id = window.location.pathname.substring(1) // /id => id
     let teacher = this._getTeacher(id)
 

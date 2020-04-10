@@ -1,5 +1,5 @@
 /**
- * Game.jsx
+ * Drag.jsx
  */
 
 
@@ -9,12 +9,12 @@ import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../api/collections'
+import collections from '../../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
-       } from '../tools/utilities'
-import Sampler from '../tools/sampler'
+       } from '../../tools/utilities'
+import Sampler from '../../tools/sampler'
 
 
 

@@ -17,7 +17,7 @@ import { StyledProfile
 
 
 
-class Learning extends Component {
+class Language extends Component {
   constructor(props) {
     super(props)
 
@@ -34,6 +34,9 @@ class Learning extends Component {
       {prompt}
     </StyledPrompt>
   }
+
+
+  //// PROVIDE A LIST OF LANGUAGES ////
 
 
   getButtonBar() {
@@ -68,7 +71,7 @@ class Learning extends Component {
     const buttonBar = this.getButtonBar()
 
     return <StyledProfile
-      id="teacher"
+      id="language"
     >
       {prompt}
       {buttonBar}
@@ -94,4 +97,4 @@ export default withTracker(() => {
   return {
     phrases
   }
-})(Learning)
+})(Language)
