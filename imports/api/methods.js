@@ -53,10 +53,6 @@ export const createNovice = {
     const user_id  = existing
                    ? existing._id
                    : Users.insert(noviceData)
-    Users.update(
-      { _id: user_id }
-    , { $set: { loggedIn: true } }
-    )
 
     // Find a group with this learner and this teacher
     const Groups = collections["Groups"]
@@ -100,41 +96,45 @@ export const createNovice = {
 /**
  * Expects data with the format...
  *
- *    { userid }
+ *    { id: <string> }
  */
-export const logOut = {
-  name: 'vdvoyom.logOut'
+export const log = {
+  name: 'vdvoyom.log'
 
-  // Factor out validation so that it can be run independently
-  // Will throw an error if any of the arguments are invalid
-, validate(logOutData) {
+, validate(logData) {
     new SimpleSchema({
-      userid: { type: String }
-    }).validate(logOutData)
+      id: { type: String }
+    , in: { type: Boolean }
+    }).validate(logData)
   }
 
-  // Factor out Method body so that it can be called independently
-, run(logOutData) {
-    const Users = collections["Users"]
-    Users.update(
-      { _id: logOutData.userid }
-    , { loggedIn: false}
-    )
+, run(logData) {
+    const [ id, _id ] = [ logData.id, logData.id ]
+    const isTeacher   = id.length < 5 // teacher.ids "xxxx" max
+    const loggedIn    = logData.in
+    const set         = { $set: { loggedIn } }
+
+    console.log(`Logging ${loggedIn ? "in" : "out"} ${isTeacher ? "teacher" : "learner"} ${id}`)
+
+    if (isTeacher) {
+      collections["Teachers"].update( { id }, set )
+
+    } else {
+      collections["Users"].update( { _id }, set )
+    }
   }
 
-  // Call Method by referencing the JS object
-  // Also, this lets us specify Meteor.apply options once in the
-  // Method implementation, rather than requiring the caller to
-  // specify it at the call site.
-, call(logOutData, callback) {
+, call(logData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [logOutData], options, callback)
+    Meteor.apply(this.name, [logData], options, callback)
   }
 }
+
+
 
 // Register the method with Meteor's DDP system
 Meteor.methods({
@@ -142,8 +142,8 @@ Meteor.methods({
     createNovice.validate.call(this, args);
     createNovice.run.call(this, args);
   }
-, [logOut.name]: function (args) {
-    logOut.validate.call(this, args);
-    logOut.run.call(this, args);
+, [log.name]: function (args) {
+    log.validate.call(this, args);
+    log.run.call(this, args);
   }
 })

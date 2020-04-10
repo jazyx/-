@@ -195,6 +195,7 @@ export const StyledButtonBar = styled.div`
   justify-content: space-between;
   height: 15vw;
   width: 100vw;
+  border-top: 1px outset #222;
 
   @media (min-aspect-ratio: 1/1) {
     height: 15vh;  
@@ -212,18 +213,31 @@ export const StyledCentred = styled.div`
 
 
 export const StyledLearner = styled.li`
-  border-width: 0.5vmin;
   border-color: #888;
+  border-style: outset;
+  border-width: 0.5vmin;
+  background-color: #111;
+  color: #999;
+  cursor: pointer;
 
   ${props => props.selected
-           ? `border-style: inset;
+           ? `border-color: #898;
+              border-style: inset;
               color: #fff;
-              background: #020;
-              border-color: #898;
+              background-color: #020;
              `
-           : `border-style: outset;
-              color: #999;
+           : ``
+   }
+
+  ${props => props.disabled
+           ? `border-color: #333;
+              border-style: solid;
+              border-width: 0.25vmin;
+              background-color: transparent;
+              color: #333;
+              pointer-events: none;
              `
+           : ``
    }
   border-radius: 10vmin;
   box-sizing: border-box;

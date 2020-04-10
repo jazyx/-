@@ -39,10 +39,10 @@ export default class Connect extends Component {
       try {
         const noviceString = localStorage.getItem("vdvoyom_profile")
         const noviceData = JSON.parse(noviceString)
-        const keys = Object.keys(noviceData)
+        const keys = Object.keys(noviceData) // includes user_id
 
         keys.forEach(key => {
-          Session.set(key, noviceData[key]) // TEMPORARY COMMENT
+          Session.set(key, noviceData[key])
         })
 
       } catch(error) { }
@@ -177,7 +177,6 @@ export default class Connect extends Component {
 
     return teacher
   }
-
 
 
   hideSplash() {

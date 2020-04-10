@@ -9,6 +9,7 @@ import collections from '../../api/collections'
 import { localize
        , getElementIndex
        } from '../../tools/utilities'
+import { log } from '../../api/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -34,9 +35,18 @@ class Teach extends Component {
     this.toggleLearner = this.toggleLearner.bind(this)
     this.scrollIntoView = this.scrollIntoView.bind(this)
 
+    this.logTeacherIn()
+
     // Allow Enter to accept the default/current language
     document.addEventListener("keydown", this.share, false)
     window.addEventListener("resize", this.scrollIntoView, false)
+  }
+
+
+  logTeacherIn() {
+    const id = Session.get("teacher_id")
+    const logIn = { id, in: true }
+    log.call(logIn) // no callback
   }
 
 
@@ -95,10 +105,12 @@ class Teach extends Component {
       const name = profile.username
       const selected = this.state.selected === index
       const ref = selected ? this.scrollTo : ""
+      const disabled = !profile.loggedIn
 
       return <StyledLearner
         key={name}
         ref={ref}
+        disabled={disabled}
         selected={selected}
         onMouseUp={this.toggleLearner}
       >
@@ -200,7 +212,10 @@ export default withTracker(() => {
   // Learners
   const users  = collections["Users"]
   Meteor.subscribe(users._name)
-  const learners = users.find({ _id: { $in: learner_ids }}).fetch()
+  const learners = users.find(
+    { _id: { $in: learner_ids } }
+  , { sort: [[ "loggedIn", "desc" ], [ "username", "asc" ]] }
+  ).fetch()
 
   const props = {
     phrases

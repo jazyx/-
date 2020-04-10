@@ -6,7 +6,9 @@ import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
 import { localize } from '../../tools/utilities'
-import { createNovice } from '../../api/methods'
+import { createNovice
+       , log
+       } from '../../api/methods'
 
 import { StyledCentred } from './Styles'
 
@@ -41,7 +43,11 @@ class Submit extends Component {
       console.log(error)
 
     } else {
-      this.noviceData.user_id = Session.get("user_id")
+      // Loge the user in
+      const id = Session.get("user_id") // may be from localStorage
+      const logIn = { id, in: true }
+      this.noviceData.user_id = id
+      log.call(logIn) // no callback
     }
 
     if ("localStorage" in window) {
