@@ -43,7 +43,7 @@ class Submit extends Component {
       console.log(error)
 
     } else {
-      // Loge the user in
+      // Log the user in so teacher can interact
       const id = Session.get("user_id") // may be from localStorage
       const logIn = { id, in: true }
       this.noviceData.user_id = id

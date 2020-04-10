@@ -114,6 +114,15 @@ export const log = {
     const loggedIn    = logData.in
     const set         = { $set: { loggedIn } }
 
+    if (!loggedIn) {
+      // Remember when this user was last seen
+      set.$currentDate = {
+        loggedOut: true
+      }
+
+      console.log(set)
+    }
+
     console.log(`Logging ${loggedIn ? "in" : "out"} ${isTeacher ? "teacher" : "learner"} ${id}`)
 
     if (isTeacher) {
