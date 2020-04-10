@@ -1,10 +1,11 @@
+import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
-import { localize } from '../../core/utilities'
+import { localize } from '../../tools/utilities'
 
 import { StyledProfile
        , StyledPrompt

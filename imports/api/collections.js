@@ -1,4 +1,7 @@
+import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
+
+
 
 const collections = {
   L10n:       new Mongo.Collection('l10n')
@@ -29,6 +32,7 @@ const publishQueries = {
                 ]
               }
 }
+
 
 
 if (Meteor.isServer) {

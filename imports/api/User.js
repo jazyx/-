@@ -1,3 +1,6 @@
+// import { Meteor } from 'meteor/meteor'
+
+
 // User.create({
 //       native:   Session.get("native")
 //     , username: Session.get("username")

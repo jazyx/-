@@ -559,7 +559,7 @@ export const localize = (cue, code, corpus, options) => {
     for (key in options) {
       phrase = phrase.replace(key, options[key])
     }
-    
+
   } else if (typeof phrase === "object") {
     phrase = phrase.simple
   }

@@ -58,7 +58,7 @@ export const createNovice = {
       learner_id: user_id
     , teacher_id: noviceData.teacher
     }
-    
+
     existing = Groups.findOne(group)
     const group_id = existing
                    ? existing._id

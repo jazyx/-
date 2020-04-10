@@ -4,7 +4,7 @@
  */
 
 import styled, { css } from 'styled-components'
-import { tweenColor } from '../../core/utilities'
+import { tweenColor } from '../../tools/utilities'
 
 const colours = {
   background: "#000"

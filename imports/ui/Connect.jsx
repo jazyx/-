@@ -1,6 +1,6 @@
+import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 
-import { Meteor } from 'meteor/meteor'
 import { Session } from 'meteor/session'
 
 import Splash   from './connect/Splash.jsx'
@@ -22,7 +22,7 @@ export default class Connect extends Component {
     /// <<< HARD-CODED minimum time (ms) to show the Splash screen
     const splashDelay = 1000
     /// HARD-CODED >>>
-   
+
     this.state = {
       view: "Splash"
     , showSplash: + new Date() + splashDelay
@@ -43,7 +43,7 @@ export default class Connect extends Component {
         keys.forEach(key => {
           Session.set(key, noviceData[key]) // TEMPORARY COMMENT
         })
-        
+
       } catch(error) { }
     }
   }
@@ -177,14 +177,14 @@ export default class Connect extends Component {
   hideSplash() {
     let view = "Native"
     const teacher = this._checkURLForTeacherName()
-    
+
     if (teacher) {
       Session.set("teacher",    teacher.name[teacher.script])
       Session.set("teacher_id", teacher.id)
       Session.set("native",     teacher.language)
       view = "Teach"
     }
- 
+
     // if (Session.get("user_id")) {
     //   // Jump straight to the Activity view
     //   this.props.setView("Activity")

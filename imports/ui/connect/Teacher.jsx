@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
 import { withTracker } from 'meteor/react-meteor-data'
@@ -7,7 +8,7 @@ import User from '../../api/User'
 import collections from '../../api/collections'
 import { localize
        , getElementIndex
-       } from '../../core/utilities'
+       } from '../../tools/utilities'
 
 import { StyledProfile
        , StyledPrompt

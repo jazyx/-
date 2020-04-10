@@ -1,5 +1,10 @@
+import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
+
 import styled, { css } from 'styled-components'
+import { Session } from 'meteor/session'
+
+
 
 
 const StyledMenu = styled.div`
@@ -9,7 +14,7 @@ const StyledMenu = styled.div`
   width: 25vmin;
   height: 100vh;
   background-color: #fff;
-  opacity: 0.01;
+  opacity: 0.05;
 
   pointer-events: none;
 `
@@ -18,6 +23,14 @@ const StyledMenu = styled.div`
 export default class Menu extends Component {
   constructor(props) {
     super(props)
+
+    this.logOut = this.logOut.bind(this)
+    document.addEventListener("onbeforeunload", this.logOut, false)
+  }
+
+
+  logOut() {
+
   }
 
 

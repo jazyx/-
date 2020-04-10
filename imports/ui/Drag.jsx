@@ -3,6 +3,7 @@
  */
 
 
+import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
@@ -12,8 +13,8 @@ import collections from '../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
-       } from '../core/utilities'
-import Sampler from '../core/sampler'
+       } from '../tools/utilities'
+import Sampler from '../tools/sampler'
 
 
 
