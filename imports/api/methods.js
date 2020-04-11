@@ -7,7 +7,6 @@
  */
 
 import { Meteor } from 'meteor/meteor'
-import { Session } from 'meteor/session'
 import SimpleSchema from 'simpl-schema'
 
 import collections from '../api/collections'
@@ -83,11 +82,7 @@ export const createNovice = {
       Groups.update({ _id }, push)
     }
 
-    if (Session) { // Meteor.isClient)
-      Session.set("user_id", user_id)
-      Session.set("master",  user_id)
-      Session.set("group_id", group_id)
-    }
+    return { user_id, group_id }
   }
 
   // Call Method by referencing the JS object
@@ -147,7 +142,7 @@ export const log = {
       }
     }
 
-    console.log(`Logging ${loggedIn ? "in" : "out"} ${isTeacher ? "teacher" : "learner"} ${id}`)
+    // console.log(`Logging ${loggedIn ? "in" : "out"} ${isTeacher ? "teacher" : "learner"} ${id}`)
 
     if (isTeacher) {
       collections["Teachers"].update( { id }, set )
@@ -198,14 +193,9 @@ export const reGroup = {
                 ? { $push: { loggedIn: user_id } }
                 : { $pull: { loggedIn: user_id } }
     const multi = true 
-
-    console.log("query:", JSON.stringify(query))
-    console.log("set:", JSON.stringify(set))
     collections["Groups"].update(query, set, multi)
 
     const groups = collections["Groups"].find(query).fetch()
-
-    console.log("groups:", groups)
 
     return groups
   }
@@ -226,14 +216,14 @@ export const reGroup = {
 Meteor.methods({
   [createNovice.name]: function (args) {
     createNovice.validate.call(this, args);
-    createNovice.run.call(this, args);
+    return createNovice.run.call(this, args);
   }
 , [log.name]: function (args) {
     log.validate.call(this, args);
-    log.run.call(this, args);
+    return log.run.call(this, args);
   }
 , [reGroup.name]: function (args) {
     reGroup.validate.call(this, args);
-    reGroup.run.call(this, args);
+    return reGroup.run.call(this, args);
   }
 })

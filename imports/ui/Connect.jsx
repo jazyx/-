@@ -293,7 +293,11 @@ export default class Connect extends Component {
     const teacher_id = Session.get("teacher")
     const user_id = Session.get("user_id")
     const join = true
-    reGroup.call({ teacher_id, user_id, join}, this.groupsCallback)
+    const params = { teacher_id, user_id, join}
+    const callback = this.groupsCallback
+
+    reGroup.call(params, callback)
+    // Meteor.call("reGroup", params, callback)
   }
 
 

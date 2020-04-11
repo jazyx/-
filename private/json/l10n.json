@@ -88,6 +88,7 @@
     , "th": "th - xxx"
     , "zh": "zh - xxx"
     }
+
   , { "cue": "saving"
     , "ru": "Сохранение..."
     , "en": "Saving..."
@@ -106,15 +107,34 @@
     , "th": "th - xxx"
     , "zh": "zh - xxx"
     }
-  , { "cue": "save_failed"
-    , "ru": "Ваши данные не были сохранены"
+  , { "cue": "save_not_stored"
+    , "ru": "Ваши данные были сохранены на сервере"
     , "en": "Data not saved to localStorage"
-    , "fr": "Vos données n'ont pas pu être sauvegardées"
+    , "fr": "Une sauvegarde locale a échoué"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"
     , "zh": "zh - xxx"
     }
+  , { "cue": "stored_only"
+    , "ru": "Ваши данные были сохранены на вашем устройстве"
+    , "en": "Data saved to localStorage only"
+    , "fr": "Une sauvegarde sur le serveur a échoué"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "save_failed"
+    , "ru": "Ваши данные не были сохранены"
+    , "en": "Data not saved"
+    , "fr": "La sauvegarde a échoué"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+
   , { "cue": "activities"
     , "ru": "Деятельности"
     , "en": "Activities"

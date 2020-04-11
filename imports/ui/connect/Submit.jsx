@@ -38,20 +38,39 @@ class Submit extends Component {
 
   callback(error, data) {
     let save = "save_failed"
+    let saved = false
+    const { user_id, group_id } = data || {}
 
     if (error) {
       save = error // cannot be localized
       console.log(error)
 
     } else {
-      this.noviceData.user_id = Session.get("user_id")
-      // may be from localStorage
+      this.noviceData.user_id = user_id
+      saved = true
     }
 
-    storage.set(this.noviceData)
+    // Save permanently to localStorage (if available)
+    const stored = storage.set(this.noviceData)
+    
+    if (saved) {
+      if (stored) {
+        save = "save_successful"
+      } else {
+        save = "save_not_stored"
+      }
+    } else if (stored) {
+      save = "stored_only"
+    }
 
+    Session.set("user_id", user_id)
+    Session.set("master",  user_id)
+    Session.set("group_id", group_id) 
+
+    // Show the save message...
     this.setState({ save })
 
+    // ... for just long enough
     setTimeout(
       () => this.props.setView("Activity")
     , this.delay

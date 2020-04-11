@@ -34,10 +34,13 @@ class Storage{
     this.id = "vdvoyom_profile"
     /// HARD-CODED >>>
 
+    this.stored = false // let's be pessimistic
+
     try {
       this.storage = window.localStorage
-      this.settings = JSON.parse(this.storage.getItem(this.id)) 
+      this.settings = JSON.parse(this.storage.getItem(this.id))
       // may be null
+      this.stored = true // we can be optimistic now
 
     } catch(error) {
       this.storage = new CustomStorage()
@@ -52,12 +55,14 @@ class Storage{
   setItem(key, value) {
     this.settings[key] = value
     this._save()
+    return this.stored // false for a simulation
   }
 
   
   set(settings) {
     Object.assign(this.settings, settings)
     this._save()
+    return this.stored // false for a simulation
   }
 
 
