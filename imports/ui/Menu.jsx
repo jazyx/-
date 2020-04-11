@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 
 import styled, { css } from 'styled-components'
 import { Session } from 'meteor/session'
+
+import storage from '../tools/storage'
 import { log } from '../api/methods.js';
 
 
@@ -41,7 +43,7 @@ export default class Menu extends Component {
     }
 
     const logOut = { id, in: false }
-    log.call(logOut) // no callback
+    log.call(logOut) // no callback because app is closing
   }
 
 

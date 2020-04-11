@@ -54,25 +54,38 @@ export const createNovice = {
                    ? existing._id
                    : Users.insert(noviceData)
 
-    // Find a group with this learner and this teacher
+    // Log in automatically
+    Users.update({ _id: user_id }, { $set: { loggedIn: true } })
+
+    // ASSUME ONE LEARNER PER GROUP, ONE GROUP PER LEARNER, FOR NOW //
+    
+    // Find a group with this teacher and this learner...
     const Groups = collections["Groups"]
     const group = {
-      learner_ids: { $elemMatch: { $eq: user_id } }
+      user_ids: { $elemMatch: { $eq: user_id } }
     , teacher_id: noviceData.teacher
     }
 
     let group_id
     existing = Groups.findOne(group)
-    if (existing) {
-      group_id = existing._id
+    if (!existing) {
+      // ... or create it and make this learner master
+      group.user_ids = [ user_id ]
+      group.master = user_id
+      group.loggedIn = [ user_id ]
+      group_id = Groups.insert(group)
 
     } else {
-      group.learner_ids = [ user_id ]
-      group_id = Groups.insert(group)
+      // A group was found, so join it now
+      const _id = group_id = existing._id
+      const push = { $push: { loggedIn: user_id } }
+
+      Groups.update({ _id }, push)
     }
 
     if (Session) { // Meteor.isClient)
       Session.set("user_id", user_id)
+      Session.set("master",  user_id)
       Session.set("group_id", group_id)
     }
   }
@@ -120,7 +133,18 @@ export const log = {
         loggedOut: true
       }
 
-      console.log(set)
+      if (isTeacher) {
+        const query = { teacher_id: id, active: true }
+        const disactivate  = { $set: { active: false } }
+        collections["Groups"].update(query, disactivate)
+
+      } else {
+        // Log student out of any current groups
+        const query = { loggedIn: { $elemMatch: { $eq: _id } } }
+        const pull  = { $pull: { loggedIn: _id } }
+        const multi = true 
+        collections["Groups"].update(query, pull, multi)
+      }
     }
 
     console.log(`Logging ${loggedIn ? "in" : "out"} ${isTeacher ? "teacher" : "learner"} ${id}`)
@@ -145,6 +169,59 @@ export const log = {
 
 
 
+/**
+ * Expects data with the format...
+ *
+ *    { id: <string> }
+ */
+export const reGroup = {
+  name: 'vdvoyom.reGroup'
+
+, validate(reGroupData) {
+    new SimpleSchema({
+      teacher_id: { type: String }
+    , user_id: { type: String }
+    , join:       { type: Boolean }
+    }).validate(reGroupData)
+  }
+
+, run(reGroupData) {
+    const { teacher_id, user_id, join } = reGroupData
+    const query = {
+      $and: [
+        { teacher_id }
+      , { user_ids: { $elemMatch: { $eq: user_id }}}
+      ]
+    }
+
+    const set   = join
+                ? { $push: { loggedIn: user_id } }
+                : { $pull: { loggedIn: user_id } }
+    const multi = true 
+
+    console.log("query:", JSON.stringify(query))
+    console.log("set:", JSON.stringify(set))
+    collections["Groups"].update(query, set, multi)
+
+    const groups = collections["Groups"].find(query).fetch()
+
+    console.log("groups:", groups)
+
+    return groups
+  }
+
+, call(reGroupData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [reGroupData], options, callback)
+  }
+}
+
+
+
 // Register the method with Meteor's DDP system
 Meteor.methods({
   [createNovice.name]: function (args) {
@@ -154,5 +231,9 @@ Meteor.methods({
 , [log.name]: function (args) {
     log.validate.call(this, args);
     log.run.call(this, args);
+  }
+, [reGroup.name]: function (args) {
+    reGroup.validate.call(this, args);
+    reGroup.run.call(this, args);
   }
 })

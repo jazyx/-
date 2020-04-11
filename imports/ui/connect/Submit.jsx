@@ -5,6 +5,7 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
+import storage from '../../tools/storage'
 import { localize } from '../../tools/utilities'
 import { createNovice
        , log
@@ -43,32 +44,18 @@ class Submit extends Component {
       console.log(error)
 
     } else {
-      // Log the user in so teacher can interact
-      const id = Session.get("user_id") // may be from localStorage
-      const logIn = { id, in: true }
-      this.noviceData.user_id = id
-      log.call(logIn) // no callback
+      this.noviceData.user_id = Session.get("user_id")
+      // may be from localStorage
     }
 
-    if ("localStorage" in window) {
-      // Save locally, even if there has been a database error
-      try {
-        const noviceData = JSON.stringify(this.noviceData)
-        localStorage.setItem("vdvoyom_profile", noviceData)
-
-        // Overwrite horrible database error
-        save = "save_successful"
-
-      } catch(error) {
-        // We'll see the horrible database error if localStorage fails
-      }
-    }
+    storage.set(this.noviceData)
 
     this.setState({ save })
 
     setTimeout(
       () => this.props.setView("Activity")
-    , this.delay)
+    , this.delay
+    )
   }
 
 

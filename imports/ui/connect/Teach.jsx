@@ -202,18 +202,18 @@ export default withTracker(() => {
   Meteor.subscribe(groups._name)
 
   const groupQuery  = { teacher_id: Session.get("teacher_id") }
-  const projection  = { learner_ids: 1, _id: 0 }
-  const learner_ids = groups.find(groupQuery, projection)
+  const projection  = { user_ids: 1, _id: 0 }
+  const user_ids = groups.find(groupQuery, projection)
                             .fetch()
                             .reduce((ids, group) => {
-                              return [...ids, ...group.learner_ids]
+                              return [...ids, ...group.user_ids]
                             }, [])
 
   // Learners
   const users  = collections["Users"]
   Meteor.subscribe(users._name)
   const learners = users.find(
-    { _id: { $in: learner_ids } }
+    { _id: { $in: user_ids } }
   , { sort: [[ "loggedIn", "desc" ], [ "username", "asc" ]] }
   ).fetch()
 
