@@ -6,6 +6,7 @@ import { Session } from 'meteor/session'
 import styled, { css } from 'styled-components'
 
 import collections from '../api/collections'
+import Share from '../tools/share'
 import { localize } from '../tools/utilities'
 
 
@@ -45,7 +46,7 @@ class ShareScreen extends Component {
 
   //// SHOW SHARED SCREEN ////
 
-  //// SHOW EXIT BUTTO UNTIL MENU IS READY ///
+  //// SHOW EXIT BUTTON UNTIL MENU IS READY ///
 
 
   render() {

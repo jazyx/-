@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import User from '../../api/User'
 import collections from '../../api/collections'
 import { localize
        , getElementIndex
        } from '../../tools/utilities'
+import Share from '../../tools/share'
 import { log } from '../../api/methods'
 
 import { StyledProfile
@@ -57,6 +57,9 @@ class Teach extends Component {
       return
     }
 
+    const group_id = this.props.groups[this.state.selected]._id
+    Session.set("group_id", group_id) // Belt and braces
+    Share.joinAsSlave(group_id)
     this.props.setView("ShareScreen")
   }
 
@@ -100,12 +103,25 @@ class Teach extends Component {
   }
 
 
-  getLearners() {
-    const learners = this.props.learners.map((profile, index) => {
-      const name = profile.username
+  getGroups() {
+    const groups = this.props.groups.map((group, index) => {
+      // { 
+      //   _id: "ZG9N9SuWwgNTzpgXH"
+      // , user_names: [
+      //     "Ирина"
+      //   , "Влад"
+      //   ]
+      // , loggedIn: ["XSK5wZtMWriW8Tuba"]
+      // , master:    "XSK5wZtMWriW8Tuba"
+      // , user_ids: [
+      //     "XSK5wZtMWriW8Tuba"
+      //   , "y6sQmtm5DGqE27S95"
+      //   ]
+      // }
+      const name = group.name || group.user_names[0]
       const selected = this.state.selected === index
       const ref = selected ? this.scrollTo : ""
-      const disabled = !profile.loggedIn
+      const disabled = !group.loggedIn.length
 
       return <StyledLearner
         key={name}
@@ -118,7 +134,7 @@ class Teach extends Component {
       </StyledLearner>
     })
 
-    return <StyledUL>{learners}</StyledUL>
+    return <StyledUL>{groups}</StyledUL>
   }
 
 
@@ -126,7 +142,7 @@ class Teach extends Component {
     const disabled = this.state.selected < 0
     const name = disabled
                ? undefined
-               : this.props.learners[this.state.selected].username
+               : this.props.groups[this.state.selected].group_name
     const prompt = this.getPhrase("share", name)
 
     return <StyledButtonBar>
@@ -148,14 +164,14 @@ class Teach extends Component {
 
   render() {
     const prompt = this.getPrompt()
-    const learners = this.getLearners()
+    const groups = this.getGroups()
     const buttonBar = this.getButtonBar()
 
     return <StyledProfile
       id="teacher"
     >
       {prompt}
-      {learners}
+      {groups}
       {buttonBar}
     </StyledProfile>
   }
@@ -198,28 +214,55 @@ export default withTracker(() => {
   const phrases = l10n.find(phraseQuery).fetch()
 
   // Groups
-  const groups  = collections["Groups"]
-  Meteor.subscribe(groups._name)
+  const Groups  = collections["Groups"]
+  Meteor.subscribe(Groups._name)
 
-  const groupQuery  = { teacher_id: Session.get("teacher_id") }
-  const projection  = { user_ids: 1, _id: 0 }
-  const user_ids = groups.find(groupQuery, projection)
-                            .fetch()
-                            .reduce((ids, group) => {
-                              return [...ids, ...group.user_ids]
-                            }, [])
+  const groupQuery = { teacher_id: Session.get("teacher_id") }
+  const project    = {
+    user_ids: 1
+  , master: 1
+  , loggedIn: 1
+  }
+  console.log(
+    "db.groups.find(",JSON.stringify(groupQuery),",",JSON.stringify(project),").pretty()")
+  let groups       = Groups.find(groupQuery, {fields: project})
+                           .fetch()
+                           .sort((a, b) => (
+                              b.loggedIn.length - a.loggedIn.length
+                            ))
+  const user_ids   = groups.reduce(
+    (ids, group) => {
+      return [...ids, ...group.user_ids]
+    }
+  , []
+  )
 
-  // Learners
-  const users  = collections["Users"]
-  Meteor.subscribe(users._name)
-  const learners = users.find(
+  const Users  = collections["Users"]
+  Meteor.subscribe(Users._name)
+  const users = Users.find(
     { _id: { $in: user_ids } }
   , { sort: [[ "loggedIn", "desc" ], [ "username", "asc" ]] }
   ).fetch()
 
+  groups = groups.map(group => {
+    group.user_names = group.user_ids.map(id => (
+      users.find(user => user._id === id))
+           .username
+    )
+
+    if (!group.group_name) {
+      group.group_name = group.user_names[0]
+    }
+
+    return group
+  })
+
+  console.log(groups)
+
   const props = {
     phrases
-  , learners
+  , groups
+  , users
   }
 
   return props

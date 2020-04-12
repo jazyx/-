@@ -155,7 +155,11 @@ export default class Connect extends Component {
     groups.every(group=> {
       if (group.master === Session.get("user_id")) {
         Session.set("group_id", group._id)
+
         Share.setAsMaster(group._id)
+        this.setState({ go: "Activity" })
+        this.hideSplash()
+
         return false
       }
 
@@ -170,7 +174,13 @@ export default class Connect extends Component {
     }
 
     const view = this.state.go
-    this.setState({ showSplash: 0, view })
+    if (!this.views[view]) {
+      // We're going up a level
+      this.setView(view)
+
+    } else {
+      this.setState({ showSplash: 0, view })
+    }
   }
 
 

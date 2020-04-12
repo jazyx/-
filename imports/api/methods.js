@@ -132,10 +132,9 @@ export const createNovice = {
 
 
 
-/**
- * Expects data with the format...
- *
- *    { id: <string> }
+/** Logs users and teachers in and out
+ * 
+ *  Groups, Users and Teachers are updated.
  */
 export const log = {
   name: 'vdvoyom.log'
@@ -195,10 +194,7 @@ export const log = {
 
 
 
-/**
- * Expects data with the format...
- *
- *    { id: <string> }
+/** Allows users to join and leave groups
  */
 export const reGroup = {
   name: 'vdvoyom.reGroup'
@@ -206,7 +202,7 @@ export const reGroup = {
 , validate(reGroupData) {
     new SimpleSchema({
       teacher_id: { type: String }
-    , user_id: { type: String }
+    , user_id:    { type: String }
     , join:       { type: Boolean }
     }).validate(reGroupData)
   }
@@ -243,18 +239,53 @@ export const reGroup = {
 
 
 
-// Register the method with Meteor's DDP system
-Meteor.methods({
-  [createNovice.name]: function (args) {
-    createNovice.validate.call(this, args);
-    return createNovice.run.call(this, args);
+/** Allows users to join and leave groups
+ */
+export const share = {
+  name: 'vdvoyom.share'
+
+, validate(shareData) {
+    new SimpleSchema({
+      _id:  { type: String }
+    , key:  { type: String }
+    , data: { type: Object, blackbox: true }
+    }).validate(shareData)
   }
-, [log.name]: function (args) {
-    log.validate.call(this, args);
-    return log.run.call(this, args);
+
+, run(shareData) {
+    const { _id, key, data } = shareData
+    const query = { _id }
+    const set   = { $set: { [key]: data } }
+    collections["Groups"].update(query, set)
+
+    // console.log( shareData, JSON.stringify(query), JSON.stringify(set))
   }
-, [reGroup.name]: function (args) {
-    reGroup.validate.call(this, args);
-    return reGroup.run.call(this, args);
+
+, call(shareData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [shareData], options, callback)
   }
+}
+
+
+
+// To register a new method with Meteor's DDP system, add it here
+const methods = [
+  createNovice
+, log
+, reGroup
+, share
+]
+
+methods.forEach(method => {
+  Meteor.methods({
+    [method.name]: function (args) {
+      method.validate.call(this, args)
+      return method.run.call(this, args)
+    }
+  })
 })
