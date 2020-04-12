@@ -186,7 +186,7 @@ export const StyledNavArrow = styled.div`
 
   @media (min-aspect-ratio: 1/1) {
     width: 15vh;
-    height: 15vh;  
+    height: 15vh;
   }
 `
 
@@ -198,7 +198,7 @@ export const StyledButtonBar = styled.div`
   border-top: 1px outset #222;
 
   @media (min-aspect-ratio: 1/1) {
-    height: 15vh;  
+    height: 15vh;
   }
 `
 

@@ -23,7 +23,7 @@ body {
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;     
+  user-select: none;
 }
 
 .can-select{
@@ -32,5 +32,5 @@ body {
   -khtml-user-select: text;    /* Konqueror HTML */
   -moz-user-select: text;      /* Firefox */
   -ms-user-select: text;       /* Internet Explorer/Edge */
-  user-select: text;     
-} 
+  user-select: text;
+}

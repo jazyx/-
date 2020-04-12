@@ -68,7 +68,7 @@ class Activity extends Component {
   }
 
 
-  getPhrase(cue, corpus) {  
+  getPhrase(cue, corpus) {
     const map  = corpus[cue]
     let code = Session.get("native")
     let phrase = map[code]
@@ -127,7 +127,7 @@ class Activity extends Component {
       // Nothing is selected
     } else {
       const activity = this.props.activities[this.state.selected]
-      description = this.getPhrase("description", activity) 
+      description = this.getPhrase("description", activity)
     }
 
     return <StyledDescription>

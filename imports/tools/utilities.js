@@ -121,8 +121,9 @@ export const buttonColors = (color, values) => {
 /// ARRAY FUNCTIONS ///
 
 export const removeFrom = (array, item, removeAll) => {
+  let removed = 0
   let index
-  let found, success = 0
+    , found
 
   do {
     if (typeof item === "function") {
@@ -134,11 +135,11 @@ export const removeFrom = (array, item, removeAll) => {
     found = !(index < 0)
     if (found) {
       array.splice(index, 1)
-      success += 1
+      removed += 1
     }
   } while (removeAll && found)
 
-  return success
+  return removed
 }
 
 

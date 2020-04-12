@@ -49,6 +49,6 @@ export class App extends Component {
         hide={this.state.view === "Connect"}
       />
     </div>
-    
+
   }
 }

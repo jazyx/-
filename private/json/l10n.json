@@ -61,6 +61,15 @@
     , "th": "th - xxx"
     , "zh": "zh - xxx"
     }
+  , { "cue": "time_out << COPY TO TimeOut.jsx >>"
+    , "ru": "Нет соединения"
+    , "en": "No connection"
+    , "fr": "Pas de connexion"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
   , { "cue": "which_language"
     , "ru": "На каком языке Вы учитеся?"
     , "en": "What language are you learning?"

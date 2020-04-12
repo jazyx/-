@@ -9,13 +9,16 @@ import Name     from './connect/Name.jsx'
 import Teacher  from './connect/Teacher.jsx'
 import Submit   from './connect/Submit.jsx'
 import Teach    from './connect/Teach.jsx'
+import TimeOut  from './connect/TimeOut.jsx'
 
 import Language from './connect/Language.jsx' // to be used later
 
 import collections from '../api/collections'
-import storage from '../tools/storage'
+import Storage from '../tools/storage'
+import Share from '../tools/share'
 
 import { reGroup } from '../api/methods'
+import { removeFrom } from '../tools/utilities'
 
 
 
@@ -25,27 +28,10 @@ export default class Connect extends Component {
 
     /// <<< HARD-CODED minimum time (ms) to show the Splash screen
     const splashDelay = 1000
+    const timeOutDelay = 10 * 1000
     this.reconnectDelay = 60 * 1000
     /// HARD-CODED >>>
 
-    this.state = {
-      view: "Splash"
-    , showSplash: + new Date() + splashDelay
-    }
-
-    this.setView             = this.setView.bind(this)
-    this.hideSplash          = this.hideSplash.bind(this)
-    this.groupsCallback      = this.groupsCallback.bind(this)
-    this._pollForCollections = this._pollForCollections.bind(this)
-
-    this.connectToRemoteDB() // calls prepareConnection() when ready
-  }
-
-
-  /** Starts polling for enough data from MongoDB to start the app
-   * then prepareConnection will be called.
-   */
-  connectToRemoteDB() {
     this.views = {
       Splash
     , Native
@@ -54,75 +40,66 @@ export default class Connect extends Component {
     , Submit
     , Teach
     , Language
+    , TimeOut
     }
 
-    // When the application is first loaded, the server will not yet
-    // have had time to populate the miniMongo collections, so they
-    // will exist but they will be empty. Show a splash screen until
-    // the collections are ready.
-
-    // For each collection that is required at startup, add an object
-    // with a `query` which will return a minimum number of documents,
-    // plus a `count` property whose value is this required minimum.
-    // If it's enough to have a single document in the collection,
-    // you can use 0 as the value for the collection name
-    // property.
-
-    this.requiredQueries = {
-      "L10n": [
-        { query: { folder: { $exists: true } }
-        , count: 1
-        }
-      , { query: { file: { $exists: true} }
-        , count: 4
-        }
-      ]
-    , "Drag": [
-        { query: { folder: { $exists: true } }
-        , count: 1
-        }
-      , { query: { file: { $exists: true} }
-        , count: 6
-        }
-      ]
-    , "Teachers": [
-        { query: { folder: { $exists: true } }
-        , count: 1
-        }
-      , { query: { file: { $exists: true} }
-        , count: 3
-        }
-      ]
-    , "Activities": [
-        { query: {}
-        , count: 1
-        }
-      ]
-    , "Users": [
-        { query: {}
-        , count: 0
-        }
-      ]
+    this.state = {
+      view: "Splash"
+    , showSplash: + new Date() + splashDelay
     }
+    this.unReady = []
 
-    // Subscribe to the required collections
-    for (let collectionName in this.requiredQueries) {
+    this.ready              = this.ready.bind(this)
+    this.setView            = this.setView.bind(this)
+    this.hideSplash         = this.hideSplash.bind(this)
+    this.groupsCallback     = this.groupsCallback.bind(this)
+    this.connectionTimedOut = this.connectionTimedOut.bind(this)
+
+    this.connectToMongoDB() // calls prepareConnection() when ready
+
+    // Loading takes about 250ms when running locally
+    this.timeOut = setTimeout(this.connectionTimedOut, timeOutDelay)
+  }
+
+
+  connectToMongoDB() {
+    for (let collectionName in collections) {
+      this.unReady.push(collectionName)
+
       const collection = collections[collectionName]
-      Meteor.subscribe(collection._name)
+      // We could send (multiple) argument(s) to the server publisher
+      const callback = () => this.ready(collectionName)
+      Meteor.subscribe(collection._name, callback)
     }
+  }
 
-    this._pollForCollections() // calls prepareConnection() when ready
+
+  ready(collectionName) {
+    removeFrom(this.unReady, collectionName)
+
+    if (!this.unReady.length) {
+      if (this.timeOut) {
+        clearTimeout(this.timeOut)
+        this.prepareConnection()
+      }
+    }
+  }
+
+
+  connectionTimedOut() {
+    this.timeOut = 0 // this.prepareConnection will not trigger now
+    this.setState({ showSplash: 0, view: "TimeOut" })
   }
 
 
   /** MongoDB is ready: use it to check which view to show
-   * 
+   *
    *  Four cases:
    *  1. New user
    *  2. Returning user
    *  3. Teacher
    *  4. Admin
-   *  
+   *
    *  A new user needs to go down the native, name, teacher path
    *  Returning user:
    *    • (When menu is available or if * is in path), resume
@@ -137,7 +114,7 @@ export default class Connect extends Component {
     // First time user: no Session data
     // Returning user:  user_id is set
     // Teacher:         teacher_id is set
-    
+
     switch (Session.get("role")) {
       case "admin":
       // TODO
@@ -154,17 +131,41 @@ export default class Connect extends Component {
       default:
         this.setState({ go: "Native" })
         this.hideSplash()
-    }    
+    }
   }
 
 
-  groupsCallback(error, data) {
-    console.log("groupsCallback(", error, ", ", data, ")")
+  groupsCallback(error, groups) {
+    if (error) {
+      // Unable to join existing groups
+      this.setState({ go: "Native"} )
+      return this.hideSplash()
+    }
+
+    // // console.log(Session.keys)
+    // language: ""en-GB""
+    // native:   ""ru""
+    // role:     ""user""
+    // teacher:  ""jn""
+    // user_id:  ""y6sQmtm5DGqE27S95""
+    // username: ""Влад"
+    // +
+    // group_id: ""aKEisZAmCpPEq5qKC""
+
+    groups.every(group=> {
+      if (group.master === Session.get("user_id")) {
+        Session.set("group_id", group._id)
+        Share.setAsMaster(group._id)
+        return false
+      }
+
+      return true
+    })
   }
 
 
   hideSplash() {
-    if (+ new Date() > this.state.showSplash) {
+    if (+ new Date() < this.state.showSplash) {
       return setTimeout(this.hideSplash, 100)
     }
 
@@ -195,38 +196,9 @@ export default class Connect extends Component {
 
   /// HELPERS /// HELPERS /// HELPERS /// HELPERS /// HELPERS  /// ///
 
-  _pollForCollections() {
-    const collectionNames = Object.keys(this.requiredQueries)
-    const basic = [ { query: {}, count: 1 } ]
-
-    const ready = collectionNames.every(collectionName => {
-      const collection = collections[collectionName]
-      const checks     = this.requiredQueries[collectionName] || basic
-
-      const checked    = checks.every(check => {
-        const query    = check.query || {}
-        const count    = isNaN(check.count)
-                       ? 1
-                       : check.count
-        const passed   = collection.find(query).count() >= count
-
-        return passed
-      })
-
-      return checked
-    })
-
-    if (ready) {
-      this.prepareConnection()
-
-    } else {
-      setTimeout(this._pollForCollections, 100)
-    }
-  }
-
 
   _SetSessionData() {
-    const storedData = storage.get()
+    const storedData = Storage.get()
     const keys = Object.keys(storedData)
     const teacher = this._checkURLForTeacherName()
     // TODO: Add test for admin
@@ -274,6 +246,9 @@ export default class Connect extends Component {
   }
 
 
+  /** Check if the connection just broke and if so, log back in
+   *  to the shared group. Otherwise, go to the Teach view.
+   */
   _checkForActiveGroup() {
     // TODO: Integrate menu then remove the following 2 lines
     this.setState({ go: "Teach" })
@@ -290,14 +265,14 @@ export default class Connect extends Component {
       return this.hideSplash()
     }
 
-    const teacher_id = Session.get("teacher")
-    const user_id = Session.get("user_id")
-    const join = true
-    const params = { teacher_id, user_id, join}
+    const params = {
+      teacher_id: Session.get("teacher")
+    , user_id:    Session.get("user_id")
+    , join:      true
+    }
     const callback = this.groupsCallback
 
     reGroup.call(params, callback)
-    // Meteor.call("reGroup", params, callback)
   }
 
 

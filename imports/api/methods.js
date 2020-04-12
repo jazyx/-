@@ -1,9 +1,44 @@
 /**
  * methods.js
  *
- * Based on:
- *
+ * Based on...
  *   https://guide.meteor.com/methods.html#advanced-boilerplate
+ * ... with the important addition of a `return` statement in each
+ * entry for Meteor.methods()
+ *
+ * createNovice() is called from the Submit view after the user has
+ *   selected a native language, a username and a teacher. It creates
+ *   a User record and a Groups record with the chosen teacher, and
+ *   indicates a loggedIn status in both.
+ *
+ *   User:  { $set: { loggedIn: true } }
+ *   Group: { $push { loggedIn: user_id } }
+ *
+ *   If it is called more than once with the same username and native
+ *   language/teacher, the  existing records are used. If the user
+ *   changes language or teacher, a new User record or a new Groups
+ *   record will be created.
+ *
+ *   NOTE: one teacher who works with two different languages will
+ *   have two different teacher ids
+ *
+ * log() combines login and logout
+ *   Called from Teach (constructor => logTeacherIn) and Menu
+ *   (beforeunload => logOut)
+ *
+ *   When anyone logs in, the loggedIn status of their profile record
+ *   (Teacher or User) is set to true
+ *   When anyone logs out, their loggedIn status is set to false and
+ *   their loggedOut status is set to an ISODate, so that we can
+ *   calculated how long ago they were last seen
+ *   When users log in or out, their id is push to or pulled from
+ *   the loggedIn array of all the groups they belong to
+ *   When teachers log out, the active state of their current group
+ *   is set to false.
+ *
+ * reGroup() combines join group and leave group
+ *   Called for users from the Connect view
+ *
  */
 
 import { Meteor } from 'meteor/meteor'
@@ -19,13 +54,8 @@ if (Meteor.isClient) {
 
 
 
-/**
- * Expects data with the format...
- *
- *    { native, username, teacher, language }
- *
- * ... where all the values are strings. Throws an error if this is
- * not the case.
+/** Creates or updates User and Group records for after profiling
+ *  Calling the method a second time reuses the existing groups
  */
 export const createNovice = {
   name: 'vdvoyom.createNovice'
@@ -44,7 +74,7 @@ export const createNovice = {
   // Factor out Method body so that it can be called independently
 , run(noviceData) {
     const Users = collections["Users"]
-    // TODO: 
+    // TODO:
     // Allow more than one user with a given name and native language
     const { native, username } = noviceData
 
@@ -57,7 +87,7 @@ export const createNovice = {
     Users.update({ _id: user_id }, { $set: { loggedIn: true } })
 
     // ASSUME ONE LEARNER PER GROUP, ONE GROUP PER LEARNER, FOR NOW //
-    
+
     // Find a group with this teacher and this learner...
     const Groups = collections["Groups"]
     const group = {
@@ -85,10 +115,11 @@ export const createNovice = {
     return { user_id, group_id }
   }
 
-  // Call Method by referencing the JS object
-  // Also, this lets us specify Meteor.apply options once in the
-  // Method implementation, rather than requiring the caller to
-  // specify it at the call site.
+  /** Call Method by referencing the JS object
+   *  Also, this lets us specify Meteor.apply options once in the
+   *  Method implementation, rather than requiring the caller to
+   *  specify it at the call site
+   */
 , call(noviceData, callback) {
     const options = {
       returnStubValue: true
@@ -111,7 +142,7 @@ export const log = {
 
 , validate(logData) {
     new SimpleSchema({
-      id: { type: String }
+      id: { type: String }  // < 5 chars = teacher; > 5 chars = user
     , in: { type: Boolean }
     }).validate(logData)
   }
@@ -137,7 +168,7 @@ export const log = {
         // Log student out of any current groups
         const query = { loggedIn: { $elemMatch: { $eq: _id } } }
         const pull  = { $pull: { loggedIn: _id } }
-        const multi = true 
+        const multi = true
         collections["Groups"].update(query, pull, multi)
       }
     }
@@ -192,7 +223,7 @@ export const reGroup = {
     const set   = join
                 ? { $push: { loggedIn: user_id } }
                 : { $pull: { loggedIn: user_id } }
-    const multi = true 
+    const multi = true
     collections["Groups"].update(query, set, multi)
 
     const groups = collections["Groups"].find(query).fetch()

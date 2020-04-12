@@ -5,7 +5,8 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
-import storage from '../../tools/storage'
+import Storage from '../../tools/storage'
+import Share from '../../tools/share'
 import { localize } from '../../tools/utilities'
 import { createNovice
        , log
@@ -51,8 +52,8 @@ class Submit extends Component {
     }
 
     // Save permanently to localStorage (if available)
-    const stored = storage.set(this.noviceData)
-    
+    const stored = Storage.set(this.noviceData)
+
     if (saved) {
       if (stored) {
         save = "save_successful"
@@ -64,8 +65,7 @@ class Submit extends Component {
     }
 
     Session.set("user_id", user_id)
-    Session.set("master",  user_id)
-    Session.set("group_id", group_id) 
+    Session.set("group_id", group_id)
 
     // Show the save message...
     this.setState({ save })

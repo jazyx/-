@@ -4,7 +4,8 @@ import React, { Component } from 'react';
 import styled, { css } from 'styled-components'
 import { Session } from 'meteor/session'
 
-import storage from '../tools/storage'
+import Storage from '../tools/storage'
+import Share from '../tools/share'
 import { log } from '../api/methods.js';
 
 

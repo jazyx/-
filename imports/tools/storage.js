@@ -1,6 +1,6 @@
 /**
  * import/tools/storage.js
- * 
+ *
  * Exports a singleton Storage instance which reads from and writes to
  * localStorage, if it's available, or just pretends to do so if it's
  * not.
@@ -58,7 +58,7 @@ class Storage{
     return this.stored // false for a simulation
   }
 
-  
+
   set(settings) {
     Object.assign(this.settings, settings)
     this._save()
