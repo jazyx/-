@@ -159,7 +159,7 @@ export default class Connect extends Component {
         Session.set("group_id", group._id)
 
         Share.joinGroup(group._id, true) // as master
-        this.setState({ go: group.view })
+        this.setState({ go: "ShareScreen" })
         this.hideSplash()
 
         return false

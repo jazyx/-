@@ -17,7 +17,7 @@ export const StyledProfile = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 100vh;
+  height: ${props => props.units.uh * 100}px;
   background-color: ${colours.background};
 `
 
@@ -25,45 +25,48 @@ export const StyledPrompt = styled.h1`
   display: flex;
   align-items: center;
   text-align: center;
-  height: 10vmin;
-  font-size: 8vmin;
-  margin: 2.5vmin 0 2.5vmin;
-
-  @media (min-aspect-ratio: 1/1) {
-    white-space: nowrap;
-  }
+  height: ${props => props.units.umin * 10}px;
+  font-size: ${props => props.units.umin * 8}px;
+  margin: ${props => props.units.umin * 2.5}px
+          0
+          ${props => props.units.umin * 2.5}px;
 `
 
 export const StyledActivities = styled.ul`
   list-style-type: none;
-  width: 100%;
-  height: calc(100vh - 45vw);
+  width: ${props => props.units.uv * 100}px;
   margin: 0;
   padding: 0;
   text-align: center;
   overflow-y: auto;
 
-  @media (min-aspect-ratio: 1/1) {
-    white-space: nowrap;
-    height: 50vh;
-  }
+  ${props => props.units.wide
+           ? `white-space: nowrap;
+              height: ${props.units.uh * 50}px;
+             `
+           : ""
+  }}
 `
 
 export const StyledDescription = styled.p`
-  height: 18vmin;
+  height: ${props => props.units.umin * 18}px;
   width: 100%;
   margin: 0;
-  font-size: 3.75vmin;
+  font-size: ${props => props.units.umin * 3.75}px;
   box-sizing: border-box;
   padding: 0.25em;
-  margin: 0 0 2vmin;
+  margin: 0 0 ${props => props.units.umin * 2.5}px;
   overflow-y: auto;
 `
 
 export const StyledActivity = styled.li`
   position: relative;
-  width: calc(50vw - 10px);
-  height: calc(50vw - 10px);
+  width: ${props => (
+    props.units.uv * 50 - 10
+  )}px;
+  height: ${props => (
+    props.units.uv * 50 - 10
+  )}px;
 
   background-image: url(${props => props.src});
   background-size: cover;
@@ -86,21 +89,25 @@ export const StyledActivity = styled.li`
     top: 0;
     left: 0;
     width: 100%;
-    font-size: 5vmin;
+    font-size: ${props => props.units.umin * 5}px;
     text-align: center;
     margin: 0;
   }
 
-  @media (max-aspect-ratio: 1/1) {
-    float: left;
-  }
+  ${props => props.units.wide
+           ? ""
+           : `float: left;`
+  }}
 
-  @media (min-aspect-ratio: 1/1) {
-    width: calc(50vh - 20px);
-    height: calc(50vh - 20px);
-    display: inline-block;
-    clear: both;
-  }
+  /* Using 22px as the height for the horizontal scrollbar */
+  ${props => props.units.wide
+           ? `width: ${props.units.uh * 50 - 22}px;
+              height: ${props.units.uh * 50 - 22}px;
+              display: inline-block;
+              clear: both;
+             `
+           : ""
+   }
 `
 
 export const StyledButton = styled.button`
@@ -108,10 +115,10 @@ export const StyledButton = styled.button`
   border-radius: 10vh;
   padding: 0.1em 1em;
   color: #fff;
-  height: 15vw;
-  width: 70vw;
-  max-width: 70vh;
-  font-size: 5.25vw;
+  height: ${props => props.units.uv * 16}px;
+  width: ${props => props.units.uv * 70}px;
+  max-width: ${props => props.units.uh * 70}px;
+  font-size: ${props => props.units.uv * 5.25}px;
   ${props => props.disabled
            ? `opacity: 0.25;
               pointer-events: none;
@@ -123,8 +130,10 @@ export const StyledButton = styled.button`
     background: ${colours.active};
   }
 
-  @media (min-aspect-ratio: 1/1) {
-    height: 15vh;
-    font-size: 5.25vh;
-  }
+  ${props => props.units.wide
+           ? `height: ${props.units.uh * 15}px;
+              font-size: ${props.units.uh* 5.25}px;
+             `
+           : ""
+  }}
 `

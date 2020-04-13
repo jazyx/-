@@ -73,7 +73,7 @@ class Submit extends Component {
 
     // ... for just long enough
     setTimeout(
-      () => this.props.setView("Activity")
+      () => this.props.setView("ShareScreen")
     , this.delay
     )
   }

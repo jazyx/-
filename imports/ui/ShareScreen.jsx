@@ -10,7 +10,7 @@ import Share from '../tools/share'
 import { localize } from '../tools/utilities'
 
 // ADD NEW ACTIVITIES HERE...
-import Activity from './activities/Drag.jsx';
+import Activity from './activities/Activity.jsx';
 import Drag from './activities/Drag.jsx';
 import Mimo from './activities/Mimo.jsx';
 
@@ -53,11 +53,14 @@ class ShareScreen extends Component {
   render() {
     const View = this.views[this.props.view] // {this.props.view}
 
-    console.log("ShareScreen props:", this.props)
-    console.log("View:", this.props.view)
+    // console.log("ShareScreen props:", this.props)
 
-    return <StyledScreen>
-      <View />
+    return <StyledScreen
+      id="SharedScreen"
+    >
+      <View
+        units={this.props.units}
+      />
     </StyledScreen>
   }
 }
@@ -66,6 +69,8 @@ class ShareScreen extends Component {
 
 export default withTracker(() => {
   const props = Share.get()
+
+  // console.log("ShareScreen props update", props)
 
   return props
 })(ShareScreen)

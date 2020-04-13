@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 
 import Connect from './Connect.jsx';
 import Menu from './Menu.jsx';
+
+// VIEWS
 import ShareScreen from './ShareScreen.jsx';
 import Activity from './activities/Activity.jsx';
 

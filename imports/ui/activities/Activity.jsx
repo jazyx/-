@@ -29,10 +29,10 @@ class Activity extends Component {
     this.selectActivity = this.selectActivity.bind(this)
     this.scrollIntoView = this.scrollIntoView.bind(this)
 
-    this.scrollTo = React.createRef
+    this.scrollTo = React.createRef()
 
     Share.setView("Activity")
-    
+
     // Allow Enter to accept the default/current language
     document.addEventListener("keydown", this.goActivity, false)
     window.addEventListener("resize", this.scrollIntoView, false)
@@ -99,7 +99,9 @@ class Activity extends Component {
     const code = Session.get("native")
     const prompt = localize("activities", code, this.props.phrases)
 
-    return <StyledPrompt>
+    return <StyledPrompt
+      units={this.props.units}
+    >
       {prompt}
     </StyledPrompt>
   }
@@ -122,11 +124,16 @@ class Activity extends Component {
         disabled={disabled}
         selected={selected}
         onMouseUp={this.selectActivity}
+        units={this.props.units}
       >
         <p>{name}</p>
       </StyledActivity>
     })
-    return <StyledActivities>{activities}</StyledActivities>
+    return <StyledActivities
+      units={this.props.units}
+    >
+      {activities}
+    </StyledActivities>
   }
 
 
@@ -139,7 +146,9 @@ class Activity extends Component {
       description = this.getPhrase("description", activity)
     }
 
-    return <StyledDescription>
+    return <StyledDescription
+      units={this.props.units}
+    >
       {description}
     </StyledDescription>
   }
@@ -153,6 +162,7 @@ class Activity extends Component {
    return <StyledButton
       disabled={disabled}
       onMouseUp={this.goActivity}
+      units={this.props.units}
     >
       {prompt}
     </StyledButton>
@@ -160,6 +170,8 @@ class Activity extends Component {
 
 
   render() {
+    console.log(JSON.stringify(this.props.units))
+
     const prompt = this.getPrompt()
     const activities = this.getActivities()
     const description = this.getDescription()
@@ -167,6 +179,7 @@ class Activity extends Component {
 
     return <StyledProfile
       id="activities"
+      units={this.props.units}
     >
       {prompt}
       {activities}

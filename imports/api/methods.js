@@ -216,7 +216,8 @@ export const reGroup = {
       ]
     }
 
-    // Always pull, in case the user_id was not properly cleared
+    // Pull will remove all occurrences of the user_id, just in case
+    // multiple pushes occurred.
     const set = join
               ? { $push: { loggedIn: user_id } }
               : { $pull: { loggedIn: user_id } }
@@ -295,14 +296,14 @@ export const setView = {
     const set   = { $set: { activity } }
     collections["Groups"].update(query, set)
 
-    console.log(
-      'db.groups.update('
-    + JSON.stringify(query)
-    + ", "
-    + JSON.stringify(set)
-    + ")"
-    // , setViewData
-    )
+    // console.log(
+    //   'db.groups.update('
+    // + JSON.stringify(query)
+    // + ", "
+    // + JSON.stringify(set)
+    // + ")"
+    // // , setViewData
+    // )
   }
 
 , call(setViewData, callback) {

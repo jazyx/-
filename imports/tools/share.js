@@ -16,7 +16,7 @@ let instances = 0
 class Share {
   constructor() {
     console.log("Share instance n°", ++instances)
-    this.viewData = { ratio: 1 }
+    this.viewData = {}
     this.isMaster = false
     this.setViewSize = this.setViewSize.bind(this)
   }
@@ -52,20 +52,42 @@ class Share {
       , key: "viewSize"
       , data
       })
-    } else {
-      this.slaveSetViewRatio(width, height)
     }
 
-    this.refresh() 
+    this.setViewRatio(width, height)
   }
 
 
-  slaveSetViewRatio(width, height) {
+  setViewRatio(width, height) {
+    this.group    = Groups.findOne({ _id: this.group_id })
     const viewSize = this.group.viewSize
-    this.viewData.ratio = Math.min(
-      width / viewSize.width
-    , height / viewSize.height
-    )
+    const ratioH = height / viewSize.height
+    const ratioW = width / viewSize.width
+    let uh
+      , uv
+
+    if (ratioH > ratioW) {
+      // Show view as wide as possible but reduce height
+      uv = width / 100
+      uh = height * ratioW / 100
+
+    } else {
+      // Show view as tall as possible but reduce width
+      uv = width * ratioH / 100
+      uh = height / 100
+    }
+
+    this.viewData.units = {
+      uv
+    , uh
+    , umin: Math.min(uv, uh)
+    , umax: Math.max(uv, uh)
+    , wide: uv > uh
+    , width
+    , height
+    }
+
+    this.refresh()
   }
 
 
@@ -76,7 +98,7 @@ class Share {
 
   get() {
     refresh.get()
-    return Object.assign(this.viewData, this.group)
+    return Object.assign({}, this.group, this.viewData)
   }
 }
 
