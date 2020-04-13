@@ -3,7 +3,7 @@
 
 , "as_is": {
     "key": "mimo"
-  , "version": 1
+  , "version": 2
   , "name": {
       "en": "Minimal pairs"
     , "fr": "Paires minimales"
@@ -16,6 +16,6 @@
     }
   , "folder": "activities/mimo/"
   , "icon": "icon.jpg"
-  , "disabled": false
+  , "disabled": true
   }
 }
