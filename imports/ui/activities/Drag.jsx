@@ -239,6 +239,8 @@ class Drag extends Component {
     , mask: 0
     }
 
+    this.dropTarget = React.createRef()
+
     this._startDrag = this._startDrag.bind(this)
     this._newDeal = this._newDeal.bind(this)
     this._fadeMask = this._fadeMask.bind(this)
@@ -265,7 +267,10 @@ class Drag extends Component {
     const items = this.sampler.getSample()
     const layouts = this._getLayouts(items)
     const show  = {}
-    layouts[6].hints.forEach(hint => { show[hint] = false })
+    layouts[6].hints.forEach(hint => { 
+      hint = this._hyphenate(hint)
+      show[hint] = false
+    })
 
     if (startUp === true) {
       return { layouts, show }
@@ -343,6 +348,10 @@ class Drag extends Component {
     // Highlight dragged element
     target.classList.add("drag")
 
+    // Choose target
+    const dropClass = this._hyphenate(target.innerText)
+    this.setState({ dropClass })
+
     const { x: startX, y: startY } = getPageXY(event)
 
     const drag = (event) => {
@@ -366,9 +375,7 @@ class Drag extends Component {
         return
       }
 
-      const dragName = elements[0].innerHTML
-      const className = this._hyphenate(dragName)
-      const onTarget = elements[2].classList.contains(className)
+      const onTarget = !(elements.indexOf(this.dropTarget.current)<0)
 
       target.style.removeProperty("left")
       target.style.removeProperty("top")
@@ -377,10 +384,12 @@ class Drag extends Component {
         target.classList.add("dropped")
 
         const show = this.state.show
-        show[dragName] = true
+        show[this.state.dropClass] = true
         const complete = this._turnComplete(show)
         this.setState({ show, complete })
       }
+
+      this.setState({ dropClass: "" })
     }
 
     const cancel = setTrackedEvents({ event, drag, drop })
@@ -408,11 +417,15 @@ class Drag extends Component {
     const frames = layout.images.map((item, index) => {
       const src = this.props.folder + item
       const hint = layout.hints[index]
-      const show = this.state.show[hint]
       const className = this._hyphenate(hint)
+      const show = this.state.show[className]
+      const ref = className === this.state.dropClass 
+                ? this.dropTarget
+                : null
 
       return <StyledFrame
         key={"frame"+index}
+        ref={ref}
         className={className}
       >
         <StyledSquare
