@@ -41,8 +41,6 @@ export class App extends Component {
   render() {
     const View = this.views[this.state.view]
 
-    console.log("View:", View)
-
     return <div id="wrapper">
       <View
         setView={this.setView}
@@ -51,6 +49,5 @@ export class App extends Component {
         hide={this.state.view === "Connect"}
       />
     </div>
-
   }
 }

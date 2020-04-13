@@ -273,12 +273,52 @@ export const share = {
 
 
 
+/** Called by Activity.goActivity()
+ */
+export const setActivity = {
+  name: 'vdvoyom.setActivity'
+
+, validate(setActivityData) {
+    new SimpleSchema({   
+      activity: { type: String }
+    , group_id: { type: String }
+    }).validate(setActivityData)
+  }
+
+, run(setActivityData) {
+    const { group_id: _id, activity } = setActivityData
+    const query = { _id }
+    const set   = { $set: { activity } }
+    collections["Groups"].update(query, set)
+
+    // console.log(
+    //   'db.groups.update('
+    // + JSON.stringify(query)
+    // + ", "
+    // + JSON.stringify(set))
+    // + ")"
+    // // , setActivityData
+  }
+
+, call(setActivityData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [setActivityData], options, callback)
+  }
+}
+
+
+
 // To register a new method with Meteor's DDP system, add it here
 const methods = [
   createNovice
 , log
 , reGroup
 , share
+, setActivity
 ]
 
 methods.forEach(method => {

@@ -17,7 +17,9 @@ import collections from '../api/collections'
 import Storage from '../tools/storage'
 import Share from '../tools/share'
 
-import { reGroup } from '../api/methods'
+import { log
+       , reGroup
+       } from '../api/methods'
 import { removeFrom } from '../tools/utilities'
 
 
@@ -157,7 +159,7 @@ export default class Connect extends Component {
         Session.set("group_id", group._id)
 
         Share.setAsMaster(group._id)
-        this.setState({ go: "Activity" })
+        this.setState({ go: group.activity })
         this.hideSplash()
 
         return false
@@ -275,13 +277,15 @@ export default class Connect extends Component {
       return this.hideSplash()
     }
 
+    const user_id = Session.get("user_id")
     const params = {
       teacher_id: Session.get("teacher")
-    , user_id:    Session.get("user_id")
+    , user_id
     , join:      true
     }
     const callback = this.groupsCallback
 
+    log.call({ id: user_id, in: true })
     reGroup.call(params, callback)
   }
 

@@ -139,7 +139,9 @@ class Teach extends Component {
 
 
   getButtonBar() {
-    const disabled = this.state.selected < 0
+    const disabled = ( this.state.selected < 0 )
+                   || !this.props.groups[this.state.selected]
+                                        .loggedIn.length
     const name = disabled
                ? undefined
                : this.props.groups[this.state.selected].group_name

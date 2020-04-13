@@ -7,6 +7,7 @@ import { Session } from 'meteor/session'
 import collections from '../../api/collections'
 import { localize
        , getElementIndex } from '../../tools/utilities'
+import { setActivity } from '../../api/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -55,6 +56,10 @@ class Activity extends Component {
     const activity = this.props.activities[this.state.selected]
     if (activity) {
       const view = activity.key
+      setActivity.call({
+        activity: view
+      , group_id: Session.get("group_id")
+      })
       this.props.setView(view)
     }
   }
