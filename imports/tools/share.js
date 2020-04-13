@@ -16,45 +16,67 @@ let instances = 0
 class Share {
   constructor() {
     console.log("Share instance n°", ++instances)
+    this.viewData = { ratio: 1 }
     this.isMaster = false
-    this.data = {}
-
-    this.setAspectRatio = this.setAspectRatio.bind(this)
+    this.setViewSize = this.setViewSize.bind(this)
   }
 
 
-  setAsMaster(group_id) {
-    this.group_id = group_id
-    this.isMaster = true
-    this.setAspectRatio()
-    window.addEventListener("resize", this.setAspectRatio, false)
-  }
-
-
-  joinAsSlave(_id) {
+  joinGroup(_id, asMaster) {
     this.group_id = _id
-    this.isMaster = false
-    window.addEventListener("resize", this.setAspectRatio, false)
-    this.group = Groups.findOne({ _id })
-
-    console.log(this.group.aspectRatio)
+    this.isMaster = asMaster
+    this.group    = Groups.findOne({ _id })
+    this.setViewSize()
+    window.addEventListener("resize", this.setViewSize, false)
   }
 
 
-  setAspectRatio(event) {
+  setView(data) {
+    if (this.isMaster) {
+      share.call({
+        _id: this.group_id
+      , key: "view"
+      , data
+      })
+    }
+  }
+
+
+  setViewSize(event) {
     const { width, height } = document.body.getBoundingClientRect()
     const data = { width, height }
-    share.call({
-      _id: this.group_id
-    , key: "aspectRatio"
-    , data
-    })
+
+    if (this.isMaster) {
+      share.call({
+        _id: this.group_id
+      , key: "viewSize"
+      , data
+      })
+    } else {
+      this.slaveSetViewRatio(width, height)
+    }
+
+    this.refresh() 
+  }
+
+
+  slaveSetViewRatio(width, height) {
+    const viewSize = this.group.viewSize
+    this.viewData.ratio = Math.min(
+      width / viewSize.width
+    , height / viewSize.height
+    )
+  }
+
+
+  refresh() {
+    refresh.set(refresh.get() + 1)
   }
 
 
   get() {
     refresh.get()
-    return this.data
+    return Object.assign(this.viewData, this.group)
   }
 }
 

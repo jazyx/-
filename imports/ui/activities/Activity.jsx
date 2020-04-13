@@ -5,9 +5,10 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
+import Share from '../../tools/share'
 import { localize
        , getElementIndex } from '../../tools/utilities'
-import { setActivity } from '../../api/methods'
+import { setView } from '../../api/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -28,8 +29,10 @@ class Activity extends Component {
     this.selectActivity = this.selectActivity.bind(this)
     this.scrollIntoView = this.scrollIntoView.bind(this)
 
-    this.scrollTo = React.createRef()
+    this.scrollTo = React.createRef
 
+    Share.setView("Activity")
+    
     // Allow Enter to accept the default/current language
     document.addEventListener("keydown", this.goActivity, false)
     window.addEventListener("resize", this.scrollIntoView, false)
@@ -56,10 +59,11 @@ class Activity extends Component {
     const activity = this.props.activities[this.state.selected]
     if (activity) {
       const view = activity.key
-      setActivity.call({
-        activity: view
+      setView.call({
+        view
       , group_id: Session.get("group_id")
       })
+
       this.props.setView(view)
     }
   }

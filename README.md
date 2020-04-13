@@ -49,8 +49,19 @@ with other students in your group (class or Waiting Room) both publicly and priv
 ### Additional Activities
 
 Future versions will include other activities, such as:
-* Flashcards
-* Minimal pairs
-* A choose-your-own adventure
-* Fill-in-the-gap exercises
+* Flashcards
+* Minimal pairs
+* A choose-your-own adventure
+* Memory
 * Idioms
+
+Fill-in-the-gap exercises
+* "Hangman" (Completing a picture)
+* Add missing letters correctly
+* Type word correctly (with hints)
+* Cloze text
+* Dragnagram
+
+Conversation games
+* [Alias](https://russkiy.fun/support/games/alias/)
+* [Lobster](https://lobster.now.sh/)

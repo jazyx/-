@@ -9,6 +9,12 @@ import collections from '../api/collections'
 import Share from '../tools/share'
 import { localize } from '../tools/utilities'
 
+// ADD NEW ACTIVITIES HERE...
+import Activity from './activities/Drag.jsx';
+import Drag from './activities/Drag.jsx';
+import Mimo from './activities/Mimo.jsx';
+
+
 
 
 const StyledScreen = styled.div`
@@ -18,44 +24,40 @@ const StyledScreen = styled.div`
   height: 100%;
 `
 
-const StyledTEMP = styled.h1`
-  text-align: center;
-  opacity: 0.2;
-`
-
-
 
 
 class ShareScreen extends Component {
   constructor(props) {
     super(props)
 
-    this.state = { ready: false }
+    this.views = {
+      Activity
+    , Drag
+    , Mimo
+    }
   }
 
 
-  getPrompt() {
-    const code = Session.get("native")
-    const prompt = localize("shared_screen", code, this.props.phrases)
-
-    return <StyledTEMP>
-      {prompt}
-    </StyledTEMP>
+  setView(view) {
+    if (this.views[view]) {
+      this.setState({ view })
+    } else {
+      console.log("Unknown view:", view)
+    }
   }
 
-
-  //// SHOW SHARED SCREEN ////
 
   //// SHOW EXIT BUTTON UNTIL MENU IS READY ///
 
 
   render() {
-    const prompt = this.getPrompt()
+    const View = this.views[this.props.view] // {this.props.view}
 
-    return <StyledScreen
-      id="shared"
-    >
-      {prompt}
+    console.log("ShareScreen props:", this.props)
+    console.log("View:", this.props.view)
+
+    return <StyledScreen>
+      <View />
     </StyledScreen>
   }
 }
@@ -63,19 +65,7 @@ class ShareScreen extends Component {
 
 
 export default withTracker(() => {
-  const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name)
+  const props = Share.get()
 
-  const key         = "phrase"
-  const phraseQuery = {
-    $and: [
-      { type: { $eq: key }}
-    , { file: { $exists: false }}
-    ]
-  }
-  const phrases = collection.find(phraseQuery).fetch()
-
-  return {
-    phrases
-  }
+  return props
 })(ShareScreen)

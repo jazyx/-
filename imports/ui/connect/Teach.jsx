@@ -45,8 +45,7 @@ class Teach extends Component {
 
   logTeacherIn() {
     const id = Session.get("teacher_id")
-    const logIn = { id, in: true }
-    log.call(logIn) // no callback
+    log.call({ id, in: true }) // no callback
   }
 
 
@@ -59,7 +58,7 @@ class Teach extends Component {
 
     const group_id = this.props.groups[this.state.selected]._id
     Session.set("group_id", group_id) // Belt and braces
-    Share.joinAsSlave(group_id)
+    Share.joinGroup(group_id, false) // not as master
     this.props.setView("ShareScreen")
   }
 
@@ -105,7 +104,7 @@ class Teach extends Component {
 
   getGroups() {
     const groups = this.props.groups.map((group, index) => {
-      // { 
+      // {
       //   _id: "ZG9N9SuWwgNTzpgXH"
       // , user_names: [
       //     "Ирина"
@@ -225,8 +224,13 @@ export default withTracker(() => {
   , master: 1
   , loggedIn: 1
   }
-  console.log(
-    "db.groups.find(",JSON.stringify(groupQuery),",",JSON.stringify(project),").pretty()")
+  // console.log(
+  //   "db.groups.find("
+  // , JSON.stringify(groupQuery)
+  // , ","
+  // , JSON.stringify(project)
+  // , ").pretty()"
+  // )
   let groups       = Groups.find(groupQuery, {fields: project})
                            .fetch()
                            .sort((a, b) => (
@@ -259,7 +263,7 @@ export default withTracker(() => {
     return group
   })
 
-  console.log(groups)
+  // console.log(groups)
 
   const props = {
     phrases

@@ -267,7 +267,7 @@ class Drag extends Component {
     const items = this.sampler.getSample()
     const layouts = this._getLayouts(items)
     const show  = {}
-    layouts[6].hints.forEach(hint => { 
+    layouts[6].hints.forEach(hint => {
       hint = this._hyphenate(hint)
       show[hint] = false
     })
@@ -419,7 +419,7 @@ class Drag extends Component {
       const hint = layout.hints[index]
       const className = this._hyphenate(hint)
       const show = this.state.show[className]
-      const ref = className === this.state.dropClass 
+      const ref = className === this.state.dropClass
                 ? this.dropTarget
                 : null
 

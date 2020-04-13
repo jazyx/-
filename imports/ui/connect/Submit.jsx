@@ -66,7 +66,7 @@ class Submit extends Component {
 
     Session.set("user_id", user_id)
     Session.set("group_id", group_id)
-    Share.setAsMaster(group_id)
+    Share.joinGroup(group_id, true) // as master
 
     // Show the save message...
     this.setState({ save })

@@ -133,7 +133,7 @@ export const createNovice = {
 
 
 /** Logs users and teachers in and out
- * 
+ *
  *  Groups, Users and Teachers are updated.
  */
 export const log = {
@@ -216,9 +216,10 @@ export const reGroup = {
       ]
     }
 
-    const set   = join
-                ? { $push: { loggedIn: user_id } }
-                : { $pull: { loggedIn: user_id } }
+    // Always pull, in case the user_id was not properly cleared
+    const set = join
+              ? { $push: { loggedIn: user_id } }
+              : { $pull: { loggedIn: user_id } }
     const multi = true
     collections["Groups"].update(query, set, multi)
 
@@ -248,7 +249,10 @@ export const share = {
     new SimpleSchema({
       _id:  { type: String }
     , key:  { type: String }
-    , data: { type: Object, blackbox: true }
+    , data: SimpleSchema.oneOf(
+        { type: String }
+      , { type: Object, blackbox: true }
+      )
     }).validate(shareData)
   }
 
@@ -275,38 +279,39 @@ export const share = {
 
 /** Called by Activity.goActivity()
  */
-export const setActivity = {
-  name: 'vdvoyom.setActivity'
+export const setView = {
+  name: 'vdvoyom.setView'
 
-, validate(setActivityData) {
-    new SimpleSchema({   
-      activity: { type: String }
+, validate(setViewData) {
+    new SimpleSchema({
+      view:     { type: String }
     , group_id: { type: String }
-    }).validate(setActivityData)
+    }).validate(setViewData)
   }
 
-, run(setActivityData) {
-    const { group_id: _id, activity } = setActivityData
+, run(setViewData) {
+    const { group_id: _id, view } = setViewData
     const query = { _id }
     const set   = { $set: { activity } }
     collections["Groups"].update(query, set)
 
-    // console.log(
-    //   'db.groups.update('
-    // + JSON.stringify(query)
-    // + ", "
-    // + JSON.stringify(set))
-    // + ")"
-    // // , setActivityData
+    console.log(
+      'db.groups.update('
+    + JSON.stringify(query)
+    + ", "
+    + JSON.stringify(set)
+    + ")"
+    // , setViewData
+    )
   }
 
-, call(setActivityData, callback) {
+, call(setViewData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [setActivityData], options, callback)
+    Meteor.apply(this.name, [setViewData], options, callback)
   }
 }
 
@@ -318,7 +323,7 @@ const methods = [
 , log
 , reGroup
 , share
-, setActivity
+, setView
 ]
 
 methods.forEach(method => {

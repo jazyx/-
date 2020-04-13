@@ -158,8 +158,8 @@ export default class Connect extends Component {
       if (group.master === Session.get("user_id")) {
         Session.set("group_id", group._id)
 
-        Share.setAsMaster(group._id)
-        this.setState({ go: group.activity })
+        Share.joinGroup(group._id, true) // as master
+        this.setState({ go: group.view })
         this.hideSplash()
 
         return false
@@ -194,7 +194,7 @@ export default class Connect extends Component {
         view: "Splash"
       , showSplash: + new Date()
       })
-      this._pollForCollections()
+      this.connectToMongoDB()
 
     } else if (!this.views[view] ) {
       // Move back up the hierarchy
@@ -218,6 +218,7 @@ export default class Connect extends Component {
     if (teacher) {
       Session.set("teacher_id", teacher.id)
       Session.set("native",     teacher.language)
+      Session.set("language",   teacher.language)
       Session.set("role",       "teacher")
 
     } else if (keys.length) {
