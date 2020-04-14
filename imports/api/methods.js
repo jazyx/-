@@ -293,7 +293,7 @@ export const setView = {
 , run(setViewData) {
     const { group_id: _id, view } = setViewData
     const query = { _id }
-    const set   = { $set: { activity } }
+    const set   = { $set: { view } }
     collections["Groups"].update(query, set)
 
     // console.log(

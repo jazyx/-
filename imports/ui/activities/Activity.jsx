@@ -5,7 +5,6 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
-import Share from '../../tools/share'
 import { localize
        , getElementIndex } from '../../tools/utilities'
 import { setView } from '../../api/methods'
@@ -30,8 +29,6 @@ class Activity extends Component {
     this.scrollIntoView = this.scrollIntoView.bind(this)
 
     this.scrollTo = React.createRef()
-
-    Share.setView("Activity")
 
     // Allow Enter to accept the default/current language
     document.addEventListener("keydown", this.goActivity, false)
@@ -100,7 +97,7 @@ class Activity extends Component {
     const prompt = localize("activities", code, this.props.phrases)
 
     return <StyledPrompt
-      units={this.props.units}
+      u={this.props.u}
     >
       {prompt}
     </StyledPrompt>
@@ -124,13 +121,13 @@ class Activity extends Component {
         disabled={disabled}
         selected={selected}
         onMouseUp={this.selectActivity}
-        units={this.props.units}
+        u={this.props.u}
       >
         <p>{name}</p>
       </StyledActivity>
     })
     return <StyledActivities
-      units={this.props.units}
+      u={this.props.u}
     >
       {activities}
     </StyledActivities>
@@ -147,7 +144,7 @@ class Activity extends Component {
     }
 
     return <StyledDescription
-      units={this.props.units}
+      u={this.props.u}
     >
       {description}
     </StyledDescription>
@@ -162,7 +159,7 @@ class Activity extends Component {
    return <StyledButton
       disabled={disabled}
       onMouseUp={this.goActivity}
-      units={this.props.units}
+      u={this.props.u}
     >
       {prompt}
     </StyledButton>
@@ -170,8 +167,6 @@ class Activity extends Component {
 
 
   render() {
-    console.log(JSON.stringify(this.props.units))
-
     const prompt = this.getPrompt()
     const activities = this.getActivities()
     const description = this.getDescription()
@@ -179,7 +174,7 @@ class Activity extends Component {
 
     return <StyledProfile
       id="activities"
-      units={this.props.units}
+      u={this.props.u}
     >
       {prompt}
       {activities}

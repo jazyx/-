@@ -8,7 +8,6 @@ import collections from '../../api/collections'
 import { localize
        , getElementIndex
        } from '../../tools/utilities'
-import Share from '../../tools/share'
 import { log } from '../../api/methods'
 
 import { StyledProfile
@@ -27,6 +26,8 @@ class Teach extends Component {
   constructor(props) {
     super(props)
 
+    // Allow the teacher to view the Teach view optimally as master
+    Session.set("isMaster", true)
     this.state = { selected: -1 }
 
     this.scrollTo = React.createRef()
@@ -56,10 +57,10 @@ class Teach extends Component {
       return
     }
 
-    const group_id = this.props.groups[this.state.selected]._id
-    Session.set("group_id", group_id) // Belt and braces
-    Share.joinGroup(group_id, false) // not as master
-    this.props.setView("ShareScreen")
+    const group = this.props.groups[this.state.selected]
+    const { _id, view } = group
+    Session.set("group_id", _id)
+    this.props.setView(view)
   }
 
 

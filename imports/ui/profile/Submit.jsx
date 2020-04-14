@@ -6,7 +6,6 @@ import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
 import Storage from '../../tools/storage'
-import Share from '../../tools/share'
 import { localize } from '../../tools/utilities'
 import { createNovice
        , log
@@ -46,6 +45,10 @@ class Submit extends Component {
       save = error // cannot be localized
       console.log(error)
 
+      // Will it be possible to continue? We know that the database
+      // was accessible on startup, so perhaps all the necessary data
+      // is already available locally.
+
     } else {
       this.noviceData.user_id = user_id
       saved = true
@@ -66,14 +69,14 @@ class Submit extends Component {
 
     Session.set("user_id", user_id)
     Session.set("group_id", group_id)
-    Share.joinGroup(group_id, true) // as master
+    Session.set("isMaster", true)
 
     // Show the save message...
     this.setState({ save })
 
     // ... for just long enough
     setTimeout(
-      () => this.props.setView("ShareScreen")
+      () => this.props.setView("Activity")
     , this.delay
     )
   }

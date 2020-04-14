@@ -1,5 +1,5 @@
 /**
- * import/ui/connect/Styles.jsx
+ * import/ui/profile/Styles.jsx
  *
  */
 

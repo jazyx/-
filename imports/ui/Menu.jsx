@@ -5,7 +5,6 @@ import styled, { css } from 'styled-components'
 import { Session } from 'meteor/session'
 
 import Storage from '../tools/storage'
-import Share from '../tools/share'
 import { log } from '../api/methods.js';
 
 

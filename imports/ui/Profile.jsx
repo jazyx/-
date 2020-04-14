@@ -3,19 +3,18 @@ import React, { Component } from 'react'
 
 import { Session } from 'meteor/session'
 
-import Splash   from './connect/Splash.jsx'
-import Native   from './connect/Native.jsx'
-import Name     from './connect/Name.jsx'
-import Teacher  from './connect/Teacher.jsx'
-import Submit   from './connect/Submit.jsx'
-import Teach    from './connect/Teach.jsx'
-import TimeOut  from './connect/TimeOut.jsx'
+import Splash   from './profile/Splash.jsx'
+import Native   from './profile/Native.jsx'
+import Name     from './profile/Name.jsx'
+import Teacher  from './profile/Teacher.jsx'
+import Submit   from './profile/Submit.jsx'
+import Teach    from './profile/Teach.jsx'
+import TimeOut  from './profile/TimeOut.jsx'
 
-import Language from './connect/Language.jsx' // to be used later
+import Language from './profile/Language.jsx' // to be used later
 
 import collections from '../api/collections'
 import Storage from '../tools/storage'
-import Share from '../tools/share'
 
 import { log
        , reGroup
@@ -24,7 +23,8 @@ import { removeFrom } from '../tools/utilities'
 
 
 
-export default class Connect extends Component {
+
+export default class Profile extends Component {
   constructor(props) {
     super(props)
 
@@ -157,9 +157,8 @@ export default class Connect extends Component {
     groups.every(group=> {
       if (group.master === Session.get("user_id")) {
         Session.set("group_id", group._id)
-
-        Share.joinGroup(group._id, true) // as master
-        this.setState({ go: "ShareScreen" })
+        Session.set("isMaster", true)
+        this.setState({ go: "Activity" })
         this.hideSplash()
 
         return false

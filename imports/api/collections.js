@@ -1,21 +1,32 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
 
-
-
-const collections = {
-  L10n:       new Mongo.Collection('l10n')
-, Users:      new Mongo.Collection('users')
-, Groups:     new Mongo.Collection('groups')
-, Teachers:   new Mongo.Collection('teachers')
-, Activities: new Mongo.Collection('activities')
+// Export collections individually: import { Name } from '...'
+export const L10n       = new Mongo.Collection('l10n')
+export const Chat       = new Mongo.Collection('chat')
+export const Users      = new Mongo.Collection('users')
+export const Groups     = new Mongo.Collection('groups')
+export const Teachers   = new Mongo.Collection('teachers')
+export const Activities = new Mongo.Collection('activities')
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
-, Drag:       new Mongo.Collection('drag')
+export const Drag       = new Mongo.Collection('drag')
+
+// Export a collections map: import arbitraryName from '...'
+const collections = {
+  L10n
+, Chat
+, Users
+, Groups
+, Teachers
+, Activities
+
+, Drag
 }
 
 const publishQueries = {
   L10n:       {}
+, Chat:       {}
 , Users:      {}
 , Groups:     {}
 , Teachers:   { $or: [
@@ -42,15 +53,8 @@ if (Meteor.isServer) {
 
     name = collection._name // name.toLowerCase()
 
-    // console.log(name, collection.find().count())
-
     Meteor.publish(name, () => {
       const items = collection.find(query)
-
-      // console.log(
-      //   "Request for", collection._name, query
-      // , items.count(), "items served"
-      // )
 
       return items
     })
