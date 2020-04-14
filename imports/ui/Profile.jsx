@@ -158,7 +158,8 @@ export default class Profile extends Component {
       if (group.master === Session.get("user_id")) {
         Session.set("group_id", group._id)
         Session.set("isMaster", true)
-        this.setState({ go: "Activity" })
+        const go = group.view
+        this.setState({ go })
         this.hideSplash()
 
         return false

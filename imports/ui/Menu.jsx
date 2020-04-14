@@ -11,11 +11,11 @@ import { log } from '../api/methods.js';
 
 
 const StyledMenu = styled.div`
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 25vmin;
-  height: 100vh;
+  width: calc(25 * var(--min));
+  height: calc(100 * var(--h));
   background-color: #fff;
   opacity: 0.05;
 
@@ -52,6 +52,8 @@ export default class Menu extends Component {
       return ""
     }
 
-    return <StyledMenu />
+    return <StyledMenu
+      id="menu"
+    />
   }
 }

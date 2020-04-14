@@ -17,7 +17,7 @@ class Chat extends Component {
 
   render() {
     return <div
-      id="pointers"
+      id="chat"
     >
     </div>
   }

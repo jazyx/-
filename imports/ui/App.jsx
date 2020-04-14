@@ -57,7 +57,7 @@ export class App extends Component {
 
     this.state = { view: "Profile" }
 
-    this.setSize = this.setSize.bind(this)
+    this.setAspectRatio = this.setAspectRatio.bind(this)
     this.setView = this.setView.bind(this)
   }
 
@@ -65,8 +65,8 @@ export class App extends Component {
   /** Called by the setViewSize method of the Share component
    *  on initialization and when the window resizes
    */
-  setSize(units) {
-    this.setState({ units })
+  setAspectRatio(aspectRatio) {
+    this.setState({ aspectRatio })
   }
 
 
@@ -85,34 +85,28 @@ export class App extends Component {
     // this.state.units to be set, so the first render will have no
     // content
 
-    if (!this.state.units) {
+    if (this.state.aspectRatio === undefined) {
       // This is cheeky. this.setSize() will be called from the Share
       // instance constructor, which is technically during this
       // render operation, and it calls this.setState(). We may need
       // to debounce it.
-      return <Share setSize={this.setSize} />
+      return <Share setAspectRatio={this.setAspectRatio} />
     }
 
     const View = this.views[this.state.view]
-    const u = {
-      h: 1
-    , v: 1
-    , min: 1
-    , max: 1
-    , wide: 1
-    } //this.state.units
+    const aspectRatio = this.state.aspectRatio
 
     return <Share
-      setSize={this.setSize}
+      setAspectRatio={this.setAspectRatio}
     >
       <View
         setView={this.setView}
-        u={u}
+        aspectRatio={aspectRatio}
       />
       <Menu
         hide={this.state.view === "Profile"}
         setView={this.setView}
-        u={u}
+        aspectRatio={aspectRatio}
       />
       <Pointers />
       <Chat />

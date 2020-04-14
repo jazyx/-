@@ -8,6 +8,10 @@ div#wrapper {
 
 div#react-target{
   overflow: hidden; /* Needed to place drag game images correctly */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 body {

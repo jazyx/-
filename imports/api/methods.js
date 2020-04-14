@@ -94,6 +94,7 @@ export const createNovice = {
       user_ids: { $elemMatch: { $eq: user_id } }
     , teacher_id: noviceData.teacher
     }
+    const view = "Activity"
 
     let group_id
     existing = Groups.findOne(group)
@@ -102,17 +103,21 @@ export const createNovice = {
       group.user_ids = [ user_id ]
       group.master = user_id
       group.loggedIn = [ user_id ]
+      group.view = view
       group_id = Groups.insert(group)
 
     } else {
       // A group was found, so join it now
       const _id = group_id = existing._id
-      const push = { $push: { loggedIn: user_id } }
+      const updates = {
+        $set: { view }
+      , $push: { loggedIn: user_id }
+      }
 
-      Groups.update({ _id }, push)
+      Groups.update({ _id }, updates )
     }
 
-    return { user_id, group_id }
+    return { user_id, group_id, view }
   }
 
   /** Call Method by referencing the JS object

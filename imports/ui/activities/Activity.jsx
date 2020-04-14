@@ -97,7 +97,7 @@ class Activity extends Component {
     const prompt = localize("activities", code, this.props.phrases)
 
     return <StyledPrompt
-      u={this.props.u}
+      aspectRatio={this.props.aspectRatio}
     >
       {prompt}
     </StyledPrompt>
@@ -121,13 +121,14 @@ class Activity extends Component {
         disabled={disabled}
         selected={selected}
         onMouseUp={this.selectActivity}
-        u={this.props.u}
+        aspectRatio={this.props.aspectRatio}
       >
         <p>{name}</p>
       </StyledActivity>
     })
     return <StyledActivities
-      u={this.props.u}
+      id="activity-list"
+      aspectRatio={this.props.aspectRatio}
     >
       {activities}
     </StyledActivities>
@@ -144,7 +145,7 @@ class Activity extends Component {
     }
 
     return <StyledDescription
-      u={this.props.u}
+      aspectRatio={this.props.aspectRatio}
     >
       {description}
     </StyledDescription>
@@ -159,7 +160,7 @@ class Activity extends Component {
    return <StyledButton
       disabled={disabled}
       onMouseUp={this.goActivity}
-      u={this.props.u}
+      aspectRatio={this.props.aspectRatio}
     >
       {prompt}
     </StyledButton>
@@ -174,7 +175,7 @@ class Activity extends Component {
 
     return <StyledProfile
       id="activities"
-      u={this.props.u}
+      aspectRatio={this.props.aspectRatio}
     >
       {prompt}
       {activities}

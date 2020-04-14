@@ -39,7 +39,7 @@ class Submit extends Component {
   callback(error, data) {
     let save = "save_failed"
     let saved = false
-    const { user_id, group_id } = data || {}
+    const { user_id, group_id, view } = data || {}
 
     if (error) {
       save = error // cannot be localized
@@ -67,16 +67,17 @@ class Submit extends Component {
       save = "stored_only"
     }
 
-    Session.set("user_id", user_id)
+    Session.set("user_id",  user_id)
     Session.set("group_id", group_id)
     Session.set("isMaster", true)
+    Session.set("view",     view) // not used?
 
     // Show the save message...
     this.setState({ save })
 
     // ... for just long enough
     setTimeout(
-      () => this.props.setView("Activity")
+      () => this.props.setView(view)
     , this.delay
     )
   }

@@ -26,8 +26,6 @@ class Teach extends Component {
   constructor(props) {
     super(props)
 
-    // Allow the teacher to view the Teach view optimally as master
-    Session.set("isMaster", true)
     this.state = { selected: -1 }
 
     this.scrollTo = React.createRef()
@@ -224,6 +222,7 @@ export default withTracker(() => {
     user_ids: 1
   , master: 1
   , loggedIn: 1
+  , view: 1
   }
   // console.log(
   //   "db.groups.find("
