@@ -1,21 +1,21 @@
 /**
  * imports/ui/Share.jsx
- * 
+ *
  * The Share component provides a wrapper div for the whole interface.
  * Users who are teachers will, by design, join each group as a slave
  * so that their student can use their entire screen estate.
- * 
- * In one-on-one sessions, the student will always be master. In 
+ *
+ * In one-on-one sessions, the student will always be master. In
  * group lessons, only one student will be master. There will always
  * be a master in every group. In a many-student group, a master will
  * be chosen from those logged on when the teacher starts the group.
- * If that student leaves, mastery will be transferred to another 
+ * If that student leaves, mastery will be transferred to another
  * student, or the group will be disolved. If a student changes groups
  * their status as master may change.
- * 
- * This script is designed to share the view dimensions of the 
+ *
+ * This script is designed to share the view dimensions of the
  * device which is master. This may happen in three ways:
- * 
+ *
  * 1. When the master first arrives
  * 2. If the master changes (the user may stop being master)
  * 3. If the current master alters the size of their browser window
@@ -47,8 +47,8 @@ class Share extends Component {
     super(props)
 
     this.setViewSize = this.setViewSize.bind(this)
-    this.setMaster   = this.setMaster.bind(this)
-    this.getMaster   = this.getMaster.bind(this)
+    // this.setMaster   = this.setMaster.bind(this)
+    // this.getMaster   = this.getMaster.bind(this)
 
     // When the local window is resized one of two things should
     // happen:
@@ -61,51 +61,56 @@ class Share extends Component {
     // When the master changes, one of two things should happen:
     // 1. If this user becomes master, this device should update the
     //    viewSize for the group
-    // 2. If this user stops being master, this device should stop 
+    // 2. If this user stops being master, this device should stop
     //    telling slaves to update if the view size changes
     // 0. If the master moves from one remote device to another,
     //    nothing needs to be done.
-    this.master = ""
-    this.isMaster = true // until otherwise proven
-    this.masterDependency = new Tracker.Dependency
-    this.trackMaster = Tracker.autorun(() => this.setViewSize)
-    
+    // this.master = ""
+    // this.isMaster = false // until otherwise proven
+    // this.masterDependency = new Tracker.Dependency
+    // this.trackMaster = Tracker.autorun(() => {
+    //   console.log("tracker")
+    //   this.setViewSize
+    // })
+
     // Initialize the view according to the current knowledge of who
     // is master
     this.setViewSize()
+    this.dontReview = true
   }
 
 
-  setMaster(master) {
-    if (this.master === master) {
-      // The master hasn't changed
-      return
-    }
+  // setMaster(master) {
+  //   console.log("setMaster:", master)
+  //   if (this.master === master) {
+  //     // The master hasn't changed
+  //     return
+  //   }
 
-    this.master = master
-    const nowMaster = [this.master,master].indexOf(this.props.user_id)
-    // -1 : still not master
-    //  0 : was master but is no longer
-    //  1 : has just become master
-    
-    if (nowMaster < 0) {
-      // The master status of this user has not changed
-      return
-    }
+  //   this.master = master
+  //   const nowMaster = [this.master,master].indexOf(this.props.user_id)
+  //   // -1 : still not master
+  //   //  0 : was master but is no longer
+  //   //  1 : has just become master
 
-    this.isMaster = !!nowMaster
-    this.masterDependency.changed()
-  }
+  //   if (nowMaster < 0) {
+  //     // The master status of this user has not changed
+  //     return
+  //   }
+
+  //   this.isMaster = !!nowMaster
+  //   this.masterDependency.changed()
+  // }
 
 
-  getMaster() {
-    this.masterDependency.depend()
-    return this.master
-  }
+  // getMaster() {
+  //   this.masterDependency.depend()
+  //   return this.master
+  // }
 
 
   setViewSize() {
-    // Before user has logged in, Session will be empty, 
+    // Before user has logged in, Session will be empty,
     // this.props.viewSize will be (by default) the local body size
     // and this.isMaster will be true (even for teachers)
     const data     = getViewSize()
@@ -149,11 +154,24 @@ class Share extends Component {
     , max: Math.max(v, h)
     , wide: v > h
     }
+
+    // This component is only re-rendered if the State of the parent
+    // App are changed, in which case. the rerenders can happen many
+    // times a second.
+
+    if (this.dontReview) {
+      return
+    }
     this.props.setSize(units)
   }
 
 
   render() {
+    console.log(
+      "rendering"
+    , Math.floor((new Date()%10000000)/1000)
+    , this.props)
+
     const style = {
       display: "flex"
     , justifyContent: "center"
@@ -178,21 +196,34 @@ export default withTracker(() => {
   let viewSize   = getViewSize()
   let master     = ""
 
+  // Accessing reactive Session variables ensures that the Share
+  // component is re-rendered if one of the values changes. All the
+  // Session variables below start as undefined, and only change later
+  // if a student user switches groups. so Share is usually only
+  // re-rendered just after login... or if the view size changes.
+
+  // user_id never changes once set, never set for a teacher
+  const user_id  = Session.get("user_id")
+
+  // group_id changes if the user changes teacher or joins a bigger
+  // group
   const _id      = Session.get("group_id")
-  const user_id  = Session.get("user_id") // undefined for a teacher
 
-  if (_id) {
-    const group_data = Groups.findOne({ _id })
+  // isMaster only changes in bigger groups
+  const isMaster = Session.get("isMaster") // false for a teacher
 
-    if (group_data) {
-      master = group_data.master // may be undefined
+  // if (_id) {
+  //   const group_data = Groups.findOne({ _id })
 
-      if (group_data.viewSize) {
-        // Use the size defined by the group's master if it exists
-        viewSize = group_data.viewSize
-      }
-    }
-  }
+  //   if (group_data) {
+  //     master = group_data.master // may be undefined
 
-  return { viewSize, master, user_id }
+  //     if (group_data.viewSize) {
+  //       // Use the size defined by the group's master if it exists
+  //       viewSize = group_data.viewSize
+  //     }
+  //   }
+  // }
+
+  return { viewSize, master }//, user_id }
 })(Share)
