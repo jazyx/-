@@ -44,6 +44,15 @@ import Drag from './activities/Drag.jsx';
 import Mimo from './activities/Mimo.jsx';
 
 
+
+// Disable the context menu. Everywhere.
+document.body.addEventListener("contextmenu", (event) => {
+  // event.preventDefault()
+  return false
+}, false)
+
+
+
 export class App extends Component {
   constructor(props) {
     super(props)

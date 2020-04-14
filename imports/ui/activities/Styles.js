@@ -38,7 +38,7 @@ export const StyledPrompt = styled.h1`
 
 export const StyledActivities = styled.ul`
   list-style-type: none;
-  width: calc(100 * var(--v));
+  width: calc(100 * var(--w));
   margin: 0;
   padding: 0;
   text-align: center;
@@ -49,7 +49,7 @@ export const StyledActivities = styled.ul`
               height: calc(50 * var(--h));
              `
            : ""
-  }}
+  }
 `
 
 export const StyledDescription = styled.p`
@@ -65,8 +65,8 @@ export const StyledDescription = styled.p`
 
 export const StyledActivity = styled.li`
   position: relative;
-  width: calc(50 * var(--v) - 10px);
-  height: calc(50 * var(--v) - 10px);
+  width: calc(50 * var(--w) - 10px);
+  height: calc(50 * var(--w) - 10px);
 
   background-image: url(${props => props.src});
   background-size: cover;
@@ -82,7 +82,7 @@ export const StyledActivity = styled.li`
            : props.selected
              ? `opacity: 1`
              : `opacity: 0.6667`
-   };
+   }
   & p {
     position: absolute;
     background: rgba(0,0,0,0.25);
@@ -97,7 +97,7 @@ export const StyledActivity = styled.li`
   ${props => (props.aspectRatio > 1)
            ? ""
            : `float: left;`
-  }}
+  }
 
   ${props => (props.aspectRatio > 1)
            ? `width: calc(50 * var(--h) - 20px);
@@ -114,7 +114,7 @@ export const StyledButton = styled.button`
   border-radius: 10vh;
   padding: 0.1em 1em;
   color: #fff;
-  height: calc(16 * var(--v));
+  height: calc(16 * var(--w));
   width: calc(70 * var(--min));
   font-size: calc(5.25 * var(--min));
   ${props => props.disabled
@@ -131,5 +131,5 @@ export const StyledButton = styled.button`
   ${props => (props.aspectRatio > 1)
            ? `height: calc(15 * var(--h));`
            : ""
-  }}
+  }
 `

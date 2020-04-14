@@ -17,10 +17,20 @@ import { shuffle
 import Sampler from '../../tools/sampler'
 
 
+const StyledGame = styled.div`
+  width: calc(100 * var(--w));
+  height: calc(100 * var(--h));
+  display: flex;
+  flex-direction: column;
+  justify-contents: space-between;
+`
+
+const StyledFrameSet = styled.div`
+`
 
 const StyledFrame = styled.div`
-  width: 50vw;
-  height: 29vh;
+  width: calc(50 * var(--w));
+  height: calc(29 * var(--h));
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -28,48 +38,59 @@ const StyledFrame = styled.div`
   float: left;
   background: #fff;
 
-  @media (min-aspect-ratio: 3/5) {
-    height: 42vh;
+  ${props => (props.aspectRatio > 3/5)
+   ? `height: calc(42 * var(--h));
 
-    &:nth-child(5), &:nth-child(6) {
-      display: none;
-    }
-  }
+      &:nth-child(5), &:nth-child(6) {
+        display: none;
+      }
+     `
+   : ""
+   }
 
-  @media (min-aspect-ratio: 5/4) {
-    width: 33.3333vw;
+  ${props => (props.aspectRatio > 5/4)
+   ? `width: calc(33.3333 * var(--w));
 
-    &:nth-child(5), &:nth-child(6) {
-      display: flex;
-    }
-  }
+      &:nth-child(5), &:nth-child(6) {
+        display: flex;
+      }
+     `
+   : ""
+   }
 
-  @media (min-aspect-ratio: 3/2) {
-    width: 33.3333vw;
-    height: 88vh;
+  ${props => (props.aspectRatio > 3/2)
+   ? `width: calc(33.3333 * var(--w));
+      height: calc(88 * var(--h));
 
-    &:nth-child(4), &:nth-child(5), &:nth-child(6) {
-      display: none;
-    }
+      &:nth-child(4), &:nth-child(5), &:nth-child(6) {
+        display: none;
+      }
+     `
+   : ""
   }
 `
 
 const StyledSquare = styled.div`
-  width: 48vw;
-  height: 48vw;
-  margin: 1vw 0 0;
+  width: calc(48 * var(--w));
+  height: calc(48 * var(--w));
+  margin: calc(1 * var(--w)) 0 0;
   background: url(${props => props.src});
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
 
-  @media (min-aspect-ratio: 3/5) {
-    height: 36vh;
+  ${props => (props.aspectRatio > 3/5)
+   ? `height: calc(36 * var(--h));
+     `
+   : ""
   }
 
-  @media (min-aspect-ratio: 3/2) {
-    width: 32vw;
-    height: 66.66667vh;
+  ${props => (props.aspectRatio > 3/2)
+   ? `width: calc(32 * var(--w));
+      height: calc(66.66667 * var(--h));
+
+     `
+   : ""
   }
 `
 
@@ -80,7 +101,7 @@ const StyledName = styled.p`
   text-align: center;
   box-sizing: border-box;
 
-  font-size: 2vh;
+  font-size: calc(2 * var(--h));
   margin: 0.15em 0 0;
   ${props => props.show
            ? `border: none;
@@ -90,21 +111,25 @@ const StyledName = styled.p`
            : `border: 0.05em dashed #999;
               color: #fff;
              `
-  };
+  }
 
   /// 2 x 2 LAYOUT ///
-  @media (min-aspect-ratio: 3/5) {
-    font-size: 2.5vh;
+  ${props => (props.aspectRatio > 3/5)
+   ? `font-size: calc(2.5 * var(--h));
+     `
+   : ""
   }
 
   /// 3 x 1 LAYOUT ///
-  @media (min-aspect-ratio: 3/2) {
-    font-size: 4.2vh;
+  ${props => (props.aspectRatio > 3/2)
+   ? `font-size: calc(4.2 * var(--h));
+     `
+   : ""
   }
 `
 
 const StyledNames = styled.div`
-  position: fixed;
+  position: absolute;
   bottom: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -113,51 +138,58 @@ const StyledNames = styled.div`
   grid-row-gap: 0px;
   width: 100%;
   text-align: center;
-  font-size: 2vh;
+  font-size: calc(2 * var(--h));
 
   /// 2 x 2 LAYOUT ///
-  @media (min-aspect-ratio: 3/5) {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    font-size: 2.5vh;
+  ${props => (props.aspectRatio > 3/5)
+   ? `grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      font-size: calc(2.5 * var(--h));
 
-    & p:nth-child(1), & p:nth-child(2) {
-      grid-row-start: 1;
-    }
+      & p:nth-child(1), & p:nth-child(2) {
+        grid-row-start: 1;
+      }
 
-    & p:nth-child(3), & p:nth-child(4) {
-      grid-row-start: 2;
-    }
+      & p:nth-child(3), & p:nth-child(4) {
+        grid-row-start: 2;
+      }
 
-    & p:nth-child(5), & p:nth-child(6) {
-      display: none;
-    }
+      & p:nth-child(5), & p:nth-child(6) {
+        display: none;
+      }
+     `
+   : ""
   }
 
   /// 3 x 2 LAYOUT ///
-  @media (min-aspect-ratio: 5/4) {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+  ${props => (props.aspectRatio > 5/4)
+   ? `grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
 
-    & p:nth-child(5), & p:nth-child(6) {
-      display: block;
-    }
+      & p:nth-child(5), & p:nth-child(6) {
+        display: block;
+      }
+     `
+   : ""
   }
 
+
   /// 3 x 1 LAYOUT ///
-  @media (min-aspect-ratio: 3/2) {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(1, 1fr);
-    font-size: 4.2vh;
+  ${props => (props.aspectRatio > 3/2)
+   ? `grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(1, 1fr);
+      font-size: calc(4.2 * var(--h));
 
-    & p:nth-child(4), & p:nth-child(5), & p:nth-child(6) {
-      display: none;
-    }
+      & p:nth-child(4), & p:nth-child(5), & p:nth-child(6) {
+        display: none;
+      }
 
-    & p:nth-child(1), & p:nth-child(2), & p:nth-child(3) {
-      display: block;
-      grid-row-start: 1;
-    }
+      & p:nth-child(1), & p:nth-child(2), & p:nth-child(3) {
+        display: block;
+        grid-row-start: 1;
+      }
+     `
+   : ""
   }
 `
 
@@ -195,14 +227,14 @@ const StyledMask = styled.div`
   transition: opacity 3s;
 
   & h1 {
-    font-size: 12vw;
+    font-size: calc(12 * var(--w));
     text-align: center;
     color: #fff;
   }
 
   & button {
     cursor: pointer;
-    font-size: 5vw;
+    font-size: calc(5 * var(--w));
     padding: 0.25em;
     border: 0.25em outset;
     border-radius: 0.25em;
@@ -231,27 +263,22 @@ class Drag extends Component {
     })
     const { layouts, show } = this._newDeal(true)
 
+    this.dropTarget = React.createRef()
+    this.gameFrame  = React.createRef()
+
     this.state = {
       layouts
     , show
-    , count: this._itemCount()
+    , count: 0
     , turn: 0
     , mask: 0
     }
-
-    this.dropTarget = React.createRef()
 
     this._startDrag = this._startDrag.bind(this)
     this._newDeal = this._newDeal.bind(this)
     this._fadeMask = this._fadeMask.bind(this)
     this.resize = this.resize.bind(this)
     window.addEventListener("resize", this.resize, false)
-
-    // Disable the context menu
-    document.body.addEventListener("contextmenu", (event) => {
-      // event.preventDefault()
-      return false
-    }, false)
   }
 
 
@@ -309,9 +336,14 @@ class Drag extends Component {
 
 
   _itemCount() {
-    const rect = document.body.getBoundingClientRect()
-    const ratio = rect.width / rect.height
+    const gameFrame = this.gameFrame.current
+    if (!gameFrame) {
+      return 0
+    }
+
     let count = 3
+    const rect = gameFrame.getBoundingClientRect()
+    const ratio = rect.width / rect.height
 
     if (ratio < 3/5) {
       count = 6
@@ -427,22 +459,29 @@ class Drag extends Component {
         key={"frame"+index}
         ref={ref}
         className={className}
+        aspectRatio={this.props.aspectRatio}
       >
         <StyledSquare
           key={item}
           src={src}
+          aspectRatio={this.props.aspectRatio}
         />
         <StyledName
           className="can-select"
           show={show}
           key={hint}
+          aspectRatio={this.props.aspectRatio}
         >
           {hint}
         </StyledName>
       </StyledFrame>
     })
 
-    return frames
+    return <StyledFrameSet
+      aspectRatio={this.props.aspectRatio}
+    >
+      {frames}
+    </StyledFrameSet>
   }
 
 
@@ -453,6 +492,7 @@ class Drag extends Component {
       return <StyledDraggable
         key={index+"-"+name}
         show={show}
+        aspectRatio={this.props.aspectRatio}
       >
         {name}
       </StyledDraggable>
@@ -475,6 +515,7 @@ class Drag extends Component {
 
       return <StyledMask
         opacity={this.state.mask}
+        aspectRatio={this.props.aspectRatio}
       >
         <h1>Congratulations!</h1>
         <button
@@ -491,23 +532,41 @@ class Drag extends Component {
 
 
   render() {
+    if (!this.state.count) {
+      // Force the gameFrame ref to become something
+      return <StyledGame
+        ref={this.gameFrame}
+      />
+    }
+
     const layout = this.state.layouts[this.state.count]
     const frames = this._getFrames(layout)
     const names = this._getNames(layout)
     const newGame = this._newGame()
+    const aspectRatio = this.props.aspectRatio
 
     return (
-      <div id="game-layout">
+      <StyledGame
+        id="game-layout"
+        aspectRatio={aspectRatio}
+        ref={this.gameFrame}
+      >
         {frames}
         <StyledNames
           onMouseDown={this._startDrag}
           onTouchStart={this._startDrag}
+          aspectRatio={aspectRatio}
         >
           {names}
         </StyledNames>
         {newGame}
-      </div>
+      </StyledGame>
     )
+  }
+
+
+  componentDidMount() {
+    this.resize()
   }
 }
 

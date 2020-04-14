@@ -20,7 +20,7 @@
  * 2. If the master changes (this user may stop being master)
  * 3. If the current master alters the size of their browser window
  *    or flips orientation on their phone or tablet.
- *    
+ *
  * <Share /> is re-rendered if
  * • The window is resized, which changes App.state.aspectRatio and
  *   tells App to request a new render
@@ -78,38 +78,38 @@ class Share extends Component {
     const ratioH = height / viewSize.height
     const ratioW = width / viewSize.width
     let h
-      , v
+      , w
 
     if (ratioH > ratioW) {
       // Show view as wide as possible but reduce height
-      v = width / 100
+      w = width / 100
       h = height * ratioW / ratioH / 100
 
     } else {
       // Show view as tall as possible but reduce width
-      v = width * ratioH / ratioW / 100
+      w = width * ratioH / ratioW / 100
       h = height / 100
     }
 
     this.units = {
-      "--v":   v + "px"
+      "--w":   w + "px"
     , "--h":   h + "px"
-    , "--min": Math.min(v, h) + "px"
-    , "--max": Math.max(v, h) + "px"
+    , "--min": Math.min(w, h) + "px"
+    , "--max": Math.max(w, h) + "px"
     }
 
     // This component is only re-rendered if the State of the parent
     // App are changed, in which case. the rerenders can happen many
     // times a second. Besides, we need to provide the right
     // aspectRatio
-    
-    const aspectRatio = v / h
+
+    const aspectRatio = w / h
     const newMaster = this.props.isMaster && !this.isMaster
     this.isMaster = this.props.isMaster
 
     // Don't reset App's state.aspectRatio unnecessarily, or we get
     // an endless loop of renders
-    
+
     if (this.aspectRatio !== aspectRatio || newMaster) {
       this.aspectRatio = aspectRatio
       this.shareViewSizeIfMaster(localSize)
@@ -149,7 +149,7 @@ class Share extends Component {
   }
 
 
-  componentDidUpdate() { 
+  componentDidUpdate() {
     this.setViewSize()
   }
 }
