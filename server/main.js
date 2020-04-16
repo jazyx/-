@@ -103,6 +103,7 @@ class CollectJSON {
       }
     }
     const document = collection.findOne(versionQuery)
+    console.log("**",collection._name)
 
     if (document) {
       if (version <= document.version) {

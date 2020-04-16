@@ -83,7 +83,7 @@ class Language extends Component {
 
 export default withTracker(() => {
   const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name)
+  Meteor.subscribe(collection._name, "Mimo")
 
   const key         = "phrase"
   const phraseQuery = {

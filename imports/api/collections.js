@@ -9,6 +9,9 @@ export const Groups     = new Mongo.Collection('groups')
 export const Teachers   = new Mongo.Collection('teachers')
 export const Activities = new Mongo.Collection('activities')
 
+const connection    = null
+export const Points = new Meteor.Collection('points', {connection})
+
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
 export const Drag       = new Mongo.Collection('drag')
 
@@ -20,6 +23,7 @@ const collections = {
 , Groups
 , Teachers
 , Activities
+, Points
 
 , Drag
 }
@@ -35,6 +39,7 @@ const publishQueries = {
                 ]
               }
 , Activities: {}
+, Points:     {}
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
 , Drag:       { $or: [
@@ -45,7 +50,6 @@ const publishQueries = {
 }
 
 
-
 if (Meteor.isServer) {
   for (name in collections) {
     const query = publishQueries[name]
@@ -53,8 +57,24 @@ if (Meteor.isServer) {
 
     name = collection._name // name.toLowerCase()
 
-    Meteor.publish(name, () => {
-      const items = collection.find(query)
+    // The publication method is run each time a client subscribes to
+    // the named collection. The subscription may be made directly or
+    // through the /imports/api/methods.js script
+
+    Meteor.publish(name, function publication(caller, customQuery){
+      let items
+
+      if (customQuery) {
+        // Use the custom query, assuming it to be valid
+        console.log(
+          "Publishing", collection._name
+        , "for", caller, "with", customQuery
+        )
+        items = collection.find(customQuery)
+
+      } else {
+        items = collection.find(query)
+      }
 
       return items
     })

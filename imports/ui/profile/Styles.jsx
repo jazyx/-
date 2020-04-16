@@ -23,7 +23,8 @@ export const StyledProfile = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 100vh;
-  background-color: ${colours.background};
+  // background-color: ${colours.background};
+  // pointer-events: none;
 `
 
 export const StyledPrompt = styled.h1`
@@ -69,6 +70,7 @@ export const StyledTeacher = styled.li`
                     ? 1
                     : 0.3333
             };
+  cursor: pointer;
 
   & img {
     position: absolute;
@@ -107,6 +109,8 @@ export const StyledTeacher = styled.li`
 `
 
 export const StyledLI = styled.li`
+  cursor: pointer;
+  
   & img {
     width: 30vw;
     opacity: ${props => props.selected

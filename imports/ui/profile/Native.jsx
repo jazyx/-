@@ -22,6 +22,9 @@ import { StyledProfile
 class Native extends Component {
   constructor(props) {
     super(props)
+
+    console.log("Native", props)
+
     const codes = this.codes = this.props.flags.map(flag => flag.cue)
     const code  = Session.get("native") || this._getDefaultCode()
     const selected = codes.indexOf(code)
@@ -205,6 +208,10 @@ class Native extends Component {
 
     return <StyledProfile
       id="native-language"
+      onMouseUp={this.props.points}
+      onMouseDown={this.props.points}
+      onTouchStart={this.props.points}
+      onTouchEnd={this.props.points}
     >
       {prompt}
       {flags}
@@ -238,7 +245,7 @@ class Native extends Component {
 
 export default withTracker(() => {
   const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name)
+  Meteor.subscribe(collection._name, "Native")
 
   const key         = "phrase"
   const flagsQuery  = { $and: [

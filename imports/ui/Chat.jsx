@@ -27,7 +27,7 @@ class Chat extends Component {
 
 export default withTracker(() => {
   // const collection  = collections["Chat"]
-  // Meteor.subscribe(collection._name)
+  // Meteor.subscribe(collection._name, "Chat")
 
   const _id = Session.get("group_id")
   const query = { /* Get message data for this group and admin */ }

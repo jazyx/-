@@ -178,6 +178,10 @@ class Teacher extends Component {
 
     return <StyledProfile
       id="teacher"
+      onMouseUp={this.props.points}
+      onMouseDown={this.props.points}
+      onTouchStart={this.props.points}
+      onTouchEnd={this.props.points}
     >
       {prompt}
       {blocks}

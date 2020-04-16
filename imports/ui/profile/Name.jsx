@@ -117,6 +117,10 @@ class Name extends Component {
 
     return <StyledProfile
       id="user-name"
+      onMouseUp={this.props.points}
+      onMouseDown={this.props.points}
+      onTouchStart={this.props.points}
+      onTouchEnd={this.props.points}
     >
       {prompt}
       {input}

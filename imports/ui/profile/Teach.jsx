@@ -168,7 +168,11 @@ class Teach extends Component {
     const buttonBar = this.getButtonBar()
 
     return <StyledProfile
-      id="teacher"
+      id="teach"
+      onMouseUp={this.props.points}
+      onMouseDown={this.props.points}
+      onTouchStart={this.props.points}
+      onTouchEnd={this.props.points}
     >
       {prompt}
       {groups}

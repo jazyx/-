@@ -44,12 +44,62 @@
 import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
 
-import collections from '../api/collections'
+// Points is a collection with no matching MongoDB
+import collections, { Points } from '../api/collections'
+import { getUnused } from '../tools/utilities'
 
 if (Meteor.isClient) {
   for (let name in collections) {
-    Meteor.subscribe(collections[name]._name)
+    Meteor.subscribe(collections[name]._name, "methods")
   }
+}
+
+
+// Provide a different colour for each users pointer. Colours will be
+// maintained across sessions, but reset when the server is rebooteed.
+// TODO: Move this to a server-only collection.
+const colours = [
+  "#900"
+, "#960"
+, "#090"
+, "#099"
+, "#009"
+, "#909"
+// And recycle for now
+, "#999"
+, "#900"
+, "#960"
+, "#090"
+, "#099"
+, "#009"
+, "#909"
+, "#900"
+, "#960"
+, "#090"
+, "#099"
+, "#009"
+, "#909"
+]
+
+const group_colours = {}
+
+const getColour = (id, group_id) => {
+  // Use the same pointer colour from one session to the next
+  console.log("Current:", group_colours[group_id])
+  const usedColours = group_colours[group_id]
+                   || (group_colours[group_id] = {})
+  console.log("Used:", group_colours[group_id], usedColours)
+
+  const usedValues = Object.keys(usedColours).map(id => (
+    usedColours[id]
+  ))
+  console.log("Values:", usedValues, usedColours[id])
+  const colour = usedColours[id]
+              || (usedColours[id] = getUnused(colours, usedValues))
+  console.log(colour)
+  console.log(group_colours)
+
+  return colour
 }
 
 
@@ -323,6 +373,81 @@ export const setView = {
 
 
 
+/** Called by Points
+ */
+export const pointInsert = {
+  name: 'vdvoyom.pointInsert'
+
+, validate(pointInsertData) {
+    new SimpleSchema({
+      id:       { type: String }
+    , group_id: { type: String }
+    , x:        { type: Number }
+    , y:        { type: Number }
+    , active:   { type: Boolean }
+    }).validate(pointInsertData)
+  }
+
+, run(pointInsertData) {
+    const { id, group_id } = pointInsertData
+    pointInsertData.colour = getColour(id, group_id)
+
+    console.log(pointInsertData.colour)
+    console.log(" ")
+
+    Points.upsert({ id, group_id }, pointInsertData)
+  }
+
+, call(pointInsertData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    // if (Meteor.isServer) {
+      Meteor.apply(this.name, [pointInsertData], options, callback)
+    // }
+  }
+}
+
+
+
+export const pointUpdate = {
+  name: 'vdvoyom.pointUpdate'
+
+, validate(pointUpdateData) {
+    new SimpleSchema({
+      id:       { type: String }
+    , group_id: { type: String }
+    , x:        { type: Number }
+    , y:        { type: Number }
+    , active:   { type: Boolean }
+    }).validate(pointUpdateData)
+  }
+
+, run(pointUpdateData) {
+    const { id, group_id } = pointUpdateData
+    const query = { id, group_id }
+    const set   = { $set: pointUpdateData } // colour won't change
+    Points.update(query, set)
+  }
+
+, call(pointUpdateData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [pointUpdateData], options, callback)
+  }
+}
+
+
+
+
+
+
+
 // To register a new method with Meteor's DDP system, add it here
 const methods = [
   createNovice
@@ -330,6 +455,8 @@ const methods = [
 , reGroup
 , share
 , setView
+, pointInsert
+, pointUpdate
 ]
 
 methods.forEach(method => {

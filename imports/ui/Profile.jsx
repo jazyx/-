@@ -71,7 +71,7 @@ export default class Profile extends Component {
       const collection = collections[collectionName]
       // We could send (multiple) argument(s) to the server publisher
       const callback = () => this.ready(collectionName)
-      Meteor.subscribe(collection._name, callback)
+      Meteor.subscribe(collection._name, "Profile", callback)
     }
   }
 
@@ -327,6 +327,11 @@ export default class Profile extends Component {
   render() {
     const View = this.views[this.state.view]
 
-    return <View setView={this.setView} />
+    return "PROFILE"
+
+    return <View
+      setView={this.setView}
+      points={this.props.points}
+    />
   }
 }

@@ -80,8 +80,8 @@ export const StyledActivity = styled.li`
               cursor: default;
              `
            : props.selected
-             ? `opacity: 1`
-             : `opacity: 0.6667`
+             ? `opacity: 1;`
+             : `opacity: 0.6667;`
    }
   & p {
     position: absolute;

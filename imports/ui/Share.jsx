@@ -36,8 +36,9 @@ import { Session } from 'meteor/session'
 
 import { Groups } from '../api/collections'
 import { share } from '../api/methods'
+// const share = () => {}
 
-Meteor.subscribe(Groups._name)
+Meteor.subscribe(Groups._name, "Share", 17)
 
 
 const getViewSize = () => {
@@ -71,10 +72,13 @@ class Share extends Component {
     // this.props.viewSize will be (by default) the local body size
     // and this.isMaster will be true (even for teachers)
     const localSize = getViewSize()
-    const { width, height} = localSize
+    const { width, height } = localSize
     const viewSize = this.isMaster
                    ? localSize
-                   : this.props.viewSize // set by remote master
+                   : this.props.viewSize
+    // this.props.viewSize is set by remote master if active. If no
+    // remote master, is set locally and is identical to localSize
+
     const ratioH = height / viewSize.height
     const ratioW = width / viewSize.width
     let h
@@ -113,8 +117,16 @@ class Share extends Component {
     if (this.aspectRatio !== aspectRatio || newMaster) {
       this.aspectRatio = aspectRatio
       this.shareViewSizeIfMaster(localSize)
-      this.props.setAspectRatio(aspectRatio)
+
+      this.convertToLocalArea(localSize, h, w)
+      this.props.setViewSize(aspectRatio, localSize)
     }
+  }
+
+
+  convertToLocalArea(localSize, h, w) {
+    localSize.top = (localSize.height - h * 100) / 2
+    localSize.left = (localSize.width - w * 100) / 2
   }
 
 

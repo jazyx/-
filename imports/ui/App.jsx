@@ -17,9 +17,9 @@ import Share from './Share.jsx';
 import Menu from './Menu.jsx';
 
 // "<<< TODO
-// The Pointers view sits above Menu and the other Share'd content
+// The Points view sits above Menu and the other Share'd content
 // to display remote cursor and touch actions
-import Pointers from './Pointers.jsx'
+import Points from './Points.jsx'
 
 // The Chat overlay will slide out from the right. When it is hidden
 // incoming messages will be shown briefly in a semi-transparent layer
@@ -64,18 +64,12 @@ export class App extends Component {
     , Mimo
     }
 
+    this.share = React.createRef()
     this.state = { view: "Profile" }
 
-    this.setAspectRatio = this.setAspectRatio.bind(this)
+    this.storePointMethod = this.storePointMethod.bind(this)
+    this.setViewSize = this.setViewSize.bind(this)
     this.setView = this.setView.bind(this)
-  }
-
-
-  /** Called by the setViewSize method of the Share component
-   *  on initialization and when the window resizes
-   */
-  setAspectRatio(aspectRatio) {
-    this.setState({ aspectRatio })
   }
 
 
@@ -85,6 +79,23 @@ export class App extends Component {
       this.setState({ view })
     } else {
       console.log("Unknown view:", view)
+    }
+  }
+
+
+  /** Called by the setViewSize method of the Share component
+   *  on initialization and when the window resizes
+   */
+  setViewSize(aspectRatio, shareRect) {
+    this.setState({ aspectRatio, shareRect })
+    console.log("setViewSize — aspectRatio:", aspectRatio, "shareRect:", shareRect)
+  }
+
+
+  storePointMethod(pointsComponent) {
+    if (pointsComponent) {
+      this.pointMethod = pointsComponent.pointMethod
+      this.pointMethod({ type: "message", target: "App" })
     }
   }
 
@@ -99,26 +110,33 @@ export class App extends Component {
       // instance constructor, which is technically during this
       // render operation, and it calls this.setState(). We may need
       // to debounce it.
-      return <Share setAspectRatio={this.setAspectRatio} />
+      return <Share setViewSize={this.setViewSize} />
     }
 
     const View = this.views[this.state.view]
     const aspectRatio = this.state.aspectRatio
 
     return <Share
-      setAspectRatio={this.setAspectRatio}
+      rect={this.shareRect}
+      setViewSize={this.setViewSize}
     >
       <View
         setView={this.setView}
         aspectRatio={aspectRatio}
+        points={this.pointMethod}
       />
-      <Menu
-        hide={this.state.view === "Profile"}
-        setView={this.setView}
-        aspectRatio={aspectRatio}
-      />
-      <Pointers />
-      <Chat />
     </Share>
   }
 }
+
+
+      // <Menu
+      //   hide={this.state.view === "Profile"}
+      //   setView={this.setView}
+      //   aspectRatio={aspectRatio}
+      // />
+      // <Points
+      //   ref={this.storePointMethod}
+      //   rect={this.shareRect}
+      // />
+      // <Chat />

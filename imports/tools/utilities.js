@@ -199,6 +199,22 @@ export const getRandomFromArray = (array) => {
 
 
 
+export const getUnused = (source, used, tolerateDuplicates) => {
+  const unused = source.slice(0)
+  used.forEach(item => removeFrom(unused, item))
+  let item = getRandomFromArray(unused)
+
+  if (!item && tolerateDuplicates) {
+    // May return the same item multiple times,
+    // rather than creating a smooth spread
+    item = getRandomFromArray(source)
+  }
+
+  return item
+}
+
+
+
 /// MOUSE/TOUCH EVENT FUNCTIONS ///
 
 export const getPageXY = (event) => {
@@ -520,8 +536,8 @@ export const trimImage = (image) => {
 
   return trimmedImage
 }
-
-window.trimImage = trimImage
+// 
+// window.trimImage = trimImage
 
 
 
