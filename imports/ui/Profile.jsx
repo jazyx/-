@@ -71,7 +71,7 @@ export default class Profile extends Component {
       const collection = collections[collectionName]
       // We could send (multiple) argument(s) to the server publisher
       const callback = () => this.ready(collectionName)
-      Meteor.subscribe(collection._name, "Profile", callback)
+      Meteor.subscribe(collection._name, callback)
     }
   }
 
@@ -273,7 +273,7 @@ export default class Profile extends Component {
   _reJoinGroups() {
     // TODO: Integrate menu then remove the following 3 lines
     if (!window.location.pathname.startsWith("/*") ) {
-      console.log("Returning user:", Session.get("username"))
+      // console.log("Returning user:", Session.get("username"))
       this.setState({ go: "Native"} )
       return this.hideSplash()
     }
@@ -326,8 +326,6 @@ export default class Profile extends Component {
 
   render() {
     const View = this.views[this.state.view]
-
-    return "PROFILE"
 
     return <View
       setView={this.setView}

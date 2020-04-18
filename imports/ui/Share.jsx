@@ -38,7 +38,7 @@ import { Groups } from '../api/collections'
 import { share } from '../api/methods'
 // const share = () => {}
 
-Meteor.subscribe(Groups._name, "Share", 17)
+Meteor.subscribe(Groups._name) //, "Share")
 
 
 const getViewSize = () => {

@@ -9,8 +9,6 @@ export const Groups     = new Mongo.Collection('groups')
 export const Teachers   = new Mongo.Collection('teachers')
 export const Activities = new Mongo.Collection('activities')
 
-const connection    = null
-export const Points = new Meteor.Collection('points', {connection})
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
 export const Drag       = new Mongo.Collection('drag')
@@ -23,11 +21,13 @@ const collections = {
 , Groups
 , Teachers
 , Activities
-, Points
 
 , Drag
 }
 
+
+// Define the queries that will be used to publish these collections
+// in the standard way
 const publishQueries = {
   L10n:       {}
 , Chat:       {}
@@ -39,7 +39,6 @@ const publishQueries = {
                 ]
               }
 , Activities: {}
-, Points:     {}
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
 , Drag:       { $or: [
@@ -61,19 +60,17 @@ if (Meteor.isServer) {
     // the named collection. The subscription may be made directly or
     // through the /imports/api/methods.js script
 
-    Meteor.publish(name, function publication(caller, customQuery){
-      let items
+    Meteor.publish(name, function public(caller, ...more) {
+      let items = collection.find(query) // (customQuery || query)
 
-      if (customQuery) {
-        // Use the custom query, assuming it to be valid
+      if (typeof caller === "string") {
         console.log(
-          "Publishing", collection._name
-        , "for", caller, "with", customQuery
+          "Publishing", collection._name, "for", caller, ...more
         )
-        items = collection.find(customQuery)
-
-      } else {
-        items = collection.find(query)
+        console.log(
+          collection.findOne(query, { limit: 4 })
+        , collection.find(query).count()
+        )
       }
 
       return items

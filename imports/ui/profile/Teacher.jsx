@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import User from '../../api/User'
 import collections from '../../api/collections'
 import { localize
        , getElementIndex

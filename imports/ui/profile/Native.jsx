@@ -23,7 +23,7 @@ class Native extends Component {
   constructor(props) {
     super(props)
 
-    console.log("Native", props)
+    // console.log("Native", props)
 
     const codes = this.codes = this.props.flags.map(flag => flag.cue)
     const code  = Session.get("native") || this._getDefaultCode()
@@ -245,7 +245,7 @@ class Native extends Component {
 
 export default withTracker(() => {
   const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name, "Native")
+  Meteor.subscribe(collection._name) // , "Native", "in withTracker")
 
   const key         = "phrase"
   const flagsQuery  = { $and: [

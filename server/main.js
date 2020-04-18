@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
-import collections from '../imports/api/collections.js';
-import createNovice from '../imports/api/methods.js';
+import { Meteor } from 'meteor/meteor'
+import collections from '../imports/api/collections.js'
+import Points from '../imports/api/points'
 
 // Required by CollectJSON
 const fs = require('fs')
@@ -103,7 +103,7 @@ class CollectJSON {
       }
     }
     const document = collection.findOne(versionQuery)
-    console.log("**",collection._name)
+    // console.log("**",collection._name)
 
     if (document) {
       if (version <= document.version) {

@@ -9,6 +9,10 @@
 /// COLOUR FUNCTIONS //
 
 export const rgbify = (color) => {
+  if (color.substring(0, 3).toLowerCase() === "hsl" ) {
+    return HSLtoRGB(color)
+  }
+
   if (color[0] === "#") {
     color = color.slice(1)
   }
@@ -72,6 +76,103 @@ export const translucify = (color, opacity) => {
   return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`
 }
 
+
+// https://stackoverflow.com/a/20129594/1927589
+// https://qph.fs.quoracdn.net/main-qimg-aaa9a544d797f1109b29c55814319195.webp
+export const getColor = ({ number, s=0.5, l=0.33, format="hsl" }) => {
+  const h = number * 137.50776405 // ≈ golden angle: 180*(3-√5)
+
+  s = Math.max(0, Math.min(s, 1))
+  l = Math.max(0, Math.min(l, 1))
+
+  switch (format.toLowerCase()) {
+    case "rgb":
+      return hsl2rgb(h, s, l)
+
+    case "hex":
+      return hsl2hex(h, s * 100, l * 100)
+
+    default: // "hsl"
+      return `hsl(${h},${s*100}%,${l*100}%)`;
+  }
+}
+
+
+// https://stackoverflow.com/a/54014428/1927589
+// input: h in [0,360] and s,v in [0,1] - output: r,g,b in [0,1]
+export const hsl2rgb = (h,s,l) => {
+  let a=s*Math.min(l,1-l);
+  let f= (n,k=(n+h/30)%12) => l - a*Math.max(Math.min(k-3,9-k,1),-1);
+  return [f(0),f(8),f(4)]
+}
+
+
+// https://stackoverflow.com/a/44134328/1927589
+export const hsl2hex = (h, s, l) => {
+  h /= 360;
+  s /= 100;
+  l /= 100;
+  let r, g, b;
+  if (s === 0) {
+    r = g = b = l; // achromatic
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+  const toHex = x => {
+    const hex = Math.round(x * 255).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+
+
+export const HSLtoRGB = (colorString )=> {
+  // "hsl(412.523,50%,40%)" <<< percentages
+  // "412.523, 0.5, 0.4"    <<< ratios
+  let rgb = [0, 0, 0]
+
+  const regex = /(hsl\s*\(\s*)?([0-9.]+)\s*,\s*([0-9.]+)(%?)\s*,\s*([0-9.]+)(%?)\s*\)?/
+  const match = regex.exec(colorString)
+
+  if (match) {
+    let h = parseFloat(match[2], 10)
+    let s = parseFloat(match[3], 10)
+    let l = parseFloat(match[5], 10)
+
+    while (h > 360) {
+      h -= 360
+    }
+    while (h < 0) {
+      h += 360
+    }
+    if (match[4]) {
+      s /= 100
+    }
+    s = Math.max(0, Math.min(s, 1))
+    if (match[6]) {
+      l /= 100
+    }
+    l = Math.max(0, Math.min(l, 1))
+
+    rgb = hsl2rgb(h, s, l) // [<0.0-1.0>, <0.0-1.0>, <0.0-1.0>]
+         .map(number => Math.round(number * 255))
+  }
+
+  return rgb
+}
 
 
 /**
@@ -218,12 +319,24 @@ export const getUnused = (source, used, tolerateDuplicates) => {
 /// MOUSE/TOUCH EVENT FUNCTIONS ///
 
 export const getPageXY = (event) => {
-    if (event.targetTouches && event.targetTouches.length) {
-      event = event.targetTouches[0] || {}
-    }
-
-    return { x: event.pageX, y: event.pageY }
+  if (event.targetTouches && event.targetTouches.length) {
+    event = event.targetTouches[0] || {}
   }
+
+  return { x: event.pageX, y: event.pageY }
+}
+
+
+export const getXY = (event, frame) => {
+  if (["client", "page", "offset"].indexOf(frame) < 0) {
+    frame = "client"
+  }
+  if (event.targetTouches && event.targetTouches.length) {
+    event = event.targetTouches[0] || {}
+  }
+
+  return { x: event[frame + "X"], y: event[frame + "Y"] }
+}
 
 
 

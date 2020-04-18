@@ -64,7 +64,6 @@ export class App extends Component {
     , Mimo
     }
 
-    this.share = React.createRef()
     this.state = { view: "Profile" }
 
     this.storePointMethod = this.storePointMethod.bind(this)
@@ -88,7 +87,7 @@ export class App extends Component {
    */
   setViewSize(aspectRatio, shareRect) {
     this.setState({ aspectRatio, shareRect })
-    console.log("setViewSize — aspectRatio:", aspectRatio, "shareRect:", shareRect)
+    // console.log("setViewSize — aspectRatio:", aspectRatio, "shareRect:", shareRect)
   }
 
 
@@ -125,18 +124,16 @@ export class App extends Component {
         aspectRatio={aspectRatio}
         points={this.pointMethod}
       />
+      <Menu
+        hide={this.state.view === "Profile"}
+        setView={this.setView}
+        aspectRatio={aspectRatio}
+      />
+      <Points
+        ref={this.storePointMethod}
+        rect={this.shareRect}
+      />
+      <Chat />
     </Share>
   }
 }
-
-
-      // <Menu
-      //   hide={this.state.view === "Profile"}
-      //   setView={this.setView}
-      //   aspectRatio={aspectRatio}
-      // />
-      // <Points
-      //   ref={this.storePointMethod}
-      //   rect={this.shareRect}
-      // />
-      // <Chat />

@@ -4,13 +4,9 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-// import { pointInsert
-//        , pointUpdate
-//        } from '../api/methods'
-import { Points } from '../api/collections'
+import Points, { pointInsert,  pointUpdate } from '../api/points'
 
-const pointInsert = () => {}
-const pointUpdate = () => {}
+
 
 let instance = 0
 
@@ -19,7 +15,7 @@ class Pointers extends Component {
   constructor(props) {
     super(props)
 
-    console.log("Points instance", ++instance)
+    // console.log("Points instance", ++instance)
 
     this.state = { pointers: {} }
     this.streaming = false
@@ -71,7 +67,7 @@ class Pointers extends Component {
   // }
 
   pointerAdded(doc) {
-    console.log("added", doc)
+    console.log("New pointer", doc)
   }
 
 
@@ -84,7 +80,7 @@ class Pointers extends Component {
 
 
   pointerLeft(doc) {
-    console.log("left", doc)
+    console.log("Pointer lost", doc)
   }
 
 
@@ -117,7 +113,7 @@ class Pointers extends Component {
 
 
   pointMethod(event) {
-    console.log("Points received", event.type, "from", event.target)
+    // console.log("Points received", event.type, "from", event.target)
   }
 
 
