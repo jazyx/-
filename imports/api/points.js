@@ -6,6 +6,10 @@
  * bypasses the MongoDB database. As a result, it cannot use the
  * built-in collection methods such as insert() and remove().
  * 
+ * Points is exported differently on the server and on the client.
+ * The server uses a null connection to prevent it from synchronizing
+ * with MongoDB, but the client needs its default connection in order
+ * to communicate with the server ({ connection: undefined })
  * 
  * See...
  *   http://richsilv.github.io/meteor/meteor-low-level-publications/
@@ -15,199 +19,141 @@
 
 import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
-import { getUnused } from '../tools/utilities'
 
 
-// COLLECTION / COLLECTION / COLLECTION / COLLECTION / COLLECTION //
+///// COLLECTION //// COLLECTION //// COLLECTION //// COLLECTION /////
 
-const name        = "points"
-const publishName = name[0].toUpperCase + name.substring(1)
-let Points // collection to export
+let Points
 
-
-// PUBLICATION (with low-level API) and SUBSCRIPTION // PUB / SUB //
 
 if (Meteor.isServer) {
-  const options = 
-  Points = new Meteor.Collection(name, { connection: null })
+  Points = new Meteor.Collection('points', { connection: null })
 
-  console.log("Publishing Points...")
+  Meteor.publish('overDPP', function(){
+    // `publish` requires the classic function() {} syntax for `this`
+    const subscription = this
 
-  const pointsFunction = (filter) => {
-    console.log("pointsFunction", this)
-    const self = this
-
-    const methods = {
+    const publication = Points.find({}).observeChanges({
       added: function (id, fields) {
-        console.log("added", this, self)
-        self.added(name, id, fields);
+        subscription.added("points", id, fields)
       },
       changed: function(id, fields) {
-        self.changed(name, id, fields);
+        subscription.changed("points", id, fields)
       },
       removed: function (id) {
-        self.removed(name, id);
+        subscription.removed("points", id)
       }
-    }
+    })
 
-    const handle = Points.find(filter || {}).observeChanges(methods);
+    subscription.ready()
 
-    self.ready();
-
-    self.onStop(function () {
-      handle.stop();
-    });
-  }
-
-  const result = Meteor.publish(publishName, pointsFunction)
+    subscription.onStop(() => {
+      publication.stop()
+    })
+  })
 }
 
 
 if (Meteor.isClient) {
-  Points = new Meteor.Collection(name)
-  Meteor.subscribe(name)
-  window.Points = Points
+  Points = new Meteor.Collection('points') // connection undefined
+  Meteor.subscribe('overDPP')
+  window.Points = Points // REMOVE
 }
 
 
-export default Points
+
+/// METHODS // METHODS // METHODS // METHODS // METHODS // METHODS ///
 
 
-// METHODS // METHODS // METHODS // METHODS // METHODS // METHODS //
+export const createTracker = {
+  name: "createTracker"
 
-// Provide a different colour for each users pointer. Colours will be
-// maintained across sessions, but reset when the server is rebooteed.
-// TODO: Move this to a server-only collection.
-const colours = [
-  "#900"
-, "#960"
-, "#090"
-, "#099"
-, "#009"
-, "#909"
-// And recycle for now
-, "#999"
-, "#900"
-, "#960"
-, "#090"
-, "#099"
-, "#009"
-, "#909"
-, "#900"
-, "#960"
-, "#090"
-, "#099"
-, "#009"
-, "#909"
-]
-
-const group_colours = {}
-
-const getColour = (id, group_id) => {
-  // Use the same pointer colour from one session to the next
-  // console.log("Current:", group_colours[group_id])
-  const usedColours = group_colours[group_id]
-                   || (group_colours[group_id] = {})
-  console.log("Used:", group_colours[group_id], usedColours)
-
-  const usedValues = Object.keys(usedColours).map(id => (
-    usedColours[id]
-  ))
-  // console.log("Values:", usedValues, usedColours[id])
-  const colour = usedColours[id]
-              || (usedColours[id] = getUnused(colours, usedValues))
-  // console.log(colour)
-  // console.log(group_colours)
-
-  return colour
-}
-
-
-const validate = (pointData) => {
-  new SimpleSchema({
-    id:       { type: String }
-  , group_id: { type: String }
-  , x:        { type: Number }
-  , y:        { type: Number }
-  , active:   { type: Boolean }
-  , touch:    { optional: true, type: Object, blackbox: true }
-  , 
-  }).validate(pointData)
-
-  if (pointData.touch){
-    new SimpleSchema({
-      radiusX:       { type: Number }
-    , radiusY:       { type: Number }
-    , rotationAngle: { type: Number }
-    }).validate(pointData.touch)
-  }
-}
-
-
-export const pointInsert = {
-  name: 'vdvoyom.pointInsert'
-
-, run(pointInsertData) {
-    console.log('vdvoyom.pointInsert', arguments)
-    const { id, group_id } = pointInsertData
-
-    if (Meteor.isServer) {
-      pointInsertData.colour = getColour(id, group_id)
-    }
-
-    console.log("Insert", Meteor.isServer, pointInsertData)
-
-    Points.upsert({ id, group_id }, pointInsertData)
-  }
-
-, call(pointInsertData, callback) {
+, call(callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    // if (Meteor.isServer) {
-      Meteor.apply(this.name, [pointInsertData], options, callback)
-    // }
+    Meteor.apply(this.name, [], options, callback)
+  }
+
+, validate: () => {}
+
+, run() {
+    const number = Points.find().count()
+    const _id = Points.insert({ number })
+
+    return _id
   }
 }
 
 
+export const update = {
+  name: "update"
 
-export const pointUpdate = {
-  name: 'vdvoyom.pointUpdate'
-
-, run(pointUpdateData) {
-      // console.log('vdvoyom.pointUpdate', arguments)
-
-    const { id, group_id } = pointUpdateData
-    const query = { id, group_id }
-    const set   = { $set: pointUpdateData } // colour won't change
-    Points.update(query, set)
-  }
-
-, call(pointUpdateData, callback) {
+, call(pointData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [pointUpdateData], options, callback)
+    Meteor.apply(this.name, [pointData], options, callback)
+  }
+
+, validate(pointData) {
+    if (pointData.touchend) {
+      new SimpleSchema({
+        _id:      { type: String }
+      , group_id: { type: String }
+      , active:   { type: Boolean, custom() {
+          if ( this.value ) {
+            return "activeAndTouchedMustBothBeFalse";
+          }
+        }}
+      , touchend: { type: Boolean }
+      }).validate(pointData)
+
+    } else {
+      new SimpleSchema({
+        _id:      { type: String }
+      , group_id: { type: String }
+      , x:        { type: Number }
+      , y:        { type: Number }
+      , active:   { type: Boolean }
+      , touchend: { type: Boolean }
+      , touch:    { type: Object, optional: true, blackbox: true }
+      }).validate(pointData)
+
+      if (pointData.touch) {
+        new SimpleSchema({
+          radiusX:       { type: Number }
+        , radiusY:       { type: Number }
+        , rotationAngle: { type: Number }
+        }).validate(pointData.touch)
+      }
+    }
+  }
+
+, run(pointData) { // {_id, group_id, x, y, active }
+    const _id = pointData._id
+    Points.update({ _id }, { $set: pointData }) // not _id, number
   }
 }
 
 
-// To register a new method with Meteor's DDP system, add it here
 const methods = [
-  pointInsert
-, pointUpdate
+  createTracker
+, update
 ]
 
 methods.forEach(method => {
   Meteor.methods({
     [method.name]: function (args) {
-      validate(args)
+      method.validate.call(this, args)
       return method.run.call(this, args)
     }
   })
 })
+
+
+export default Points

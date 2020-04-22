@@ -6,12 +6,14 @@ import { Session } from 'meteor/session'
 
 import collections from '../../api/collections'
 import Storage from '../../tools/storage'
-import { localize } from '../../tools/utilities'
+import { localize
+       , getRandomFromArray 
+       } from '../../tools/utilities'
 import { createNovice
        , log
        } from '../../api/methods'
 
-import { StyledCentred } from './Styles'
+import { StyledCentred } from '../styles'
 
 
 
@@ -24,22 +26,57 @@ class Submit extends Component {
     this.delay = 1000
     /// HARD-CODED >>>
 
+    this.callback = this.callback.bind(this)
+
+    // Session data
+    // === for all users
+    // native:   "en-GB"
+    // username: "James"
+    // language: "ru"
+    // teacher:  "aa"
+    // === for returning users with data from localStorage
+    // user_id:  "g5Q3geSR2KuigZybJ"
+    // q_code:   "0294"
+    // d_code:   "xTG3"
+    // view:     "Activity"
+ 
+    const d_code = Session.get("d_code") || this.getD_code()
+
     this.noviceData = {
       native:   Session.get("native")
     , username: Session.get("username")
     , language: Session.get("language")
     , teacher:  Session.get("teacher")
+    , d_code:   d_code
     }
-    this.callback = this.callback.bind(this)
 
-    createNovice.call(this.noviceData, this.callback)
+    if (Session.get("user_id")) {
+      // This is a returning user logging in automatically
+      log.call(
+        { d_code
+        , in: true
+        , id: Session.get("user_id")
+        , teacher: Session.get("teacher")
+        }
+      , this.callback
+      )
+
+    } else {
+      // This is either:
+      // * A new user
+      // or
+      // * A returning user on a new device or logging in from a
+      //   machine that has no localStorage
+
+      createNovice.call(this.noviceData, this.callback)
+    }
   }
 
 
   callback(error, data) {
     let save = "save_failed"
     let saved = false
-    const { user_id, group_id, view } = data || {}
+    const { user_id, q_code, group_id, view } = data || {}
 
     if (error) {
       save = error // cannot be localized
@@ -51,6 +88,7 @@ class Submit extends Component {
 
     } else {
       this.noviceData.user_id = user_id
+      this.noviceData.q_code = q_code
       saved = true
     }
 
@@ -69,17 +107,34 @@ class Submit extends Component {
 
     Session.set("user_id",  user_id)
     Session.set("group_id", group_id)
+    Session.set("code",     code)
     Session.set("isMaster", true)
-    Session.set("view",     view) // not used?
+    Session.set("view",     view)
 
     // Show the save message...
     this.setState({ save })
 
     // ... for just long enough
     setTimeout(
-      () => this.props.setView(view)
+      () => this.props.setView("NewPIN")
     , this.delay
     )
+  }
+
+
+  getD_code() {
+    let d_code    = ""
+    const source = "0123456789&#"
+                 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                 + "abcdefghijklmnopqrstuvwxyz"
+    const length = source.length
+    const total  = 5 //        Creates 1,073,741,824 possible strings
+    // const total  = 7 // Creates 4 398 046 511 104 possible strings
+    for ( let ii = 0; ii < total; ii += 1 ) {
+      d_code += getRandomFromArray(source)
+    }
+
+    return d_code
   }
 
 

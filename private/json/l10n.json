@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 70
+    "version": 73
   , "folder": "img/flags/"
   }
 
@@ -138,6 +138,52 @@
     , "ru": "Ваши данные не были сохранены"
     , "en": "Data not saved"
     , "fr": "La sauvegarde a échoué"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+
+  , { "cue": "learn_pin"
+    , "ru": "Запомните этот PIN-код, чтобы вы могли войти с другого устройства."
+    , "en": "Remember this PIN Code so that you can log in from a different device."
+    , "fr": "Garder ce code PIN en mémoire. Il vous permet de vous connecter à votre compte à partir d'un autre appareil."
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "enter_pin"
+    , "ru": "Если у вас есть PIN-код, введите его здесь:"
+    , "en": "If you have a PIN Code, enter it here:"
+    , "fr": "Si vous avez un code PIN, saissisez-le:"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "log_in"
+    , "ru": "Войти"
+    , "en": "Log in"
+    , "fr": "Connexion"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "create_account"
+    , "ru": "Создать новый аккаунт"
+    , "en": "Create a new account"
+    , "fr": "Créez un nouveau compte"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "pin_memorized"
+    , "ru": "ПИН-код запомнен"
+    , "en": "PIN memorized"
+    , "fr": "Code PIN mémorisé"
     , "ja": "ja - xxx"
     , "ko": "ko - xxx"
     , "th": "th - xxx"

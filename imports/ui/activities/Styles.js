@@ -6,10 +6,10 @@
 import styled, { css } from 'styled-components'
 import { tweenColor } from '../../tools/utilities'
 
-const colours = {
+const colors = {
   background: "#010"
 }
-colours.active = tweenColor(colours.background, "#fff", 0.1)
+colors.active = tweenColor(colors.background, "#fff", 0.1)
 
 
 export const StyledProfile = styled.div`
@@ -18,7 +18,7 @@ export const StyledProfile = styled.div`
   justify-content: space-between;
   align-items: center;
   height: calc(100 * var(--h));
-  background-color: ${colours.background};
+  background-color: ${colors.background};
   background-color: ${props => (props.aspectRatio > 1)
                              ? "#100;"
                              : "#000800;"
@@ -125,7 +125,7 @@ export const StyledButton = styled.button`
    }
 
   &:active {
-    background: ${colours.active};
+    background: ${colors.active};
   }
 
   ${props => (props.aspectRatio > 1)

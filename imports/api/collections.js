@@ -61,6 +61,9 @@ if (Meteor.isServer) {
     // through the /imports/api/methods.js script
 
     Meteor.publish(name, function public(caller, ...more) {
+      // We need to use the classic function () syntax so that we can
+      // use this to access the Meteor connection and use this.user_id
+    
       let items = collection.find(query) // (customQuery || query)
 
       if (typeof caller === "string") {
@@ -68,8 +71,9 @@ if (Meteor.isServer) {
           "Publishing", collection._name, "for", caller, ...more
         )
         console.log(
-          collection.findOne(query, { limit: 4 })
+          "Items 1 - 4 /"
         , collection.find(query).count()
+        , collection.find(query, { limit: 4 }).fetch()
         )
       }
 

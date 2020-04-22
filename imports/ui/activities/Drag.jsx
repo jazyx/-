@@ -573,7 +573,7 @@ class Drag extends Component {
 
 export default withTracker(() => {
   const collection  = collections["Drag"]
-  Meteor.subscribe(collection._name, "Drag")
+  Meteor.subscribe(collection._name) //, "Drag")
 
   const key         = "furniture"
   const code        = Session.get("language").replace(/-\w*/, "")

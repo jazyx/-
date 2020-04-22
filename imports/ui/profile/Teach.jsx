@@ -17,7 +17,7 @@ import { StyledProfile
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
-       } from './Styles'
+       } from '../styles'
 
 
 
@@ -44,7 +44,7 @@ class Teach extends Component {
 
   logTeacherIn() {
     const id = Session.get("teacher_id")
-    log.call({ id, in: true }) // no callback
+    log.call({ id, in: true }) // no callback means synchronous
   }
 
 

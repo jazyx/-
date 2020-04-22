@@ -73,23 +73,52 @@ export const createNovice = {
     , native:   { type: String }
     , teacher:  { type: String }
     , language: { type: String }
+    , d:    { type: String }
+    , q_code:   { type: String, optional: true}
     }).validate(noviceData)
   }
 
   // Factor out Method body so that it can be called independently
+
 , run(noviceData) {
     const Users = collections["Users"]
+
+    function getUsersNamed({ username, teacher }) {
+      const query = { teacher_id: teacher, username }
+      const users = Users.find(query).count()
+
+      return users
+    }
+
+    function createNewAccount() {
+
+    }
+
+    function getQData () {
+      // Create a number at random between 0833 and 9165 (one of 8333
+      // possible numbers). Ensure that it has not been attributed to
+      // anyone else with the same name or teacher.
+    }
+
     // TODO:
     // Allow more than one user with a given name and native language
-    const { native, username } = noviceData
+    // Using color q_code * 711/256
+    const { native, username, teacher, d_code, q_code } = noviceData
+    delete noviceData.d_code
 
-    let existing = Users.findOne({ native, username })
-    const user_id  = existing
-                   ? existing._id
-                   : Users.insert(noviceData)
-
-    // Log in automatically
-    Users.update({ _id: user_id }, { $set: { loggedIn: true } })
+    const existing = getUsersNamed(noviceData)
+    switch (existing) {
+      case 0:
+        // A user is connecting with this teacher for the first time
+        const user_id = createNewAccount(data, noviceData)
+      break
+      default:
+        // This may be a new user with the same name as an existing
+        // user, or it may be a returning user connecting from a new
+        // device or from a device which has no localStorage
+        return askForPINCode(data)
+    } 
+    
 
     // ASSUME ONE LEARNER PER GROUP, ONE GROUP PER LEARNER, FOR NOW //
 
@@ -113,11 +142,6 @@ export const createNovice = {
 
     } else {
       // A group was found, so join it now
-      const _id = group_id = existing._id
-      const updates = {
-        $set: { view }
-      , $push: { loggedIn: user_id }
-      }
 
       Groups.update({ _id }, updates )
     }
@@ -130,6 +154,7 @@ export const createNovice = {
    *  Method implementation, rather than requiring the caller to
    *  specify it at the call site
    */
+
 , call(noviceData, callback) {
     const options = {
       returnStubValue: true
@@ -153,42 +178,106 @@ export const log = {
     new SimpleSchema({
       id: { type: String }  // < 5 chars = teacher; > 5 chars = user
     , in: { type: Boolean }
+    , d_code: { type: String }
+    , teacher: { type: String, optional: true}
     }).validate(logData)
   }
 
 , run(logData) {
-    const [ id, _id ] = [ logData.id, logData.id ]
-    const isTeacher   = id.length < 5 // teacher.ids "xxxx" max
-    const loggedIn    = logData.in
-    const set         = { $set: { loggedIn } }
+    const { user_id, teacher, d_code } = logData
+    const Teachers  = collections["Teachers"]
+    const Users     = collections["Users"]
+    const Groups    = collections["Groups"]
 
-    if (!loggedIn) {
-      // Remember when this user was last seen
-      set.$currentDate = {
-        loggedOut: true
+    const isTeacher = id.length < 6 // teacher.ids "xxxxx" max
+    const loggingIn = logData.in
+
+    let collection
+      , query
+      , project
+
+    function logOut() {
+      // Get current dqueue, to check if d_code is first in the queue
+      // The device should be used in only one group.
+      collection
+      query    = { dqueue: { $elemMatch: { $eq: d_code } } }
+      project  = { fields: { dqueue: 1 } }
+      const { _id, dqueue } = Groups.findOne(query)
+
+      // // Do we need to the following line? Or will the Points
+      // // component work this out for itself?
+      // const isMaster = !dqueue.indexOf(d_code)
+
+      // Remove this device from this group...
+      Groups.updateOne({ _id }, { $pull: { dqueue: d_code } } )
+
+      // ... and from the User/Teacher record
+      if (isTeacher) {
+        collection = Teachers
+        query = { id }
+      } else {
+        collection = Users
+        query = { _id: id }
       }
 
-      if (isTeacher) {
-        const query = { teacher_id: id, active: true }
-        const disactivate  = { $set: { active: false } }
-        collections["Groups"].update(query, disactivate)
+      collection.updateOne(query, { $pull: { loggedIn: d_code } } )
+
+      // Get all the remaining devices for this user/teacher
+      project = { _id: 0, loggedIn: 1 }
+      const { loggedIn } = collection.findOne( query, project )
+
+      if (!loggedIn.length) {
+        // This user had only one device, and this was it. They're
+        // gone. Remember when they were last seen.
+        collection.updateOne(query, {$currentDate: {loggedOut: true}})
 
       } else {
-        // Log student out of any current groups
-        const query = { loggedIn: { $elemMatch: { $eq: _id } } }
-        const pull  = { $pull: { loggedIn: _id } }
-        const multi = true
-        collections["Groups"].update(query, pull, multi)
+        // This user /teacher has other devices loggedIn. Check if
+        // this is only one here
+        const noOtherViewsHere = loggedIn.every(d_code => (
+          dqueue.indexOf(d_code) < 0
+        ))
+
+        if (noOtherViewsHere) {
+          // Remove user_id from loggedIn
+          Groups.updateOne({ _id }, { $pull: { loggedIn: id } } )
+
+        } else {
+          // This user is still part of this group, on another device
+          // We've removed a different device. Don't do anything else.
+        }
       }
     }
 
-    // console.log(`Logging ${loggedIn ? "in" : "out"} ${isTeacher ? "teacher" : "learner"} ${id}`)
+    function logIn() {     
+      // Logging in
+      if (isTeacher) {
+        collection = Teachers
+        query = { id }
+      } else {
+        collection = Users
+        query = { _id: id, teacher }
+      }
 
-    if (isTeacher) {
-      collections["Teachers"].update( { id }, set )
+      // Record that this user/teacher loggedIn with this device
+      collection.updateOne(query, { loggedIn: d_code })
+
+      const { _id } = Groups.findOne({ })
+      const push = { $push: { loggedIn: _id, dqueue: d_code } }
+      Groups.updateOne(query, push)
+
+      // Get the most recent view for the teacher-student group
+      const project = { _id: 0, view: 1 }
+      var { view } = Groups(query, project).findOne()
+
+      return { view }
+    }
+
+    if (!loggingIn) {
+      logOut()
 
     } else {
-      collections["Users"].update( { _id }, set )
+      return logIn()
     }
   }
 
@@ -204,50 +293,50 @@ export const log = {
 
 
 
-/** Allows users to join and leave groups
- */
-export const reGroup = {
-  name: 'vdvoyom.reGroup'
+// /** Allows users to join and leave groups
+//  */
+// export const reGroup = {
+//   name: 'vdvoyom.reGroup'
 
-, validate(reGroupData) {
-    new SimpleSchema({
-      teacher_id: { type: String }
-    , user_id:    { type: String }
-    , join:       { type: Boolean }
-    }).validate(reGroupData)
-  }
+// , validate(reGroupData) {
+//     new SimpleSchema({
+//       teacher_id: { type: String }
+//     , user_id:    { type: String }
+//     , join:       { type: Boolean }
+//     }).validate(reGroupData)
+//   }
 
-, run(reGroupData) {
-    const { teacher_id, user_id, join } = reGroupData
-    const query = {
-      $and: [
-        { teacher_id }
-      , { user_ids: { $elemMatch: { $eq: user_id }}}
-      ]
-    }
+// , run(reGroupData) {
+//     const { teacher_id, user_id, join } = reGroupData
+//     const query = {
+//       $and: [
+//         { teacher_id }
+//       , { user_ids: { $elemMatch: { $eq: user_id }}}
+//       ]
+//     }
 
-    // Pull will remove all occurrences of the user_id, just in case
-    // multiple pushes occurred.
-    const set = join
-              ? { $push: { loggedIn: user_id } }
-              : { $pull: { loggedIn: user_id } }
-    const multi = true
-    collections["Groups"].update(query, set, multi)
+//     // Pull will remove all occurrences of the user_id, just in case
+//     // multiple pushes occurred.
+//     const set = join
+//               ? { $push: { loggedIn: user_id } }
+//               : { $pull: { loggedIn: user_id } }
+//     const multi = true
+//     collections["Groups"].update(query, set, multi)
 
-    const groups = collections["Groups"].find(query).fetch()
+//     const groups = collections["Groups"].find(query).fetch()
 
-    return groups
-  }
+//     return groups
+//   }
 
-, call(reGroupData, callback) {
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
+// , call(reGroupData, callback) {
+//     const options = {
+//       returnStubValue: true
+//     , throwStubExceptions: true
+//     }
 
-    Meteor.apply(this.name, [reGroupData], options, callback)
-  }
-}
+//     Meteor.apply(this.name, [reGroupData], options, callback)
+//   }
+// }
 
 
 
@@ -329,6 +418,42 @@ export const setView = {
 
 
 
+/** Called by Activity.goActivity()
+ */
+export const test = {
+  name: 'vdvoyom.test'
+
+, validate() {
+    console.log("Validating")
+  }
+
+, run() {
+    const result = 123 //self.subRoutine()
+    // console.log("test subRoutine ran:", result )
+    return { result }
+  }
+
+, subRoutine() {
+    console.log("running subRoutine")
+    return "successfully"
+  }
+
+, call(testData, callback) {
+    // This code is only run on the Client, so `this` only refers to
+    // the enclosing object on the Client. On the server, only
+    // validate() and run() are called, separately. As a result
+    // this.subRoutine is inaccessible and cannot be called.
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [], options, callback)
+  }
+}
+
+
+
 
 
 
@@ -336,14 +461,16 @@ export const setView = {
 const methods = [
   createNovice
 , log
-, reGroup
+// , reGroup
 , share
 , setView
+, test
 ]
 
 methods.forEach(method => {
   Meteor.methods({
     [method.name]: function (args) {
+      // console.log("this:", this)
       method.validate.call(this, args)
       return method.run.call(this, args)
     }

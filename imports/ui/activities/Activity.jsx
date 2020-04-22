@@ -18,6 +18,10 @@ import { StyledProfile
        } from './Styles'
 
 
+Meteor.subscribe(collections["L10n"]._name) //, "Activity")
+Meteor.subscribe(collections["Activities"]._name) //, "Activity")
+
+
 
 class Activity extends Component {
   constructor(props) {
@@ -203,7 +207,6 @@ class Activity extends Component {
 export default withTracker(() => {
   // Phrases
   const l10n  = collections["L10n"]
-  Meteor.subscribe(l10n._name, "Activity")
 
   const phraseQuery = {
     $and: [
@@ -216,7 +219,6 @@ export default withTracker(() => {
 
   // Activities
   const collection  = collections["Activities"]
-  Meteor.subscribe(collection._name, "Activity")
 
   const activityQuery = {}
   const activities = collection.find(activityQuery).fetch()

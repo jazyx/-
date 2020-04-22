@@ -6,7 +6,7 @@
  */
 
 
-/// COLOUR FUNCTIONS //
+/// COLOR FUNCTIONS //
 
 export const rgbify = (color) => {
   if (color.substring(0, 3).toLowerCase() === "hsl" ) {

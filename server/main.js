@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import {} from '../imports/api/methods.js'
 import collections from '../imports/api/collections.js'
 import Points from '../imports/api/points'
 

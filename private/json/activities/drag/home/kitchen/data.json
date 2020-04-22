@@ -2,7 +2,7 @@
 
 , "as_is": {
     "key": "kitchen"
-  , "version": 5
+  , "version": 6
   , "parent": "home"
   , "root": "drag"
   , "name": {
@@ -15,7 +15,14 @@
 }
 
 , "kitchen": [
-    { "file": "chair.jpg"
+    { "file": "broom.jpg"
+    , "text": {
+        "en": "broom"
+      , "fr": "balai brosse"
+      , "ru": "метла"
+      }
+    }
+  , { "file": "chair.jpg"
     , "text": {
         "en": "chair"
       , "fr": "chaise"
@@ -55,6 +62,154 @@
         "en": "washing machine"
       , "fr": "machine à laver"
       , "ru": "стиральная машина"
+      }
+    }
+
+  , { "file": "coffee_cup.jpg"
+    , "text": {
+        "en": "coffee cup"
+      , "fr": "une tasse à café"
+      , "ru": "кофейная чашка"
+      }
+    }
+  , { "file": "tea_cup.jpg"
+    , "text": {
+        "en": "teacup"
+      , "fr": "une tasse à thé"
+      , "ru": "чашка чая"
+      }
+    }
+  , { "file": "frying_pan.jpg"
+    , "text": {
+        "en": "frying pan"
+      , "fr": "une poêle"
+      , "ru": "сковорода"
+      }
+    }
+  , { "file": "kettle.jpg"
+    , "text": {
+        "en": "kettle"
+      , "fr": "une bouilloire"
+      , "ru": "чайник"
+      }
+    }
+  , { "file": "wineglass.jpg"
+    , "text": {
+        "en": "wineglass"
+      , "fr": "un verre à vin"
+      , "ru": "бокал"
+      }
+    }
+  , { "file": "bowl.jpg"
+    , "text": {
+        "en": "bowl"
+      , "fr": "un bol"
+      , "ru": "чаша"
+      }
+    }
+  , { "file": "saucepan.jpg"
+    , "text": {
+        "en": "saucepan"
+      , "fr": "une casserole"
+      , "ru": "кастрюля"
+      }
+    }
+  , { "file": "glass.jpg"
+    , "text": {
+        "en": "glass"
+      , "fr": "une verre"
+      , "ru": "стакан"
+      }
+    }
+  , { "file": "jug.jpg"
+    , "text": {
+        "en": "jug"
+      , "fr": "une cruche"
+      , "ru": "кувшин"
+      }
+    }
+  , { "file": "mop.jpg"
+    , "text": {
+        "en": "mop"
+      , "fr": "un balai"
+      , "ru": "швабра"
+      }
+    }
+  , { "file": "teapot.jpg"
+    , "text": {
+        "en": "teapot"
+      , "fr": "une théière"
+      , "ru": "чайник"
+      }
+    }
+  , { "file": "knife.jpg"
+    , "text": {
+        "en": "knife"
+      , "fr": "un couteau"
+      , "ru": "нож"
+      }
+    }
+  , { "file": "spoon.jpg"
+    , "text": {
+        "en": "spoon"
+      , "fr": "une cuillère"
+      , "ru": "ложка"
+      }
+    }
+  , { "file": "plate.jpg"
+    , "text": {
+        "en": "plate"
+      , "fr": "une assiette"
+      , "ru": "тарелка"
+      }
+    }
+  , { "file": "fork.jpg"
+    , "text": {
+        "en": "fork"
+      , "fr": "une fourchette"
+      , "ru": "вилка"
+      }
+    }
+  , { "file": "mug.jpg"
+   , "text": {
+        "en": "mug"
+      , "fr": "une "
+      , "ru": "кружка"
+      }
+    }
+  , { "file": "bucket.jpg"
+    , "text": {
+        "en": "bucket"
+      , "fr": "bucket"
+      , "ru": "ведро"
+      }
+    }
+  , { "file": "lid.jpg"
+    , "text": {
+        "en": "lid"
+      , "fr": "lid"
+      , "ru": "крышка"
+      }
+    }
+  , { "file": "jar.jpg"
+    , "text": {
+        "en": "jar"
+      , "fr": "jar"
+      , "ru": "банка"
+      }
+    }
+  , { "file": "dustpan_and_brush.jpg"
+    , "text": {
+        "en": "dustpan and brush"
+      , "fr": "dustpan_and_brush"
+      , "ru": "совок и щетка"
+      }
+    }
+  , { "file": "kitchen.jpg"
+    , "text": {
+        "en": "kitchen"
+      , "fr": "cuisine"
+      , "ru": "кухня"
       }
     }
   ]

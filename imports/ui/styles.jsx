@@ -4,12 +4,12 @@
  */
 
 import styled, { css } from 'styled-components'
-import { tweenColor } from '../../tools/utilities'
+import { tweenColor } from '../tools/utilities'
 
-const colours = {
+const colors = {
   background: "#000"
 }
-colours.active = tweenColor(colours.background, "#fff", 0.1)
+colors.active = tweenColor(colors.background, "#fff", 0.1)
 
 
 // On Android, the page may be shown full screen but with the address
@@ -23,7 +23,7 @@ export const StyledProfile = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 100vh;
-  // background-color: ${colours.background};
+  // background-color: ${colors.background};
   // pointer-events: none;
 `
 
@@ -127,7 +127,7 @@ export const StyledLI = styled.li`
   }
 
   &:hover {
-    background-color: ${colours.active};
+    background-color: ${colors.active};
   }
 
   @media (min-aspect-ratio: 1/1) {
@@ -165,7 +165,7 @@ export const StyledButton = styled.button`
    }
 
   &:active {
-    background: ${colours.active};
+    background: ${colors.active};
   }
 
   @media (min-aspect-ratio: 1/1) {

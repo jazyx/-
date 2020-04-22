@@ -1,5 +1,12 @@
 /**
  * imports/ui/Share.jsx
+ * 
+ * The Share component has two purposes:
+ * 1. To subscribe to all the non-activity collections, so that these
+ *    will be immediately available elsewhere
+ * 2. As detailed below, to preserve the aspect ratio of a student's
+ *    device when it is shown on the teacher's (or another student's)
+ *    screen.
  *
  * The Share component provides a wrapper div for the whole interface.
  * Users who are teachers will, by design, join each group as a slave
@@ -10,8 +17,8 @@
  * be a master in every group. In a many-student group, a master will
  * be chosen from those logged on when the teacher starts the group.
  * If that student leaves, mastery will be transferred to another
- * student, or the group will be dissolved. If a student changes
- * groups their status as master may change.
+ * student, or the group will be dissolved. In addition, if a student
+ * changes groups their status as master may change.
  *
  * This script is designed to share the view dimensions of the
  * device which is master. This may happen in three ways:
@@ -28,24 +35,33 @@
  *   in the withTracker() function
  */
 
+
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
+// Subscriptions
 import { Groups } from '../api/collections'
+
+// viewSize
 import { share } from '../api/methods'
-// const share = () => {}
-
-Meteor.subscribe(Groups._name) //, "Share")
+import StartUp from './startup/StartUp'
 
 
+// For debugging only
+let instance = 0
+let render = 0
+
+
+// Called by the track function that is wrapped by withTracker
+// and by Share.setViewSize() when the group_id changes or the window
+// is resized.
 const getViewSize = () => {
   const { width, height } = document.body.getBoundingClientRect()
   return { width, height }
 }
-
 
 
 class Share extends Component {
@@ -54,7 +70,11 @@ class Share extends Component {
 
     this.isMaster    = undefined
     this.aspectRatio = undefined
+
     this.setViewSize = this.setViewSize.bind(this)
+
+    // Debugging only
+    // console.log("Share instance", ++instance)
 
     // When the local window is resized one of two things should
     // happen:
@@ -63,14 +83,23 @@ class Share extends Component {
     // 2. If this device is a slave, it should resise the master's
     //    view to fit optimally in the current view area
     window.addEventListener("resize", this.setViewSize, false)
-    this.setViewSize()
+
+    // Subscribe to all collections, then hide Splash screen when done
+    new StartUp(this.setViewSize)
   }
 
 
-  setViewSize() {
-    // Before user has logged in, Session will be empty,
-    // this.props.viewSize will be (by default) the local body size
-    // and this.isMaster will be true (even for teachers)
+  /**
+   * Called once by hideSplash in StartUp, when `view` will be a
+   * string.
+   * 
+   * Called by window.resize any time the user changes the orientation
+   * of their device, or changes the size of their browser window. In
+   * this case, view will be undefined.
+   * 
+   * Action:
+   */
+  setViewSize(view) {
     const localSize = getViewSize()
     const { width, height } = localSize
     const viewSize = this.isMaster
@@ -115,11 +144,24 @@ class Share extends Component {
     // an endless loop of renders
 
     if (this.aspectRatio !== aspectRatio || newMaster) {
+      // console.log(
+      //   "Share setViewSize"
+      // , newMaster
+      // ? "triggered by a new master"
+      // : this.aspectRatio
+      //   ? "triggered by a change in aspect-ratio"
+      //   : "as aspect-ratio is initialized"
+      // )
+
       this.aspectRatio = aspectRatio
       this.shareViewSizeIfMaster(localSize)
 
       this.convertToLocalArea(localSize, h, w)
-      this.props.setViewSize(aspectRatio, localSize)
+
+      // If the call comes from the StartUp instance, then view will
+      // be defined, and this.props.setViewSize will point to
+      // App.setViewAndSize, just this once.
+      this.props.setViewSize ({ view, aspectRatio, localSize })
     }
   }
 
@@ -142,12 +184,15 @@ class Share extends Component {
 
 
   render() {
+    // console.log("Share render", ++render, this.props.tag)
+
     const style = Object.assign({
       position: "relative"
     , display: "flex"
     , justifyContent: "center"
     , alignItems: "center"
     , height: "calc(100 * var(--h))"
+    , width: "calc(100 * var(--w))"
     }
     , this.units
     )
@@ -161,22 +206,31 @@ class Share extends Component {
   }
 
 
-  componentDidUpdate() {
-    this.setViewSize()
+  // Called after a render is complete, if this latest render did not
+  // include this component. This should only happen when the app as
+  // a whole is being unloaded from the browser, so this may be
+  // redundant.
+  componentWillUnmount() {
+    for (let subscriptionName in this.subscriptions) {
+      console.log("Unsubscribing from", subscriptionName)
+      this.subscriptions[subscriptionName].stop()
+    }
   }
 }
 
 
-export default withTracker(() => {
+export default withTracker(function track() {
   // Get the local size by default
   let viewSize   = getViewSize()
 
   // Accessing reactive Session variables ensures that the Share
   // component is re-rendered if one of the values changes. Both
   // Session variables below start as undefined, and change when a
-  // user logs in or switches groups. This mean that Share is usually
-  // only re-rendered just after login... or if the view size changes,
-  // as handled by setViewSize() above.
+  // user logs in or switches groups. This mean that the code here
+  // usually only triggers a re-render of Share just after login.
+  // 
+  // However, a re-render will also be trigger if the view size
+  // changes, as handled by setViewSize() above.
 
   // group_id changes when user changes teacher or changes groups
   const group_id = Session.get("group_id")

@@ -1,9 +1,20 @@
+/**
+ * /imports/ui/startup/TimeOut.jsx
+ * 
+ * The Menu will be active, but it won't be possible to use it much.
+ * 
+ * TODO: Add active buttons for Try Again, Wait and [Continue], which
+ * will only become active if the non-activity collections eventually
+ * become ready.
+ */
+
+
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
 import { StyledProfile
        , StyledPrompt
-       } from './Styles'
+       } from '../styles'
 
 
 
@@ -32,6 +43,7 @@ export default class TimeOut extends Component {
       id="time-out"
     >
       {prompt}
+      <button>Try Again</button>
     </StyledProfile>
   }
 }

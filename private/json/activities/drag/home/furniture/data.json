@@ -2,7 +2,7 @@
 
 , "as_is": {
     "key": "furniture"
-  , "version": 6
+  , "version": 7
   , "parent": "home"
   , "root": "drag"
   , "name": {
@@ -18,148 +18,211 @@
     { "file": "armchair.jpg"
     , "text": {
         "en": "armchair"
-      , "fr": "fauteil"
+      , "fr": "un fauteil"
       , "ru": "кресло"
       }
     }
   , { "file": "bin.jpg"
     , "text": {
         "en": "bin"
-      , "fr": "poubelle"
+      , "fr": "une poubelle"
       , "ru": "ведро"
       }
     }
   , { "file": "bookcase.jpg"
     , "text": {
         "en": "bookcase"
-      , "fr": "bibliothèque"
+      , "fr": "un bibliothèque"
       , "ru": "книжный шкаф"
       }
     }
   , { "file": "chair.jpg"
     , "text": {
         "en": "chair"
-      , "fr": "chaise"
+      , "fr": "une chaise"
       , "ru": "стул"
       }
     }
   , { "file": "chest_of_drawers.jpg"
     , "text": {
         "en": "chest of drawers"
-      , "fr": "commode"
+      , "fr": "une commode"
       , "ru": "комод"
       }
     }
   , { "file": "clock.jpg"
     , "text": {
         "en": "clock"
-      , "fr": "horloge"
+      , "fr": "une horloge"
       , "ru": "часы"
       }
     }
   , { "file": "cushions.jpg"
     , "text": {
         "en": "cushions"
-      , "fr": "coussins"
+      , "fr": "des coussins"
       , "ru": "подушки"
       }
     }
   , { "file": "desk.jpg"
     , "text": {
         "en": "desk"
-      , "fr": "bureau"
+      , "fr": "un bureau"
       , "ru": "стол письменный"
       }
     }
   , { "file": "dishwasher.jpg"
     , "text": {
         "en": "dishwasher"
-      , "fr": "lave-vaisselle"
+      , "fr": "une lave-vaisselle"
       , "ru": "посудомоечная машина"
       }
     }
   , { "file": "fridge.jpg"
     , "text": {
         "en": "fridge"
-      , "fr": "refrigérateur"
+      , "fr": "un refrigérateur"
       , "ru": "холодильник"
       }
     }
   , { "file": "lamp.jpg"
     , "text": {
         "en": "lamp"
-      , "fr": "lampe"
+      , "fr": "une lampe"
       , "ru": "лампа"
       }
     }
   , { "file": "microwave_oven.jpg"
     , "text": {
         "en": "microwave oven"
-      , "fr": "four micro-ondes"
+      , "fr": "un four micro-ondes"
       , "ru": "микроволновая печь"
       }
     }
   , { "file": "mirror.jpg"
     , "text": {
         "en": "mirror"
-      , "fr": "mirroir"
+      , "fr": "un miroir"
       , "ru": "зеркало"
       }
     }
   , { "file": "phone.jpg"
     , "text": {
         "en": "phone"
-      , "fr": "téléphone"
+      , "fr": "un téléphone"
       , "ru": "телефон"
       }
     }
   , { "file": "photo.jpg"
     , "text": {
         "en": "photo"
-      , "fr": "photo"
+      , "fr": "une photo"
       , "ru": "фото"
       }
     }
   , { "file": "radiator.jpg"
     , "text": {
         "en": "radiator"
-      , "fr": "radiateur"
+      , "fr": "un radiateur"
       , "ru": "радиатор"
       }
     }
   , { "file": "sofa.jpg"
     , "text": {
         "en": "sofa"
-      , "fr": "canapé"
+      , "fr": "un canapé"
       , "ru": "диван"
       }
     }
   , { "file": "table.jpg"
     , "text": {
         "en": "table"
-      , "fr": "table"
+      , "fr": "une table"
       , "ru": "стол"
       }
     }
   , { "file": "television.jpg"
     , "text": {
         "en": "television"
-      , "fr": "télévision"
+      , "fr": "une télévision"
       , "ru": "телевизор"
       }
     }
   , { "file": "wardrobe.jpg"
     , "text": {
         "en": "wardrobe"
-      , "fr": "garderobe"
+      , "fr": "un garderobe"
       , "ru": "гардероб"
       }
     }
   , { "file": "washing_machine.jpg"
     , "text": {
         "en": "washing machine"
-      , "fr": "machine à laver"
+      , "fr": "une machine à laver"
       , "ru": "стиральная машина"
+      }
+    }
+  , { "file": "balcony.jpg"
+    , "text": {
+        "en": "balcony"
+      , "fr": "balcony"
+      , "ru": "балкон"
+      }
+    }
+  , { "file": "barbecue.jpg"
+    , "text": {
+        "en": "barbecue"
+      , "fr": "barbecue"
+      , "ru": "барбекю"
+      }
+    }
+  , { "file": "bedroom.jpg"
+    , "text": {
+        "en": "bedroom"
+      , "fr": "bedroom"
+      , "ru": "спальная комната"
+      }
+    }
+  , { "file": "flats.jpg"
+    , "text": {
+        "en": "flats"
+      , "fr": "flats"
+      , "ru": "квартиры"
+      }
+    }
+  , { "file": "house.jpg"
+    , "text": {
+        "en": "house"
+      , "fr": "house"
+      , "ru": "дом"
+      }
+    }
+  , { "file": "living_room.jpg"
+    , "text": {
+        "en": "living room"
+      , "fr": "living_room"
+      , "ru": "гостинная"
+      }
+    }
+  , { "file": "garden.jpg"
+    , "text": {
+        "en": "garden"
+      , "fr": "garden"
+      , "ru": "сад"
+      }
+    }
+  , { "file": "train.jpg"
+    , "text": {
+        "en": "train"
+      , "fr": "train"
+      , "ru": "поезд"
+      }
+    }
+  , { "file": "shops.jpg"
+    , "text": {
+        "en": "shops"
+      , "fr": "shops"
+      , "ru": "магазины"
       }
     }
   ]
