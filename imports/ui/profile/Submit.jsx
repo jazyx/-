@@ -9,9 +9,7 @@ import Storage from '../../tools/storage'
 import { localize
        , getRandomFromArray 
        } from '../../tools/utilities'
-import { createNovice
-       , log
-       } from '../../api/methods'
+import { logIn } from '../../api/methods/methods'
 
 import { StyledCentred } from '../styles'
 
@@ -19,7 +17,7 @@ import { StyledCentred } from '../styles'
 
 class Submit extends Component {
   constructor(props) {
-    super(props)
+    super(props) // { phrases }
 
     this.state = { save: "saving" }
     /// <<< HARD-CODED
@@ -35,14 +33,19 @@ class Submit extends Component {
     // language: "ru"
     // teacher:  "aa"
     // === for returning users with data from localStorage
-    // user_id:  "g5Q3geSR2KuigZybJ"
-    // q_code:   "0294"
-    // d_code:   "xTG3"
-    // view:     "Activity"
+    // d_code:   "xTG3"              // or created here on Client
+    // 
+    // user_id:  "g5Q3geSR2KuigZybJ" // created on Server
+    // q_code:   "0294"              //        —"—
+    // view:     "Activity"          // —"— but updated on Client
+    // viewData: {...}               // created on Client
  
-    const d_code = Session.get("d_code") || this.getD_code()
+    // Add the data that we can be sure of having, through the user
+    // input, or by calculation.
+    const d_code = Session.get("d_code")
+                || this.setD_code()
 
-    this.noviceData = {
+    this.accountData = {
       native:   Session.get("native")
     , username: Session.get("username")
     , language: Session.get("language")
@@ -50,30 +53,26 @@ class Submit extends Component {
     , d_code:   d_code
     }
 
-    if (Session.get("user_id")) {
-      // This is a returning user logging in automatically
-      log.call(
-        { d_code
-        , in: true
-        , id: Session.get("user_id")
-        , teacher: Session.get("teacher")
-        }
-      , this.callback
-      )
+    // Add data that could have been read in from the localStorage
+    const savedKeys = [
+      "q_code"
+    , "user_id"
+    , "group_id"
+    ]
+    savedKeys.forEach(key => {
+      const value = Session.get(key)
+      if (value) {
+        this.accountData[key] = value
+      }
+    })
 
-    } else {
-      // This is either:
-      // * A new user
-      // or
-      // * A returning user on a new device or logging in from a
-      //   machine that has no localStorage
-
-      createNovice.call(this.noviceData, this.callback)
-    }
+    logIn.call(this.accountData, this.callback)
   }
 
 
   callback(error, data) {
+    console.log("Submit callback", "error:", error, "data:", data)
+
     let save = "save_failed"
     let saved = false
     const { user_id, q_code, group_id, view } = data || {}
@@ -87,13 +86,14 @@ class Submit extends Component {
       // is already available locally.
 
     } else {
-      this.noviceData.user_id = user_id
-      this.noviceData.q_code = q_code
+      this.accountData.q_code = q_code
+      this.accountData.user_id = user_id
+      this.accountData.group_id = group_id
       saved = true
     }
 
     // Save permanently to localStorage (if available)
-    const stored = Storage.set(this.noviceData)
+    const stored = Storage.set(this.accountData)
 
     if (saved) {
       if (stored) {
@@ -107,8 +107,6 @@ class Submit extends Component {
 
     Session.set("user_id",  user_id)
     Session.set("group_id", group_id)
-    Session.set("code",     code)
-    Session.set("isMaster", true)
     Session.set("view",     view)
 
     // Show the save message...
@@ -122,7 +120,7 @@ class Submit extends Component {
   }
 
 
-  getD_code() {
+  setD_code() {
     let d_code    = ""
     const source = "0123456789&#"
                  + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -133,6 +131,8 @@ class Submit extends Component {
     for ( let ii = 0; ii < total; ii += 1 ) {
       d_code += getRandomFromArray(source)
     }
+
+    Session.set("d_code", d_code)
 
     return d_code
   }

@@ -8,7 +8,7 @@ import collections from '../../api/collections'
 // viewSize
 import { log
        , reGroup
-       } from '../../api/methods'
+       } from '../../api/methods/methods'
 import Storage from '../../tools/storage'
 
 
@@ -125,7 +125,6 @@ export default class StartUp {
   }
 
 
-
   setSessionData() {
     const storedData = Storage.get()
     const keys = Object.keys(storedData)
@@ -196,18 +195,19 @@ export default class StartUp {
     }
 
     const user_id = Session.get("user_id")
+    const teacher_id = Session.get("teacher")
     const params = {
-      teacher_id: Session.get("teacher")
-    , user_id
-    , join: true
+      user_id
+    , teacher_id
+    , in: true
     }
     const callback = this.groupsCallback
 
     // Update the User document
-    log.call({ id: user_id, in: true })
+    log.call(params)
 
-    // Log in to one-on-one group with teacher
-    reGroup.call(params, callback)
+    // // Log in to one-on-one group with teacher
+    // reGroup.call(params, callback)
   }
 
 

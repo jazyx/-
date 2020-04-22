@@ -46,7 +46,7 @@ import { Session } from 'meteor/session'
 import { Groups } from '../api/collections'
 
 // viewSize
-import { share } from '../api/methods'
+import { share } from '../api/methods/methods'
 import StartUp from './startup/StartUp'
 
 

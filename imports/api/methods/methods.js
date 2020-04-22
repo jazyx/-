@@ -6,7 +6,7 @@
  * ... with the important addition of a `return` statement in each
  * entry for Meteor.methods()
  *
- * createNovice() is called from the Submit view after the user has
+ * createAccount() is called from the Submit view after the user has
  *   selected a native language, a username and a teacher. It creates
  *   a User record and a Groups record with the chosen teacher, and
  *   indicates a loggedIn status in both.
@@ -49,104 +49,68 @@
 import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
 
-import collections from '../api/collections'
+import LogIn from './login'
+import LogOut from './logout'
+import JoinGroup from './join'
+import LeaveGroup from './leave'
+import CreateAccount from './account'
 
-if (Meteor.isClient) {
-  for (let name in collections) {
-    Meteor.subscribe(collections[name]._name) //, "methods")
-  }
-}
+import collections from '../../api/collections'
+// ^^^ import required collections by name in associated class scripts
+
+// // SUBSCRIPTION IS TAKEN CARE OF IN Share.jsx ON THE CLIENT // //
+// if (Meteor.isClient) {
+//   for (let name in collections) {
+//     Meteor.subscribe(collections[name]._name) //, "methods")
+//   }
+// }
 
 
 
 /** Creates or updates User and Group records for after profiling
  *  Calling the method a second time reuses the existing groups
  */
-export const createNovice = {
-  name: 'vdvoyom.createNovice'
+export const createAccount = {
+  name: 'vdvoyom.createAccount'
 
   // Factor out validation so that it can be run independently
   // Will throw an error if any of the arguments are invalid
-, validate(noviceData) {
+, validate(accountData) {
     new SimpleSchema({
       username: { type: String }
     , native:   { type: String }
     , teacher:  { type: String }
     , language: { type: String }
-    , d:    { type: String }
-    , q_code:   { type: String, optional: true}
-    }).validate(noviceData)
+    , d_code:   { type: String }
+
+    // action will have been added if the original call was to logIn
+    , action:   { type: String, optional: true }
+    }).validate(accountData)
   }
 
   // Factor out Method body so that it can be called independently
 
-, run(noviceData) {
-    const Users = collections["Users"]
+, run(accountData) {
+    new CreateAccount(accountData) // modifies accountData
 
-    function getUsersNamed({ username, teacher }) {
-      const query = { teacher_id: teacher, username }
-      const users = Users.find(query).count()
+    console.log("After CreateAccount accountData is", accountData)
+    // { username: "Влад"
+    // , teacher:  "jn"
+    // , d_code:   "d9Uvl"
+    // 
+    // , q_code:   "0381"
+    // , q_color:  "#33cc60"
+    // , q_index:  1
+    // , user_id:  "BqKkMjjBSRzedasyT"
+    // , group_id: "PWwknSiHCGmsivSXg"
+    // }
 
-      return users
-    }
+    new LogIn(accountData)     // , action: "loggedIn"
+    new JoinGroup(accountData)
 
-    function createNewAccount() {
+    console.log("Data to return from CreateAccount", accountData)
 
-    }
-
-    function getQData () {
-      // Create a number at random between 0833 and 9165 (one of 8333
-      // possible numbers). Ensure that it has not been attributed to
-      // anyone else with the same name or teacher.
-    }
-
-    // TODO:
-    // Allow more than one user with a given name and native language
-    // Using color q_code * 711/256
-    const { native, username, teacher, d_code, q_code } = noviceData
-    delete noviceData.d_code
-
-    const existing = getUsersNamed(noviceData)
-    switch (existing) {
-      case 0:
-        // A user is connecting with this teacher for the first time
-        const user_id = createNewAccount(data, noviceData)
-      break
-      default:
-        // This may be a new user with the same name as an existing
-        // user, or it may be a returning user connecting from a new
-        // device or from a device which has no localStorage
-        return askForPINCode(data)
-    } 
-    
-
-    // ASSUME ONE LEARNER PER GROUP, ONE GROUP PER LEARNER, FOR NOW //
-
-    // Find a group with this teacher and this learner...
-    const Groups = collections["Groups"]
-    const group = {
-      user_ids: { $elemMatch: { $eq: user_id } }
-    , teacher_id: noviceData.teacher
-    }
-    const view = "Activity"
-
-    let group_id
-    existing = Groups.findOne(group)
-    if (!existing) {
-      // ... or create it and make this learner master
-      group.user_ids = [ user_id ]
-      group.master = user_id
-      group.loggedIn = [ user_id ]
-      group.view = view
-      group_id = Groups.insert(group)
-
-    } else {
-      // A group was found, so join it now
-
-      Groups.update({ _id }, updates )
-    }
-
-    return { user_id, group_id, view }
+    return accountData
   }
 
   /** Call Method by referencing the JS object
@@ -155,13 +119,74 @@ export const createNovice = {
    *  specify it at the call site
    */
 
-, call(noviceData, callback) {
+, call(accountData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [noviceData], options, callback)
+    Meteor.apply(this.name, [accountData], options, callback)
+  }
+}
+
+
+
+/** Logs users and teachers in and out
+ *
+ *  Groups, Users and Teachers are updated.
+ */
+export const logIn = {
+  name: 'vdvoyom.logIn'
+
+, validate(logInData) {
+    new SimpleSchema({
+      username: { type: String }
+    , native:   { type: String }
+    , teacher:  { type: String }
+    , language: { type: String }
+    , d_code:   { type: String }
+    , q_code:   { type: String, optional: true }
+    // if q_code is missing or does not match username, Client may be
+    // asked to provide a PIN, and then logIn will be called again.
+
+    // Sent only if localStorage is available on Client
+    , user_id:  { type: String, optional: true }
+    , group_id: { type: String, optional: true }
+
+    // May not be useful on Client, so not available
+    , q_index:  { type: Number, optional: true }
+    , q_color:  { type: String, optional: true }
+    }).validate(logInData)
+  }
+
+, run(logInData) {
+    new LogIn(logInData)
+
+    const { action } = logInData
+
+    switch (action) {
+      case "CreateAccount":
+        console.log("Run", createAccount.run(logInData))
+        console.log("CreateAccount called from LogIn", logInData)
+        return logInData
+
+      case "loggedIn":
+        new JoinGroup(logInData) // fall through; action: loggedIn
+      case "RequestPIN":
+        return logInData
+
+      default:
+        throw "Unknown action in vdvoyom.logIn: '" + action + "'"
+    }
+  }
+
+, call(logInData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [logInData], options, callback)
   }
 }
 
@@ -459,8 +484,8 @@ export const test = {
 
 // To register a new method with Meteor's DDP system, add it here
 const methods = [
-  createNovice
-, log
+  createAccount
+, logIn
 // , reGroup
 , share
 , setView

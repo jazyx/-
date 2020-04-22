@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor'
-import {} from '../imports/api/methods.js'
+import {} from '../imports/api/methods/methods'
 import collections from '../imports/api/collections.js'
 import Points from '../imports/api/points'
+
+
+console.log(Meteor.methods)
 
 // Required by CollectJSON
 const fs = require('fs')

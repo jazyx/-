@@ -7,7 +7,7 @@ import { Session } from 'meteor/session'
 import collections from '../../api/collections'
 import { localize
        , getElementIndex } from '../../tools/utilities'
-import { setView } from '../../api/methods'
+import { setView } from '../../api/methods/methods'
 
 import { StyledProfile
        , StyledPrompt

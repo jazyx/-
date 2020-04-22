@@ -8,7 +8,7 @@ import collections from '../../api/collections'
 import { localize
        , getElementIndex
        } from '../../tools/utilities'
-import { log } from '../../api/methods'
+import { log } from '../../api/methods/methods'
 
 import { StyledProfile
        , StyledPrompt
