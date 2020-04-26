@@ -17,7 +17,6 @@ import { getGoldenAngleAt
 export default class CreateAccount {
   constructor(accountData) {
     this.accountData = accountData
-
     // console.log("CreateAccount accountData:", accountData)
 
     /// <<< HARD-CODED

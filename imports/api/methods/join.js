@@ -60,7 +60,7 @@ export default class JoinGroup {
   addUserHistoryItem(group_id, d_code, user_id) {
     const index = getNextIndex("history") // could use a random value
     const query = { _id: user_id }
-    const item  = { d_code: d_code, in: index }
+    const item  = { in: index }
     const path  = "history." + group_id
     // { ...
     // , history: {

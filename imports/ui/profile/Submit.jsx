@@ -42,8 +42,8 @@ class Submit extends Component {
 
     // Add the data that we can be sure of having, through the user
     // input, or by calculation.
-    const d_code = Session.get("d_code")
-                || this.setD_code()
+    const d_code = this.setD_code() // does Session.set("d_code", <>)
+    // Session.get("d_code") || this.setD_code()
 
     this.accountData = {
       native:   Session.get("native")
@@ -74,14 +74,15 @@ class Submit extends Component {
 
   callback(error, data) {
     console.log("Submit callback", "error:", error, "data:", data)
-    // action:   <missing | "CreateAccount" | "RequestPIN"
-    // status:   <missing | true>
+    // status:   <missing | "CreateAccount" | "RequestPIN"
+    // loggedIn: <missing | true>
+    // accountCreated: <missing | true>
     // d_code:   <5-character string to identify this device>
     // group_id: <16-character string>
     // language: <langage user is learning: "en-GB" | "ru" | ...>
     // native:   <2-5 character string (as above)>
     // q_code:   <4-digit string>
-    // teacher:  <string <8 characters.
+    // teacher:  <string <8 characters>
     // user_id:  <16-character string>
     // username: <string>
 
@@ -99,7 +100,7 @@ class Submit extends Component {
         view = data.view
       }
 
-    } else { // if (data.action === "RequestPIN") {
+    } else { // if (data.status === "RequestPIN") {
       view = "EnterPIN"
     }
 
@@ -153,8 +154,10 @@ class Submit extends Component {
     this.accountData.user_id = user_id
     this.accountData.group_id = group_id
 
+    // Remove properties that won't be reused on next connection
     delete this.accountData.pin_given
     delete this.accountData.status
+    delete this.accountData.d_code
 
     // Save permanently to localStorage (if available)
     const stored = Storage.set(this.accountData)
@@ -164,12 +167,7 @@ class Submit extends Component {
 
 
   goErrorPage(error) {
-
-  }
-
-
-  goLandingPage() {
-
+    // TODO
   }
 
 
