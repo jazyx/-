@@ -7,10 +7,10 @@ import { Users
        , Groups
        } from '../../api/collections'
 
+import { hsl2hex } from '../../tools/utilities'
 import { getGoldenAngleAt
        , getCodeFrom
-       , hsl2hex
-       } from '../../tools/utilities'
+       } from '../../tools/project'
 
 
 

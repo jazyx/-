@@ -53,6 +53,7 @@ import LogIn from './login'
 import LogOut from './logout'
 import JoinGroup from './join'
 import LeaveGroup from './leave'
+import LogInTeacher from './loginTeacher'
 import CreateAccount from './account'
 // ^^^ import required collections by name in associated class scripts
 
@@ -160,6 +161,37 @@ export const logIn = {
       default:
         throw "Unknown action in vdvoyom.logIn: '" + action + "'"
     }
+  }
+
+, call(logInData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [logInData], options, callback)
+  }
+}
+
+
+
+/** Logs a teacher's device into its Groups and Users records
+ *
+ *  A
+ */
+export const logInTeacher = {
+  name: 'vdvoyom.logInTeacher'
+
+, validate(logInData) {
+    new SimpleSchema({
+      id:       { type: String }
+    , d_code:   { type: String }
+    }).validate(logInData)
+  }
+
+, run(logInData) {
+    new LogInTeacher(logInData)
+    return logInData
   }
 
 , call(logInData, callback) {
@@ -292,6 +324,7 @@ const methods = [
   createAccount
 , logIn
 , logOut
+, logInTeacher
 , share
 , setView
 ]

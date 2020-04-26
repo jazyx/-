@@ -191,7 +191,6 @@ export const StyledButtonBar = styled.div`
   height: calc(15 * var(--min));
   width: calc(100 * var(--w));
   border-top: 1px outset #222;
-
 `
 
 export const StyledCentred = styled.div`
@@ -236,6 +235,10 @@ export const StyledLearner = styled.li`
   padding: calc(1 * var(--min));
   width: calc(90 * var(--min));
   margin: auto;
+
+  & p {
+    margin: 0;
+  }
 `
 
 export const StyledPIN = styled.p`

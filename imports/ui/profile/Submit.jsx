@@ -9,6 +9,7 @@ import Storage from '../../tools/storage'
 import { localize
        , getRandomFromArray
        } from '../../tools/utilities'
+import { getD_code } from '../../tools/project'
 import { logIn } from '../../api/methods/methods'
 
 import { StyledCentred } from './styles'
@@ -42,8 +43,8 @@ class Submit extends Component {
 
     // Add the data that we can be sure of having, through the user
     // input, or by calculation.
-    const d_code = this.setD_code() // does Session.set("d_code", <>)
-    // Session.get("d_code") || this.setD_code()
+    const d_code = getD_code()
+    Session.set("d_code", d_code)
 
     this.accountData = {
       native:   Session.get("native")
@@ -109,24 +110,6 @@ class Submit extends Component {
       () => this.props.setView(view)
     , this.delay
     )
-  }
-
-
-  setD_code() {
-    let d_code    = ""
-    const source = "0123456789&#"
-                 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                 + "abcdefghijklmnopqrstuvwxyz"
-    const length = source.length
-    const total  = 5 //        Creates 1,073,741,824 possible strings
-    // const total  = 7 // Creates 4 398 046 511 104 possible strings
-    for ( let ii = 0; ii < total; ii += 1 ) {
-      d_code += getRandomFromArray(source)
-    }
-
-    Session.set("d_code", d_code)
-
-    return d_code
   }
 
 

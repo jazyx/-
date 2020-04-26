@@ -4,11 +4,18 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { L10n
+       , Users
+       , Groups
+       } from '../../api/collections'
+
 import { localize
        , getElementIndex
+       , removeFrom
+       , arrayOverlap
        } from '../../tools/utilities'
-import { log } from '../../api/methods/methods'
+import { getD_code } from '../../tools/project'
+import { logInTeacher } from '../../api/methods/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -43,8 +50,11 @@ class Teach extends Component {
 
 
   logTeacherIn() {
-    const id = Session.get("teacher_id")
-    log.call({ id, in: true }) // no callback means synchronous
+    const id     = Session.get("teacher_id")
+    const d_code = getD_code()
+    Session.set("d_code", d_code)
+
+    logInTeacher.call({ id, d_code }) // no callback => synchronous
   }
 
 
@@ -103,32 +113,27 @@ class Teach extends Component {
 
   getGroups() {
     const groups = this.props.groups.map((group, index) => {
-      // {
-      //   _id: "ZG9N9SuWwgNTzpgXH"
-      // , user_names: [
-      //     "Ирина"
-      //   , "Влад"
-      //   ]
-      // , loggedIn: ["XSK5wZtMWriW8Tuba"]
-      // , master:    "XSK5wZtMWriW8Tuba"
-      // , user_ids: [
-      //     "XSK5wZtMWriW8Tuba"
-      //   , "y6sQmtm5DGqE27S95"
-      //   ]
-      // }
-      const name = group.name || group.user_names[0]
+
+      const names = group.members.map(member => {
+        const username = member.username
+        return <p
+          key={username}
+        >
+          {username}
+        </p>
+      })
       const selected = this.state.selected === index
       const ref = selected ? this.scrollTo : ""
       const disabled = !group.loggedIn.length
 
       return <StyledLearner
-        key={name}
+        key={index}
         ref={ref}
         disabled={disabled}
         selected={selected}
         onMouseUp={this.toggleLearner}
       >
-        {name}
+        {names}
       </StyledLearner>
     })
 
@@ -206,74 +211,140 @@ class Teach extends Component {
 
 export default withTracker(() => {
   // Phrases
-  const l10n  = collections["L10n"]
-  Meteor.subscribe(l10n._name)
+  const phrases = getPhrases()
+  const groups = getGroups()
+  // console.log(groups)
 
+  const props = {
+    phrases
+  , groups
+  }
+
+  return props
+})(Teach)
+
+
+
+function getPhrases() {
   const phraseQuery = {
     $and: [
       { type: { $eq: "phrase" }}
     , { file: { $exists: false }} // no flags
     ]
   }
-  const phrases = l10n.find(phraseQuery).fetch()
+  const phrases = L10n.find(phraseQuery).fetch()
 
-  // Groups
-  const Groups  = collections["Groups"]
-  Meteor.subscribe(Groups._name)
+  return phrases
+}
 
-  const groupQuery = { teacher_id: Session.get("teacher_id") }
-  const project    = {
-    user_ids: 1
-  , master: 1
-  , loggedIn: 1
-  , view: 1
+
+function getGroups() {
+  // Groups records have the format:
+  // {
+  //   "_id" :       "Q6Sb6WsfokFdf5Ccw",
+  //
+  //   "owner" :     "aa",
+  //   "language" :  "ru",
+  //   "active" :    false,
+  //   "lobby" :     "",
+  //   "chat_room" : "",
+  //
+  //   "members" :   [ <user_id>,     ...,    <teacher_id> ],
+  //   "loggedIn" :  [ <user d_code>, ... <teacher d_code> ],
+  //   "view" :      "Activity"
+  // }
+
+  // We will return a filtered list with the format
+  // [ { _id: <>
+  //   , view: <string>
+  //   , members: [
+  //       { _id: <user_id>
+  //       , username: <string>
+  //       , loggedIn: <boolean>
+  //       }
+  //     , ...
+  //     ]
+  //   }
+  // , ...
+  // ]
+
+  // Get a list of Groups that the Teacher owns, with their members
+  // (which will include the Teacher), loggedIn details and view.
+  // Sort the groups so that groups with loggedIn users appear first
+
+  const teacher_id = Session.get("teacher_id")
+  const d_code = Session.get("d_code")
+  const query = { owner: teacher_id }
+  const project = {
+    fields: {
+      members: 1
+    , loggedIn: 1
+    , view: 1
+    }
   }
   // console.log(
   //   "db.groups.find("
-  // , JSON.stringify(groupQuery)
+  // , JSON.stringify(query)
   // , ","
   // , JSON.stringify(project)
   // , ").pretty()"
   // )
-  let groups       = Groups.find(groupQuery, {fields: project})
-                           .fetch()
-                           .sort((a, b) => (
-                              b.loggedIn.length - a.loggedIn.length
-                            ))
-  const user_ids   = groups.reduce(
-    (ids, group) => {
-      return [...ids, ...group.user_ids]
-    }
-  , []
+  let groups = Groups.find(query, project)
+                     .fetch()
+                     .sort((a, b) => ( // non-zero lengths first
+                         ( b.loggedIn.length > 1)
+                       - ( a.loggedIn.length > 1)
+                      ))
+  const user_ids = getUniqueValues(groups, "members", teacher_id)
+  const userMap  = getUserMap(user_ids)
+  addUserNamesTo(groups, userMap, teacher_id)
+
+  return groups
+}
+
+
+function getUniqueValues(groups, key, exclude) {
+  const reducer = (reduced, group) => (
+     [...reduced, ...group[key]]
   )
 
-  const Users  = collections["Users"]
-  Meteor.subscribe(Users._name)
-  const users = Users.find(
-    { _id: { $in: user_ids } }
-  , { sort: [[ "loggedIn", "desc" ], [ "username", "asc" ]] }
-  ).fetch()
+  const uniqueValues = (value, index, array) => (
+    array.indexOf(value) === index
+  )
 
-  groups = groups.map(group => {
-    group.user_names = group.user_ids.map(id => (
-      users.find(user => user._id === id))
-           .username
-    )
+  const output = groups.reduce(reducer, [])
+                       .filter(uniqueValues)
+  removeFrom(output, exclude)
 
-    if (!group.group_name) {
-      group.group_name = group.user_names[0]
-    }
+  return output
+}
 
-    return group
+
+function getUserMap(user_ids) {
+  const map = {}
+  const project = { fields: { username: 1, loggedIn: 1 }}
+
+  user_ids.forEach(_id => {
+    const user = Users.findOne({ _id }, project)
+    map[_id] = user
   })
 
-  // console.log(groups)
+  return map
+}
 
-  const props = {
-    phrases
-  , groups
-  , users
-  }
 
-  return props
-})(Teach)
+function addUserNamesTo(groups, userMap, exclude) {
+  groups.forEach(group => {
+    const loggedIn = group.loggedIn
+    const members  = group.members.filter( _id => _id !== exclude )
+                                  .map( _id => {
+      const userData    = userMap[_id] // vvv array vvv
+      const overlap     = arrayOverlap(userData.loggedIn, loggedIn)
+      userData.loggedIn = overlap.length // <<< Boolean
+
+      return userData
+    })
+
+    group.members = members
+  })
+}
