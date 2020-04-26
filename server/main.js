@@ -4,8 +4,6 @@ import collections from '../imports/api/collections.js'
 import Points from '../imports/api/points'
 
 
-console.log(Meteor.methods)
-
 // Required by CollectJSON
 const fs = require('fs')
 const path = require('path')
@@ -149,6 +147,7 @@ class CollectJSON {
 
   _insertNewItems(collection, json, version) {
     const keys = Object.keys(json)
+    let counter = 0
 
     keys.forEach(key => {
       const value = json[key]
@@ -158,15 +157,20 @@ class CollectJSON {
           document.type = key
           document.version = version
           collection.insert(document)
+          counter += 1
         })
 
       } else if (key === "as_is") {
         collection.insert( value )
+        counter += 1
 
       } else { // Use with caution. Old documents will not be cleared.
         collection.insert({ [key]: value })
+         counter += 1
       }
     })
+
+    console.log("Added", counter, "items to", collection._name)
   }
 
 

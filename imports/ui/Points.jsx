@@ -1,6 +1,6 @@
 /**
  * /import/ui/Points.jsx
- * 
+ *
  */
 
 
@@ -251,7 +251,7 @@ export default withTracker(() => {
   // if no data was saved to localStorage after an earlier session.
   // trackPoint() and tap() will not run until group_id is set.
 
-  return { 
+  return {
     id
   , group_id
   , points

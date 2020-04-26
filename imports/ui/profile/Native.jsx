@@ -16,7 +16,7 @@ import { StyledProfile
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
-       } from '../styles'
+       } from './styles'
 
 
 class Native extends Component {
@@ -98,7 +98,9 @@ class Native extends Component {
 
   scrollIntoView() {
     const element = this.scrollTo.current
-    element.scrollIntoView({behavior: 'smooth'})
+    if (element) {
+      element.scrollIntoView({behavior: 'smooth'})
+    }
   }
 
 
@@ -134,7 +136,9 @@ class Native extends Component {
   getPrompt(selected) {
     const prompt = this.getPhrase("native_language", selected)
 
-    return <StyledPrompt>
+    return <StyledPrompt
+      aspectRatio={this.props.aspectRatio}
+    >
       {prompt}
     </StyledPrompt>
   }
@@ -159,6 +163,7 @@ class Native extends Component {
         onMouseLeave={this.mouseLeave}
         onMouseUp={this.selectFlag}
         ref={ref}
+        aspectRatio={this.props.aspectRatio}
       >
         <img
           src={folder + flag.file}
@@ -167,7 +172,11 @@ class Native extends Component {
        </StyledLI>
     }) //.reverse()
 
-    return <StyledUL>{flags}</StyledUL>
+    return <StyledUL
+      aspectRatio={this.props.aspectRatio}
+    >
+      {flags}
+    </StyledUL>
   }
 
 
@@ -195,6 +204,8 @@ class Native extends Component {
 
 
   render() {
+    // console.log("Native props", this.props.aspectRatio)
+
     const selected = this.getSelected()
     if (selected < 0) {
       // No language data is available. We'll jump back to Splash
@@ -221,7 +232,7 @@ class Native extends Component {
 
 
   componentDidMount(delay) {
-    // HACK: Not all images may have been loaded from MongoDB, so
+    // HACK: Not all images may have been loaded from the server, so
     // let's wait a little before we scrollIntoView
     setTimeout(this.scrollIntoView, 200)
   }
@@ -229,7 +240,7 @@ class Native extends Component {
 
   componentDidUpdate() {
     if (this.scrollFlag) {
-      this.scrollIntoView()
+      setTimeout(this.scrollIntoView, 1000) // <<< HARD-CODED
       this.scrollFlag = false
     }
   }

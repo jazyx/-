@@ -6,8 +6,35 @@ export const L10n       = new Mongo.Collection('l10n')
 export const Chat       = new Mongo.Collection('chat')
 export const Users      = new Mongo.Collection('users')
 export const Groups     = new Mongo.Collection('groups')
+export const Counters   = new Mongo.Collection('counters')
 export const Teachers   = new Mongo.Collection('teachers')
 export const Activities = new Mongo.Collection('activities')
+
+export const getNextIndex = (_id) => {
+  let inc = 1
+
+  if (Meteor.isMeteor) {
+    Counters.upsert(
+      { _id }
+    , { $inc: { index: inc }}
+    )
+
+    inc = 0
+  }
+
+  const index = (Counters.findOne({ _id })) || { index:0 }.index + inc
+
+  return index
+}
+
+
+// <<< DEVELOPMENT ONLY // DEVELOPMENT ONLY // DEVELOPMENT ONLY //
+if (Meteor.isClient) {
+  window.Users = Users
+  window.Groups = Groups
+  window.getNextIndex = getNextIndex
+}
+// DEVELOPMENT ONLY // DEVELOPMENT ONLY // DEVELOPMENT ONLY >>> //
 
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
@@ -63,7 +90,7 @@ if (Meteor.isServer) {
     Meteor.publish(name, function public(caller, ...more) {
       // We need to use the classic function () syntax so that we can
       // use this to access the Meteor connection and use this.user_id
-    
+
       let items = collection.find(query) // (customQuery || query)
 
       if (typeof caller === "string") {

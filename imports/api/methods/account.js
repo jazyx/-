@@ -7,10 +7,10 @@ import { Users
        , Groups
        } from '../../api/collections'
 
-import { GOLDEN_ANGLE
-       , RATIO 
-       } from '../magicNumbers'
-import { hsl2hex } from '../../tools/utilities'
+import { getGoldenAngleAt
+       , getCodeFrom
+       , hsl2hex
+       } from '../../tools/utilities'
 
 
 
@@ -18,38 +18,49 @@ export default class CreateAccount {
   constructor(accountData) {
     this.accountData = accountData
 
-    //console.log("CreateAccount accountData:", accountData)
-    // 
-    // d_code:   "LZ5lf"
-    // language: "en-GB"
-    // native:   "ru"
-    // teacher:  "jn"
-    // username: "Влад"
-  
+    // console.log("CreateAccount accountData:", accountData)
+
     /// <<< HARD-CODED
     this.saturation = 60
     this.luminosity = 50
-    /// HARD-CODED >>>  
+    // accountData.view = "Activity"
+    /// HARD-CODED >>>
 
     this.createUniqueQCode()
     this.createUser()
     this.createGroupWithTeacher()
 
-    // console.log("create accountData:", accountData)
+    accountData.accountCreated = true
+
+    // console.log("accountData after createUser:", accountData)
+    // console.log("————————————————————————————")
     //
-    // = username: "Влад"
-    // = teacher:  "jn"
-    // = d_code:   "d9Uvl"
-    // + q_code:   "0381"
-    // + user_id:  "BqKkMjjBSRzedasyT"
-    // + group_id: "PWwknSiHCGmsivSXg"
+    //d_code: "HABIg"
+    // loggedOut: []
+    // native: "en-GB"
+    // q_code: "3819"
+    // q_color: "#33cc60"
+    // q_index: 1
+    // status: "CreateAccount"
+    // user_id: "DcMNnhN7meZ7hmSr4"
+    // username: "James"
+    // view: "Activity"
+    //
+    // = username:   "Влад"
+    // = teacher:    "jn"
+    // = d_code:     "d9Uvl"
+    // + q_code:     "0381"
+    // + user_id:    "BqKkMjjBSRzedasyT"
+    // + group_id:   "PWwknSiHCGmsivSXg"
+    // + newAccount: true
+    // + view:       "Activity"
     //
     // // Not needed in the return value
-    // = language: "en-GB"
-    // = native:   "ru"
-    // + q_color:  "#33cc60"
-    // + q_index:  1
-    // + loggedIn: []
+    // = language:   "en-GB"
+    // = native:     "ru"
+    // + q_color:    "#33cc60"
+    // + q_index:    1
+    // + loggedIn:   []
 
     const notNeeded = [
       "language"
@@ -66,16 +77,24 @@ export default class CreateAccount {
   createUniqueQCode() {
     // Create or recyle a number between 0001 and 9999
 
-    let q_index = Users.find().count() + 1
+    let newest  = Users.findOne(
+      {}
+    , { fields: { _id: 0, q_index: 1 }
+      , sort: { q_index: -1 }
+      }
+    )
+
+    let q_index = newest
+                ? newest.q_index + 1
+                : 1
     let hue
       , q_code
       , q_color
 
     if (q_index < 6765) {
       // Use the Golden Angle to get the next value
-
-      hue  = this.getAngleFrom(q_index)
-      q_code = this.getQCodeFrom(hue)
+      hue = getGoldenAngleAt(q_index)
+      q_code = getCodeFrom(hue)
 
     } else if (q_index < 8901) {
       // TODO: Use the Golden Angle, but check for duplicate q_code's
@@ -99,105 +118,53 @@ export default class CreateAccount {
   }
 
 
-  getAngleFrom(index) {
-    let angle = index * GOLDEN_ANGLE
-    angle -= Math.floor(angle / 360) * 360 // 0.0 ≤ angle < 360.0
-
-    return angle
-  }
-
-
-  getQCodeFrom(angle) {
-    let code = Math.floor(angle * RATIO)
-
-    // The following lines depend on 0 ≤  code ≤ 9999, because of the
-    // values of RATIO. If RATIO is multiplied by 10, for example,
-    // we'll need an extra zero and an extra } else if { statement.
-
-    if (code < 10) {
-      code = "000" + code
-    } else if (code < 100) {
-      code = "00" + code
-    } else if (code < 1000) {
-      code = "0" + code
-    } else {
-      code = "" + code
-    }
-
-    return code
-  }
-
-
   createUser() {
-    // Remove d_code before inserting new User document...
-    const { d_code } = this.accountData
-    delete this.accountData.d_code
+    const {
+      username
+    , native
+    , q_index
+    , q_code
+    , q_color
+    , d_code
+    } = this.accountData
 
-    this.accountData.loggedIn = []
+    const fields = {
+      username
+    , native
+    , q_index
+    , q_code
+    , q_color
+    }
+    fields.history = {}
+    fields.loggedIn = []
+    fields.autoLogIn = true
+    fields.restoreAll = true
 
-    // console.log("createUser", this.accountData)
-    // language: "en-GB"
-    // loggedIn: []
-    // native: "ru"
-    // q_code: "0381"
-    // q_color: "#33cc60"
-    // q_index: 1
-    // teacher: "jn"
-    // username: "Влад"
+    // console.log("createUser accountData = ", this.accountData)
 
-    this.accountData.user_id = Users.insert(this.accountData)
-
-    // ... and restore d_code afterwards to be used for logIn
-    this.accountData.d_code = d_code
+    this.accountData.user_id  = Users.insert(fields)
   }
 
 
   createGroupWithTeacher() {
+    const view = "Activity" // <<< HARD-CODED default value
+
     const group = {
-      user_ids: [ 
+      language:   this.accountData.language
+    , owner:      this.accountData.teacher
+    , active:     false // becomes true if Teacher logs in personally
+    , lobby:      ""
+    , chat_room:  ""
+    , members: [
         this.accountData.user_id
       , this.accountData.teacher
       ]
-    , teacher_id: this.accountData.teacher
     , loggedIn: []
-    , view: "Activity" // by default
+    , view
     // // Will be added by the Client
     // , viewData: {}
     // , viewSize: { width, height }
     }
     this.accountData.group_id = Groups.insert(group)
   }
-
-
-  create() {
-    this.createUniqueQCode()
-    this.createUser()
-    this.createGroupWithTeacher()
-
-    // console.log("create accountDatat:", this.accountData)
-    //
-    // = teacher:  "jn"
-    // = d_code:   "d9Uvl"
-    // + q_code:   "0381"
-    // + q_color:  "#33cc60"
-    // + q_index:  1
-    // + user_id:  "BqKkMjjBSRzedasyT"
-    // + group_id: "PWwknSiHCGmsivSXg"
-    //
-    // // Not needed in the return value
-    // = username: "Влад"
-    // = language: "en-GB"
-    // = native:   "ru"
-    // + loggedIn: []
-
-    const notNeeded = [
-      "username"
-    , "language"
-    , "native"
-    , "loggedIn"
-    ]
-    notNeeded.forEach(key => {delete this.accountData[key]})
-
-    return this.accountData
-  } 
 }

@@ -1,8 +1,8 @@
 /**
  * /imports/ui/startup/TimeOut.jsx
- * 
+ *
  * The Menu will be active, but it won't be possible to use it much.
- * 
+ *
  * TODO: Add active buttons for Try Again, Wait and [Continue], which
  * will only become active if the non-activity collections eventually
  * become ready.
@@ -14,7 +14,7 @@ import React, { Component } from 'react';
 
 import { StyledProfile
        , StyledPrompt
-       } from '../styles'
+       } from '../profile/styles'
 
 
 

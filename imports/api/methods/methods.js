@@ -38,7 +38,7 @@
  *
  * reGroup() combines join group and leave group
  *   Called for users from the Connect view
- *   
+ *
  * NOTE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  * Methods specific to the Points collection are defined separately in
  * /imports/api/points.js
@@ -54,8 +54,6 @@ import LogOut from './logout'
 import JoinGroup from './join'
 import LeaveGroup from './leave'
 import CreateAccount from './account'
-
-import collections from '../../api/collections'
 // ^^^ import required collections by name in associated class scripts
 
 // // SUBSCRIPTION IS TAKEN CARE OF IN Share.jsx ON THE CLIENT // //
@@ -66,15 +64,12 @@ import collections from '../../api/collections'
 // }
 
 
-
 /** Creates or updates User and Group records for after profiling
  *  Calling the method a second time reuses the existing groups
  */
 export const createAccount = {
   name: 'vdvoyom.createAccount'
 
-  // Factor out validation so that it can be run independently
-  // Will throw an error if any of the arguments are invalid
 , validate(accountData) {
     new SimpleSchema({
       username: { type: String }
@@ -88,36 +83,18 @@ export const createAccount = {
     }).validate(accountData)
   }
 
-  // Factor out Method body so that it can be called independently
-
 , run(accountData) {
     new CreateAccount(accountData) // modifies accountData
 
-    console.log("After CreateAccount accountData is", accountData)
-    // { username: "Влад"
-    // , teacher:  "jn"
-    // , d_code:   "d9Uvl"
-    // 
-    // , q_code:   "0381"
-    // , q_color:  "#33cc60"
-    // , q_index:  1
-    // , user_id:  "BqKkMjjBSRzedasyT"
-    // , group_id: "PWwknSiHCGmsivSXg"
-    // }
+    // console.log("After CreateAccount accountData is", accountData)
 
     new LogIn(accountData)     // , action: "loggedIn"
     new JoinGroup(accountData)
 
-    console.log("Data to return from CreateAccount", accountData)
+    // console.log("Data to return from CreateAccount", accountData)
 
     return accountData
   }
-
-  /** Call Method by referencing the JS object
-   *  Also, this lets us specify Meteor.apply options once in the
-   *  Method implementation, rather than requiring the caller to
-   *  specify it at the call site
-   */
 
 , call(accountData, callback) {
     const options = {
@@ -131,9 +108,10 @@ export const createAccount = {
 
 
 
-/** Logs users and teachers in and out
+/** Logs a user's device into its Groups and Users records
  *
- *  Groups, Users and Teachers are updated.
+ *  Creates a new account if necessary, or asks for confirmation by
+ *  PIN number if ownership of a name is uncertain
  */
 export const logIn = {
   name: 'vdvoyom.logIn'
@@ -148,6 +126,11 @@ export const logIn = {
     , q_code:   { type: String, optional: true }
     // if q_code is missing or does not match username, Client may be
     // asked to provide a PIN, and then logIn will be called again.
+    // In that case, status will be set to "RequestPIN" which may be
+    // altered to "CreateAccount" if user has no PIN, and pin_given
+    // will be set to true
+    , pin_given:{ type: Boolean, optional: true }
+    , status :  { type: String, optional: true }
 
     // Sent only if localStorage is available on Client
     , user_id:  { type: String, optional: true }
@@ -162,12 +145,11 @@ export const logIn = {
 , run(logInData) {
     new LogIn(logInData)
 
-    const { action } = logInData
+    const { status } = logInData
 
-    switch (action) {
+    switch (status) {
       case "CreateAccount":
-        console.log("Run", createAccount.run(logInData))
-        console.log("CreateAccount called from LogIn", logInData)
+        createAccount.run(logInData) // logInData modified
         return logInData
 
       case "loggedIn":
@@ -192,180 +174,43 @@ export const logIn = {
 
 
 
-/** Logs users and teachers in and out
+/** Logs a user's device out of its Groups and Users records
  *
- *  Groups, Users and Teachers are updated.
+ *
  */
-export const log = {
+export const logOut = {
   name: 'vdvoyom.log'
 
-, validate(logData) {
+, validate(logOutData) {
     new SimpleSchema({
-      id: { type: String }  // < 5 chars = teacher; > 5 chars = user
-    , in: { type: Boolean }
-    , d_code: { type: String }
-    , teacher: { type: String, optional: true}
-    }).validate(logData)
+      id:       { type: String }
+      // < 5 chars = teacher; > 5 chars = user
+      // 'xxxx' => 456976 combinations
+    , group_id: { type: String }
+    , d_code:   { type: String }
+    }).validate(logOutData)
   }
 
-, run(logData) {
-    const { user_id, teacher, d_code } = logData
-    const Teachers  = collections["Teachers"]
-    const Users     = collections["Users"]
-    const Groups    = collections["Groups"]
+, run(logOutData) {
+    new LeaveGroup(logOutData) // adds .leftGroup = [<id>, ...]
+    new LogOut(logOutData)
 
-    const isTeacher = id.length < 6 // teacher.ids "xxxxx" max
-    const loggingIn = logData.in
-
-    let collection
-      , query
-      , project
-
-    function logOut() {
-      // Get current dqueue, to check if d_code is first in the queue
-      // The device should be used in only one group.
-      collection
-      query    = { dqueue: { $elemMatch: { $eq: d_code } } }
-      project  = { fields: { dqueue: 1 } }
-      const { _id, dqueue } = Groups.findOne(query)
-
-      // // Do we need to the following line? Or will the Points
-      // // component work this out for itself?
-      // const isMaster = !dqueue.indexOf(d_code)
-
-      // Remove this device from this group...
-      Groups.updateOne({ _id }, { $pull: { dqueue: d_code } } )
-
-      // ... and from the User/Teacher record
-      if (isTeacher) {
-        collection = Teachers
-        query = { id }
-      } else {
-        collection = Users
-        query = { _id: id }
-      }
-
-      collection.updateOne(query, { $pull: { loggedIn: d_code } } )
-
-      // Get all the remaining devices for this user/teacher
-      project = { _id: 0, loggedIn: 1 }
-      const { loggedIn } = collection.findOne( query, project )
-
-      if (!loggedIn.length) {
-        // This user had only one device, and this was it. They're
-        // gone. Remember when they were last seen.
-        collection.updateOne(query, {$currentDate: {loggedOut: true}})
-
-      } else {
-        // This user /teacher has other devices loggedIn. Check if
-        // this is only one here
-        const noOtherViewsHere = loggedIn.every(d_code => (
-          dqueue.indexOf(d_code) < 0
-        ))
-
-        if (noOtherViewsHere) {
-          // Remove user_id from loggedIn
-          Groups.updateOne({ _id }, { $pull: { loggedIn: id } } )
-
-        } else {
-          // This user is still part of this group, on another device
-          // We've removed a different device. Don't do anything else.
-        }
-      }
-    }
-
-    function logIn() {     
-      // Logging in
-      if (isTeacher) {
-        collection = Teachers
-        query = { id }
-      } else {
-        collection = Users
-        query = { _id: id, teacher }
-      }
-
-      // Record that this user/teacher loggedIn with this device
-      collection.updateOne(query, { loggedIn: d_code })
-
-      const { _id } = Groups.findOne({ })
-      const push = { $push: { loggedIn: _id, dqueue: d_code } }
-      Groups.updateOne(query, push)
-
-      // Get the most recent view for the teacher-student group
-      const project = { _id: 0, view: 1 }
-      var { view } = Groups(query, project).findOne()
-
-      return { view }
-    }
-
-    if (!loggingIn) {
-      logOut()
-
-    } else {
-      return logIn()
-    }
+    return logOutData
   }
 
-, call(logData, callback) {
+, call(logOutData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [logData], options, callback)
+    Meteor.apply(this.name, [logOutData], options, callback)
   }
 }
 
 
 
-// /** Allows users to join and leave groups
-//  */
-// export const reGroup = {
-//   name: 'vdvoyom.reGroup'
-
-// , validate(reGroupData) {
-//     new SimpleSchema({
-//       teacher_id: { type: String }
-//     , user_id:    { type: String }
-//     , join:       { type: Boolean }
-//     }).validate(reGroupData)
-//   }
-
-// , run(reGroupData) {
-//     const { teacher_id, user_id, join } = reGroupData
-//     const query = {
-//       $and: [
-//         { teacher_id }
-//       , { user_ids: { $elemMatch: { $eq: user_id }}}
-//       ]
-//     }
-
-//     // Pull will remove all occurrences of the user_id, just in case
-//     // multiple pushes occurred.
-//     const set = join
-//               ? { $push: { loggedIn: user_id } }
-//               : { $pull: { loggedIn: user_id } }
-//     const multi = true
-//     collections["Groups"].update(query, set, multi)
-
-//     const groups = collections["Groups"].find(query).fetch()
-
-//     return groups
-//   }
-
-// , call(reGroupData, callback) {
-//     const options = {
-//       returnStubValue: true
-//     , throwStubExceptions: true
-//     }
-
-//     Meteor.apply(this.name, [reGroupData], options, callback)
-//   }
-// }
-
-
-
-/** Allows users to join and leave groups
+/** Allows the master to share viewSize with slaves
  */
 export const share = {
   name: 'vdvoyom.share'
@@ -442,60 +287,18 @@ export const setView = {
 
 
 
-
-/** Called by Activity.goActivity()
- */
-export const test = {
-  name: 'vdvoyom.test'
-
-, validate() {
-    console.log("Validating")
-  }
-
-, run() {
-    const result = 123 //self.subRoutine()
-    // console.log("test subRoutine ran:", result )
-    return { result }
-  }
-
-, subRoutine() {
-    console.log("running subRoutine")
-    return "successfully"
-  }
-
-, call(testData, callback) {
-    // This code is only run on the Client, so `this` only refers to
-    // the enclosing object on the Client. On the server, only
-    // validate() and run() are called, separately. As a result
-    // this.subRoutine is inaccessible and cannot be called.
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
-
-    Meteor.apply(this.name, [], options, callback)
-  }
-}
-
-
-
-
-
-
 // To register a new method with Meteor's DDP system, add it here
 const methods = [
   createAccount
 , logIn
-// , reGroup
+, logOut
 , share
 , setView
-, test
 ]
 
 methods.forEach(method => {
   Meteor.methods({
     [method.name]: function (args) {
-      // console.log("this:", this)
       method.validate.call(this, args)
       return method.run.call(this, args)
     }

@@ -5,12 +5,12 @@
  * positions of each user's mouse or touch actions. The collection
  * bypasses the MongoDB database. As a result, it cannot use the
  * built-in collection methods such as insert() and remove().
- * 
+ *
  * Points is exported differently on the server and on the client.
  * The server uses a null connection to prevent it from synchronizing
  * with MongoDB, but the client needs its default connection in order
  * to communicate with the server ({ connection: undefined })
- * 
+ *
  * See...
  *   http://richsilv.github.io/meteor/meteor-low-level-publications/
  * ... for more details.

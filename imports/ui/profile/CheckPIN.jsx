@@ -9,8 +9,6 @@ import { localize } from '../../tools/utilities'
 
 import { StyledProfile
        , StyledPrompt
-       , StyledPIN
-       , StyledP
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
@@ -19,46 +17,41 @@ import { StyledProfile
 
 
 
-class NewPIN extends Component {
+class CheckPIN extends Component {
   constructor(props) {
     super(props)
 
-    this.goNext = this.goNext.bind(this)
-    document.addEventListener("keydown", this.goNext, false)
+    this.start = this.start.bind(this)
+    document.addEventListener("keydown", this.start, false)
   }
 
 
-  goNext(event) {
+  start(event) {
     if (event && event.type === "keydown" && event.key !== "Enter") {
+      return
+    } else if (!this.state.selected) {
       return
     }
 
-console.log("NewPIN view", Session.get("view"))
-    this.props.setView(Session.get("view"))
-    // this.props.setView("CheckPIN")
+    this.props.setView("Activity")
   }
 
 
   getPrompt() {
+    const cue = "learn_pin"
     const code = Session.get("native")
-
-    let cue = "remember_pin"
     const prompt = localize(cue, code, this.props.phrases)
-    const PIN = Session.get("q_code")
-    cue = "pin_reason"
-    const reason = localize(cue, code, this.props.phrases)
 
-    return <StyledProfile>
-      <StyledPrompt>
-        {prompt}
-      </StyledPrompt>
-      <StyledPIN>
-        {PIN}
-      </StyledPIN>
-      <StyledP>
-        {reason}
-      </StyledP>
-    </StyledProfile>
+    return <StyledPrompt>
+      {prompt}
+    </StyledPrompt>
+  }
+
+
+  getPIN() {
+    return <StyledPrompt>
+      {Session.get("code")}
+    </StyledPrompt>
   }
 
 
@@ -74,7 +67,7 @@ console.log("NewPIN view", Session.get("view"))
       />
       <StyledButton
         disabled={false}
-        onMouseUp={this.goNext}
+        onMouseUp={this.start}
       >
         {prompt}
       </StyledButton>
@@ -91,7 +84,7 @@ console.log("NewPIN view", Session.get("view"))
     const buttonBar = this.getButtonBar()
 
     return <StyledProfile
-      id="new-pin"
+      id="check-pin"
     >
       {prompt}
       {buttonBar}
@@ -104,8 +97,7 @@ console.log("NewPIN view", Session.get("view"))
 export default withTracker(() => {
   const phraseQuery = {
    $or: [
-      { cue: "remember_pin" }
-    , { cue: "pin_reason" }
+      { cue: "learn_pin" }
     , { cue: "pin_memorized" }
     ]
   }
@@ -114,4 +106,4 @@ export default withTracker(() => {
   return {
     phrases
   }
-})(NewPIN)
+})(CheckPIN)

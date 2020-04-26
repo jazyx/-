@@ -17,7 +17,7 @@ import { StyledProfile
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
-       } from '../styles'
+       } from './styles'
 
 
 

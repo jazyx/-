@@ -215,7 +215,7 @@ export default class StartUp {
     if (error) {
       // Unable to join existing groups. No information about which
       // group the user should be in. Go to the Activity page, with
-      // the Menu open, so that the user can choose to edit their 
+      // the Menu open, so that the user can choose to edit their
       // Profile/Preferences
       this.go = "Profile"
     }

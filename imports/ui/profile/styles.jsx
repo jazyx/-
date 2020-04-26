@@ -4,7 +4,7 @@
  */
 
 import styled, { css } from 'styled-components'
-import { tweenColor } from '../tools/utilities'
+import { tweenColor } from '../../tools/utilities'
 
 const colors = {
   background: "#000"
@@ -14,7 +14,7 @@ colors.active = tweenColor(colors.background, "#fff", 0.1)
 
 // On Android, the page may be shown full screen but with the address
 // bar covering the top part of the page. For this reason, the prompt
-// header is given a top margin of 10vh, so that it is visible at all
+// header is given a top margin of calc(10 * var(--h)), so that it is visible at all
 // times.
 
 export const StyledProfile = styled.div`
@@ -22,7 +22,8 @@ export const StyledProfile = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 100vh;
+  height: calc(100 * var(--h));
+  width: calc(100 * var(--v));
   // background-color: ${colors.background};
   // pointer-events: none;
 `
@@ -30,38 +31,35 @@ export const StyledProfile = styled.div`
 export const StyledPrompt = styled.h1`
   display: flex;
   align-items: center;
-  height: 20vw;
-  font-size: 8vw;
+  height: calc(20 * var(--min));
+  font-size: calc(8 * var(--min));
   text-align: center;
-  margin: 10vh 0 2vh;
+  margin: calc(10 * var(--h)) 0 calc(2 * var(--h));
   color: #fff;
-
-  @media (min-aspect-ratio: 1/1) {
-    height: 20vh;
-    font-size: 8vh;
-  }
 `
 
 export const StyledUL = styled.ul`
   list-style-type: none;
-  width: 100%;
-  height: calc(88vh - 35vw);
+  width: calc(100 * var(--w));
+  height: calc(88 * var(--h) - 35 * var(--w));
   padding: 0;
   margin: 0;
   text-align: center;
   overflow-y: auto;
 
-  @media (min-aspect-ratio: 1/1) {
-    height: 53vh;
-    white-space: nowrap;
+  ${props => (props.aspectRatio > 1)
+   ? `height: calc(53 * var(--h));
+      white-space: nowrap;
+     `
+   : ""
   }
 `
 
 export const StyledTeacher = styled.li`
   position: relative;
-  width: 50vmin;
-  height: 50vmin;
-  margin: 0 25vmin;
+  width: calc(50 * var(--min));
+  height: calc(50 * var(--min));
+  margin: 0 calc(25 * var(--min));
   background-image: url(${props => props.src});
   background-size: cover;
   background-position: center;
@@ -76,7 +74,7 @@ export const StyledTeacher = styled.li`
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 10vmin!important;
+    width: calc(10 * var(--min))!important;
     opacity: 1!important;
     ;
   }
@@ -90,7 +88,7 @@ export const StyledTeacher = styled.li`
     // text-shadow: 2px 2px 2px #000000, -2px -2px 2px #000000;
     background: rgba(0,0,0,0.1);
     text-align: center;
-    font-size: 7.5vmin;
+    font-size: calc(7.5 * var(--min));
     margin: 0;
   }
 
@@ -101,18 +99,20 @@ export const StyledTeacher = styled.li`
               };
   }
 
-  @media (min-aspect-ratio: 1/1) {
-    display: inline-block;
-    clear: both;
-    margin: 0;
-  }
+  ${props => (props.aspectRatio > 1)
+   ? `display: inline-block;
+      clear: both;
+      margin: 0;
+     `
+   : ""
+   }
 `
 
 export const StyledLI = styled.li`
   cursor: pointer;
-  
+
   & img {
-    width: 30vw;
+    width: calc(30 * var(--w));
     opacity: ${props => props.selected
                       ? 1
                       : 0.3333
@@ -130,33 +130,35 @@ export const StyledLI = styled.li`
     background-color: ${colors.active};
   }
 
-  @media (min-aspect-ratio: 1/1) {
-    display: inline-block;
-    clear: both;
-    height: calc(53vh - 20px);
+  ${props => (props.aspectRatio > 1)
+   ? `display: inline-block;
+      clear: both;
+      height: calc(53 * var(--h) - 20px);
 
-    & img {
-      position: relative;
-      top: 10vh;
-      width: 33vh;
-    }
+      & img {
+        position: relative;
+        top: calc(10 * var(--h));
+        width: calc(33 * var(--h));
+      }
+     `
+   : ""
   }
 `
 
 export const StyledInput = styled.input`
-  font-size: 8vmin;
-  width: 70vmin;
+  font-size: calc(8 * var(--min));
+  width: calc(70 * var(--min));
 `
 
 export const StyledButton = styled.button`
   background: transparent;
-  border-radius: 10vh;
+  border-radius: calc(10 * var(--h));
   padding: 0.1em 1em;
   color: #fff;
-  height: 15vw;
-  width: 70vw;
-  max-width: 70vh;
-  font-size: 5.25vw;
+  height: calc(15 * var(--min));
+  width: calc(70 * var(--w));
+  max-width: calc(70 * var(--h));
+  font-size: calc(5.25 * var(--min));
   ${props => props.disabled
            ? `opacity: 0.25;
               pointer-events: none;
@@ -167,16 +169,11 @@ export const StyledButton = styled.button`
   &:active {
     background: ${colors.active};
   }
-
-  @media (min-aspect-ratio: 1/1) {
-    height: 15vh;
-    font-size: 5.25vh;
-  }
 `
 
 export const StyledNavArrow = styled.div`
-  width: 15vw;
-  height: 15vw;
+  width: calc(15 * var(--min));
+  height: calc(15 * var(--min));
   background-color: #333;
 
   ${props => (props.disabled || props.invisible)
@@ -186,24 +183,15 @@ export const StyledNavArrow = styled.div`
            : `cursor: pointer;
              `
    }
-
-
-  @media (min-aspect-ratio: 1/1) {
-    width: 15vh;
-    height: 15vh;
-  }
 `
 
 export const StyledButtonBar = styled.div`
   display:flex;
   justify-content: space-between;
-  height: 15vw;
-  width: 100vw;
+  height: calc(15 * var(--min));
+  width: calc(100 * var(--w));
   border-top: 1px outset #222;
 
-  @media (min-aspect-ratio: 1/1) {
-    height: 15vh;
-  }
 `
 
 export const StyledCentred = styled.div`
@@ -211,15 +199,14 @@ export const StyledCentred = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: calc(100 * var(--h));
   text-align: center;
 `
-
 
 export const StyledLearner = styled.li`
   border-color: #888;
   border-style: outset;
-  border-width: 0.5vmin;
+  border-width: calc(0.5 * var(--min));
   background-color: #111;
   color: #999;
   cursor: pointer;
@@ -236,18 +223,39 @@ export const StyledLearner = styled.li`
   ${props => props.disabled
            ? `border-color: #333;
               border-style: solid;
-              border-width: 0.25vmin;
+              border-width: calc(0.25 * var(--min));
               background-color: transparent;
               color: #333;
               pointer-events: none;
              `
            : ``
    }
-  border-radius: 10vmin;
+  border-radius: calc(10 * var(--min));
   box-sizing: border-box;
-  font-size: 8vmin;
-  padding: 1vmin;
-  width: 90vmin;
+  font-size: calc(8 * var(--min));
+  padding: calc(1 * var(--min));
+  width: calc(90 * var(--min));
   margin: auto;
+`
 
+export const StyledPIN = styled.p`
+  font-size: calc(20 * var(--min));
+  text-align: center;
+  margin: 0
+`
+
+export const StyledP = styled.p`
+  font-size: calc(5 * var(--min));
+  text-align: center;
+`
+
+
+// NOT YET USED
+export const StyledCheckbox = styled.label`
+`
+
+export const StyledRadioButtonGroup = styled.label`
+`
+
+export const StyledRadioButton = styled.label`
 `

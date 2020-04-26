@@ -1,3 +1,4 @@
+
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
@@ -16,7 +17,7 @@ import { StyledProfile
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
-       } from '../styles'
+       } from './styles'
 
 
 
@@ -121,13 +122,18 @@ class Teacher extends Component {
         src={src}
         selected={selected}
         onMouseUp={this.selectTeacher}
+        aspectRatio={this.props.aspectRatio}
       >
         <img src={flag} alt={code} className="flag" />
         <p>{name}</p>
       </StyledTeacher>
     })
 
-    return <StyledUL>{blocks}</StyledUL>
+    return <StyledUL
+      aspectRatio={this.props.aspectRatio}
+    >
+      {blocks}
+    </StyledUL>
   }
 
 
@@ -198,7 +204,7 @@ class Teacher extends Component {
 
   componentDidUpdate() {
     if (this.scrollFlag) {
-      this.scrollIntoView()
+      setTimeout(this.scrollIntoView, 1000) // <<< HARD-CODED
       this.scrollFlag = false
     }
   }

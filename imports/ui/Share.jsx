@@ -1,6 +1,6 @@
 /**
  * imports/ui/Share.jsx
- * 
+ *
  * The Share component has two purposes:
  * 1. To subscribe to all the non-activity collections, so that these
  *    will be immediately available elsewhere
@@ -92,24 +92,24 @@ class Share extends Component {
   /**
    * Called once by hideSplash in StartUp, when `view` will be a
    * string.
-   * 
+   *
    * Called by window.resize any time the user changes the orientation
    * of their device, or changes the size of their browser window. In
-   * this case, view will be undefined.
-   * 
+   * this case, view will be a resize event.
+   *
    * Action:
    */
   setViewSize(view) {
-    const localSize = getViewSize()
-    const { width, height } = localSize
-    const viewSize = this.isMaster
-                   ? localSize
-                   : this.props.viewSize
+    const viewSize = getViewSize()
+    const { width, height } = viewSize
+    const masterSize = this.isMaster
+                     ? viewSize
+                     : this.props.viewSize
     // this.props.viewSize is set by remote master if active. If no
-    // remote master, is set locally and is identical to localSize
+    // remote master, is set locally and is identical to viewSize
 
-    const ratioH = height / viewSize.height
-    const ratioW = width / viewSize.width
+    const ratioH = height / masterSize.height
+    const ratioW = width / masterSize.width
     let h
       , w
 
@@ -154,21 +154,28 @@ class Share extends Component {
       // )
 
       this.aspectRatio = aspectRatio
-      this.shareViewSizeIfMaster(localSize)
+      this.shareViewSizeIfMaster(viewSize)
 
-      this.convertToLocalArea(localSize, h, w)
+      this.convertToLocalArea(viewSize, h, w)
 
       // If the call comes from the StartUp instance, then view will
-      // be defined, and this.props.setViewSize will point to
-      // App.setViewAndSize, just this once.
-      this.props.setViewSize ({ view, aspectRatio, localSize })
+      // be a string, and this.props.setViewSize will point to
+      // App.setViewAndSize, just this once. If the window is being
+      // resized, view will be a resize event, and should be ignored.
+
+      const output = { aspectRatio, viewSize }
+      if (typeof view === "string") {
+        output.view = view
+      }
+
+      this.props.setViewSize (output)
     }
   }
 
 
-  convertToLocalArea(localSize, h, w) {
-    localSize.top = (localSize.height - h * 100) / 2
-    localSize.left = (localSize.width - w * 100) / 2
+  convertToLocalArea(viewSize, h, w) {
+    viewSize.top = (viewSize.height - h * 100) / 2
+    viewSize.left = (viewSize.width - w * 100) / 2
   }
 
 
@@ -228,7 +235,7 @@ export default withTracker(function track() {
   // Session variables below start as undefined, and change when a
   // user logs in or switches groups. This mean that the code here
   // usually only triggers a re-render of Share just after login.
-  // 
+  //
   // However, a re-render will also be trigger if the view size
   // changes, as handled by setViewSize() above.
 

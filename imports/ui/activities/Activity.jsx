@@ -191,7 +191,7 @@ class Activity extends Component {
 
   componentDidUpdate() {
     if (this.scrollFlag) {
-      this.scrollIntoView()
+      setTimeout(this.scrollIntoView, 1000) // <<< HARD-CODED
       this.scrollFlag = false
     }
   }

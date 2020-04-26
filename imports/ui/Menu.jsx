@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components'
 import { Session } from 'meteor/session'
 
 import Storage from '../tools/storage'
-import { log } from '../api/methods/methods'
+import { logOut } from '../api/methods/methods'
 
 
 
@@ -41,8 +41,13 @@ export default class Menu extends Component {
       return
     }
 
-    const logOut = { id, in: false }
-    log.call(logOut) // no callback because app is closing
+    const group_id = Session.get("group_id")
+    const d_code = Session.get("d_code")
+    const userAndDevice = { id, group_id, d_code }
+    // Without a callback, the operation is synchronous, which will
+    // prevent the app from closing. Does a callback prevent this?
+    const callback = () => {console.log("Callback from logOut")}
+    logOut.call(userAndDevice, callback)
   }
 
 

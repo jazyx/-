@@ -9,7 +9,7 @@ import React, { Component } from 'react';
 // the Share wrapper will ensure that the aspect ratio of the master
 // screen is preserved. It maintains the `units` Session variable.
 //   Since it is the first view to be rendered, and since the same
-// instance is used for the whole lifetime of the app, it also 
+// instance is used for the whole lifetime of the app, it also
 // opens connections to all non-activity collections, and keeps them
 // open until the user quits the app.
 import Share from './Share.jsx';
@@ -86,14 +86,17 @@ export class App extends Component {
    *  disruptive re-render.
    */
   setViewAndSize(viewAndSize) {
-    // { view, aspectRatio, shareRect }
+    // { view
+    // , aspectRatio
+    // , shareRect
+    // }
     this.setState(viewAndSize)
   }
 
 
   /** Called by the setViewSize method of the Share component
    *  on initialization and when the window resizes
-   *  
+   *
    * @param  {object}  viewSize  { aspectRatio // number (≈ 0.5 - 2.0)
    *                             , shareRect   // { top, left
    *                             }             // , width, height }
