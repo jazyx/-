@@ -55,7 +55,8 @@ import JoinGroup from './join'
 import LeaveGroup from './leave'
 import LogInTeacher from './loginTeacher'
 import CreateAccount from './account'
-// ^^^ import required collections by name in associated class scripts
+
+import { Groups } from '../collections' // used by share & setView
 
 // // SUBSCRIPTION IS TAKEN CARE OF IN Share.jsx ON THE CLIENT // //
 // if (Meteor.isClient) {
@@ -262,7 +263,7 @@ export const share = {
     const { _id, key, data } = shareData
     const query = { _id }
     const set   = { $set: { [key]: data } }
-    collections["Groups"].update(query, set)
+    Groups.update(query, set)
 
     // console.log( shareData, JSON.stringify(query), JSON.stringify(set))
   }
@@ -295,7 +296,7 @@ export const setView = {
     const { group_id: _id, view } = setViewData
     const query = { _id }
     const set   = { $set: { view } }
-    collections["Groups"].update(query, set)
+    Groups.update(query, set)
 
     // console.log(
     //   'db.groups.update('

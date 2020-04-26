@@ -213,6 +213,11 @@ class Share extends Component {
   }
 
 
+  componentDidUpdate() {
+    this.setViewSize()
+  }
+
+
   // Called after a render is complete, if this latest render did not
   // include this component. This should only happen when the app as
   // a whole is being unloaded from the browser, so this may be
@@ -241,16 +246,21 @@ export default withTracker(function track() {
 
   // group_id changes when user changes teacher or changes groups
   const group_id = Session.get("group_id")
+  const d_code   = Session.get("d_code")
 
   // isMaster only changes in bigger groups
-  const isMaster = Session.get("isMaster") // false for a teacher
+  let isMaster = false // always false for a teacher
 
   if (group_id) {
     const group_data = Groups.findOne({ _id: group_id })
 
-    if (group_data && group_data.viewSize) {
-      // Use the size defined by the group's master if it exists
-      viewSize = group_data.viewSize
+    if (group_data) {
+      isMaster = group_data.loggedIn[0] === d_code
+
+      if (group_data.viewSize) {
+        // Use the size defined by the group's master if it exists
+        viewSize = group_data.viewSize
+      }
     }
   }
 
