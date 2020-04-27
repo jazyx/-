@@ -3,7 +3,7 @@
 
 , "as_is": {
     "folder": "img/teachers/"
-  , "version": 9
+  , "version": 11
   }
 
 , "script": [
@@ -48,15 +48,6 @@
     , "with": "Apprendre le français avec Michaël"
     , "language": "fr"
     , "script": "latn"
-    }
-  , { "file": "xxxx"
-    , "id": "xxxx"
-    , "name": {
-         "xxxx": "xxxx"
-       , "xxxx": "xxxx"
-       }
-    , "language": "xxxx"
-    , "script": "xxxx"
     }
   ]
 }

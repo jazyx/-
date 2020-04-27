@@ -46,8 +46,7 @@ export default class Menu extends Component {
     const userAndDevice = { id, group_id, d_code }
     // Without a callback, the operation is synchronous, which will
     // prevent the app from closing. Does a callback prevent this?
-    const callback = () => {console.log("Callback from logOut")}
-    logOut.call(userAndDevice, callback)
+    logOut.call(userAndDevice) // no callback = synchronous
   }
 
 

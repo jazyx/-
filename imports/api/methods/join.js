@@ -20,7 +20,11 @@ export default class JoinGroup {
     // }
 
 
-    const { group_id, d_code, user_id } = accountData
+    let { group_id, d_code, user_id } = accountData
+    if (!group_id) {
+      group_id = this.findMostRecentGroup(user_id)
+    }
+
     let success = this.joinGroup(group_id, d_code)
 
     if (success) {
@@ -36,6 +40,46 @@ export default class JoinGroup {
     } else {
       accountData.status = "JoinGroup_fail"
     }
+  }
+
+
+  findMostRecentGroup(user_id) {
+    let latestId
+
+    const query = { _id: user_id }
+    const project = { fields: { history: 1 }}
+    const history = (Users.findOne(query, project) || {}).history
+
+    if (history) {
+      // console.log("history:", history)
+      // { <group_id>: [
+      //     {  in: ISODate...
+      //     , out: ISODate...
+      //     }
+      //   , ...
+      //   ]
+      // , ...
+      // }
+
+      let latestDate = 0
+
+      const group_ids = Object.keys(history)
+      group_ids.forEach(group_id => {
+        const array = history[group_id]
+        array.forEach(item => {
+          const date = new Date( item.out
+                               ? item.out
+                               : item.in || 0
+                               )
+          if (latestDate < date) {
+            latestDate = date
+            latestId = group_id
+          }
+        })
+      })
+    }
+
+    return latestId // will be undefined if there is no history
   }
 
 
@@ -88,12 +132,12 @@ export default class JoinGroup {
         $currentDate: { [path + ".$.in"]: true }
       }
 
-      console.log( "db.users.update("
-                 + JSON.stringify(query)
-                 + ", "
-                 + JSON.stringify(created)
-                 + ")"
-                 )
+      // console.log( "db.users.update("
+      //            + JSON.stringify(query)
+      //            + ", "
+      //            + JSON.stringify(created)
+      //            + ")"
+      //            )
 
       success = Users.update(
         query

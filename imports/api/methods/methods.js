@@ -219,8 +219,9 @@ export const logOut = {
       id:       { type: String }
       // < 5 chars = teacher; > 5 chars = user
       // 'xxxx' => 456976 combinations
-    , group_id: { type: String }
     , d_code:   { type: String }
+      // A Teacher might log out without being part of a group
+    , group_id: { type: String, optional: true }
     }).validate(logOutData)
   }
 

@@ -8,7 +8,7 @@ import { Teachers } from '../../api/collections'
 
 export default class LogInTeacher {
   constructor(accountData) {
-    console.log("LogInTeacher accountData:", accountData)
+    // console.log("LogInTeacher accountData:", accountData)
 
     const { id, d_code } = accountData
 
