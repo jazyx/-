@@ -12,9 +12,13 @@ export default class LogInTeacher {
 
     const { id, d_code } = accountData
 
-    const query = { id }
-    const push = { $push: { loggedIn: d_code } }
-    const result = Teachers.update(query, push) // 1 = success; 0 = not
+    const select = { id }
+    const update = {
+      $push: {
+        loggedIn: d_code
+      }
+    }
+    const result = Teachers.update(select, update) // 1 = success; 0 = not
 
     accountData.loggedIn = result
   }

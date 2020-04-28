@@ -55,6 +55,8 @@ import JoinGroup from './join'
 import LeaveGroup from './leave'
 import LogInTeacher from './loginTeacher'
 import CreateAccount from './account'
+import ToggleActivation from './activate'
+
 
 import { Groups } from '../collections' // used by share & setView
 
@@ -71,6 +73,15 @@ import { Groups } from '../collections' // used by share & setView
  */
 export const createAccount = {
   name: 'vdvoyom.createAccount'
+
+, call(accountData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [accountData], options, callback)
+  }
 
 , validate(accountData) {
     new SimpleSchema({
@@ -97,15 +108,6 @@ export const createAccount = {
 
     return accountData
   }
-
-, call(accountData, callback) {
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
-
-    Meteor.apply(this.name, [accountData], options, callback)
-  }
 }
 
 
@@ -118,14 +120,26 @@ export const createAccount = {
 export const logIn = {
   name: 'vdvoyom.logIn'
 
+, call(logInData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [logInData], options, callback)
+  }
+
 , validate(logInData) {
     new SimpleSchema({
       username: { type: String }
-    , native:   { type: String }
-    , teacher:  { type: String }
-    , language: { type: String }
     , d_code:   { type: String }
-    , q_code:   { type: String, optional: true }
+
+    // Sent only if automatic login is NOT used
+    , native:   { type: String, optional: true } // for Users doc
+    , teacher:  { type: String, optional: true } // for Groups doc
+    , language: { type: String, optional: true } //      —⫵—
+
+    , q_code:   { type: String, optional: true } // created on server
     // if q_code is missing or does not match username, Client may be
     // asked to provide a PIN, and then logIn will be called again.
     // In that case, status will be set to "RequestPIN" which may be
@@ -137,10 +151,10 @@ export const logIn = {
     // Sent only if localStorage is available on Client
     , user_id:  { type: String, optional: true }
     , group_id: { type: String, optional: true }
+    , q_color:  { type: String, optional: true }
 
     // May not be useful on Client, so not available
     , q_index:  { type: Number, optional: true }
-    , q_color:  { type: String, optional: true }
     }).validate(logInData)
   }
 
@@ -163,15 +177,6 @@ export const logIn = {
         throw "Unknown action in vdvoyom.logIn: '" + action + "'"
     }
   }
-
-, call(logInData, callback) {
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
-
-    Meteor.apply(this.name, [logInData], options, callback)
-  }
 }
 
 
@@ -182,6 +187,15 @@ export const logIn = {
  */
 export const logInTeacher = {
   name: 'vdvoyom.logInTeacher'
+
+, call(logInData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [logInData], options, callback)
+  }
 
 , validate(logInData) {
     new SimpleSchema({
@@ -194,14 +208,36 @@ export const logInTeacher = {
     new LogInTeacher(logInData)
     return logInData
   }
+}
 
-, call(logInData, callback) {
+
+
+/** Logs a teacher's device into its Groups and Users records
+ *
+ *  A
+ */
+export const toggleActivation = {
+  name: 'vdvoyom.toggleActivation'
+
+, call(groupData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [logInData], options, callback)
+    Meteor.apply(this.name, [groupData], options, callback)
+  }
+
+, validate(groupData) {
+    new SimpleSchema({
+      _id:    { type: String }
+    , active: { type: Boolean }
+    }).validate(groupData)
+  }
+
+, run(groupData) {
+    new ToggleActivation(groupData)
+    return groupData
   }
 }
 
@@ -213,6 +249,15 @@ export const logInTeacher = {
  */
 export const logOut = {
   name: 'vdvoyom.log'
+
+, call(logOutData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [logOutData], options, callback)
+  }
 
 , validate(logOutData) {
     new SimpleSchema({
@@ -231,15 +276,6 @@ export const logOut = {
 
     return logOutData
   }
-
-, call(logOutData, callback) {
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
-
-    Meteor.apply(this.name, [logOutData], options, callback)
-  }
 }
 
 
@@ -248,6 +284,15 @@ export const logOut = {
  */
 export const share = {
   name: 'vdvoyom.share'
+
+, call(shareData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [shareData], options, callback)
+  }
 
 , validate(shareData) {
     new SimpleSchema({
@@ -262,20 +307,11 @@ export const share = {
 
 , run(shareData) {
     const { _id, key, data } = shareData
-    const query = { _id }
-    const set   = { $set: { [key]: data } }
-    Groups.update(query, set)
+    const select = { _id }
+    const set    = { $set: { [key]: data } }
+    Groups.update(select, set)
 
-    // console.log( shareData, JSON.stringify(query), JSON.stringify(set))
-  }
-
-, call(shareData, callback) {
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
-
-    Meteor.apply(this.name, [shareData], options, callback)
+    // console.log( shareData, JSON.stringify(select), JSON.stringify(set))
   }
 }
 
@@ -286,6 +322,15 @@ export const share = {
 export const setView = {
   name: 'vdvoyom.setView'
 
+, call(setViewData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [setViewData], options, callback)
+  }
+
 , validate(setViewData) {
     new SimpleSchema({
       view:     { type: String }
@@ -295,27 +340,18 @@ export const setView = {
 
 , run(setViewData) {
     const { group_id: _id, view } = setViewData
-    const query = { _id }
-    const set   = { $set: { view } }
-    Groups.update(query, set)
+    const select = { _id }
+    const set    = { $set: { view } }
+    Groups.update(select, set)
 
     // console.log(
     //   'db.groups.update('
-    // + JSON.stringify(query)
+    // + JSON.stringify(select)
     // + ", "
     // + JSON.stringify(set)
     // + ")"
     // // , setViewData
     // )
-  }
-
-, call(setViewData, callback) {
-    const options = {
-      returnStubValue: true
-    , throwStubExceptions: true
-    }
-
-    Meteor.apply(this.name, [setViewData], options, callback)
   }
 }
 
@@ -327,6 +363,7 @@ const methods = [
 , logIn
 , logOut
 , logInTeacher
+, toggleActivation
 , share
 , setView
 ]

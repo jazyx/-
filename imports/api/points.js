@@ -68,22 +68,37 @@ if (Meteor.isClient) {
 export const createTracker = {
   name: "createTracker"
 
-, call(callback) {
+, call(trackerData, callback) {
     const options = {
       returnStubValue: true
     , throwStubExceptions: true
     }
 
-    Meteor.apply(this.name, [], options, callback)
+    Meteor.apply(this.name, [trackerData], options, callback)
   }
 
-, validate: () => {}
+, validate(trackerData) {
+    new SimpleSchema({
+      _id:      { type: String }
+    , color:    { type: String }
+    , group_id: { type: String }
+    }).validate(trackerData)
+  }
 
-, run() {
-    const number = Points.find().count()
-    const _id = Points.insert({ number })
+  /** Create a document for the current User in group group_id
+   *
+   *  The _id of the new document will be stored in the Client. Each
+   *  time the User moves the mouse or drags the mouse or a touch
+   *  point on the screen, the x, y and other properties of this
+   *  document will be updated. All Users and Teachers connected to
+   *  group group_id will be able to display the cursor/touch position
+   *  of this User on their screen.
+   */
 
-    return _id
+, run(trackerData) {
+    const _id = Points.insert( trackerData )
+
+    return _id // should be same as trackerData._id
   }
 }
 
@@ -101,36 +116,22 @@ export const update = {
   }
 
 , validate(pointData) {
-    if (pointData.touchend) {
-      new SimpleSchema({
-        _id:      { type: String }
-      , group_id: { type: String }
-      , active:   { type: Boolean, custom() {
-          if ( this.value ) {
-            return "activeAndTouchedMustBothBeFalse";
-          }
-        }}
-      , touchend: { type: Boolean }
-      }).validate(pointData)
+    new SimpleSchema({
+      _id:      { type: String }
+    , group_id: { type: String }
+    , x:        { type: Number }
+    , y:        { type: Number }
+    , active:   { type: Boolean }
+    , touchend: { type: Boolean }
+    , touch:    { type: Object, optional: true, blackbox: true }
+    }).validate(pointData)
 
-    } else {
+    if (pointData.touch) {
       new SimpleSchema({
-        _id:      { type: String }
-      , group_id: { type: String }
-      , x:        { type: Number }
-      , y:        { type: Number }
-      , active:   { type: Boolean }
-      , touchend: { type: Boolean }
-      , touch:    { type: Object, optional: true, blackbox: true }
-      }).validate(pointData)
-
-      if (pointData.touch) {
-        new SimpleSchema({
-          radiusX:       { type: Number }
-        , radiusY:       { type: Number }
-        , rotationAngle: { type: Number }
-        }).validate(pointData.touch)
-      }
+        radiusX:       { type: Number }
+      , radiusY:       { type: Number }
+      , rotationAngle: { type: Number }
+      }).validate(pointData.touch)
     }
   }
 
@@ -141,10 +142,50 @@ export const update = {
 }
 
 
+export const destroyTracker = {
+  name: "destroyTracker"
+
+, call(trackerData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [trackerData], options, callback)
+  }
+
+, validate(trackerData) {
+    new SimpleSchema({
+      _id:      { type: String }
+    , group_id: { type: String }
+    }).validate(trackerData)
+  }
+
+, run(trackerData) {
+    const { group_id } = trackerData
+    const result = Points.remove( trackerData )
+
+    console.log("Points.remove("
+               + JSON.stringify(trackerData)
+               + ") =>"
+               + "result:", result)
+
+    const members = Points.find({ group_id }, {}).fetch()
+    if (members.length < 2) {
+      Points.remove({ group_id })
+    }
+
+    return false
+  }
+}
+
+
 const methods = [
   createTracker
 , update
+, destroyTracker
 ]
+
 
 methods.forEach(method => {
   Meteor.methods({

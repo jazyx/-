@@ -5,6 +5,7 @@
 
 import { Users
        , Teachers
+       , Groups
        } from '../../api/collections'
 
 
@@ -12,26 +13,32 @@ export default class LogOut {
   constructor(logOutData) {
     const { id, d_code, group_id } = logOutData
 
+    const update = {
+      $pull: {
+        loggedIn: d_code
+      }
+    }
+
     let key
       , collection
 
     if (id.length < 5) {// "xxxx" => 456976 teacher id`s
       key = "id"
       collection = Teachers
+
     } else {
       key = "_id"
       collection = Users
     }
 
-    const query  = { [key]: id }
-    const update = { $pull: { loggedIn: d_code }}
+    const select = { [key]: id }
 
     if (group_id) {
-      // Also remove entry from history
+      // Also update entry in history
       const path = "history." + group_id
       const pathOut = path + ".$.out"
-      query[path+".in"] = { $exists: true }
-      query[pathOut]    = { $exists: false }
+      select[path+".in"] = { $exists: true }
+      select[pathOut]    = { $exists: false }
 
       update.$currentDate = {
         [pathOut]: true
@@ -39,12 +46,12 @@ export default class LogOut {
     }
 
     // console.log("db.users.update("
-    //            + JSON.stringify(query)
+    //            + JSON.stringify(select)
     //            + ", "
     //            + JSON.stringify(update)
     //            + ")")
 
-    const result = collection.update(query, update)
+    const result = collection.update(select, update)
     // 0 if no in without out
     // 1 if history entry updated
 

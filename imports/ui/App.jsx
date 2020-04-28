@@ -27,9 +27,9 @@ import TimeOut from './startup/TimeOut.jsx';
 import Menu from './Menu.jsx';
 
 // "<<< TODO
-// The Points view sits above Menu and the other Share'd content
+// The Pointers view sits above Menu and the other Share'd content
 // to display remote cursor and touch actions
-import Points from './Points.jsx'
+import Pointers from './Pointers.jsx'
 
 // The Chat overlay will slide out from the right. When it is hidden
 // incoming messages will be shown briefly in a semi-transparent layer
@@ -86,6 +86,7 @@ export class App extends Component {
    *  disruptive re-render.
    */
   setViewAndSize(viewAndSize) {
+    // console.log("App setViewAndSize(" + JSON.stringify(viewAndSize) + ")")
     // { view
     // , aspectRatio
     // , shareRect
@@ -123,9 +124,9 @@ export class App extends Component {
   }
 
 
-  storePointMethod(pointsComponent) {
-    if (pointsComponent) {
-      this.pointMethod = pointsComponent.pointMethod
+  storePointMethod(pointersComponent) {
+    if (pointersComponent) {
+      this.pointMethod = pointersComponent.pointMethod
       this.pointMethod(
         { type: "test message", target: "App.storePointMethod" }
       )
@@ -188,7 +189,7 @@ export class App extends Component {
         setView={this.setView}
         aspectRatio={aspectRatio}
       />
-      <Points
+      <Pointers
         ref={this.storePointMethod}
         rect={this.shareRect}
       />

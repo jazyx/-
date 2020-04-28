@@ -5,7 +5,9 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { L10n
+       , Teachers
+       } from '../../api/collections'
 import { localize
        , getElementIndex
        } from '../../tools/utilities'
@@ -220,32 +222,25 @@ class Teacher extends Component {
 
 export default withTracker(() => {
   // Phrases and flags
-  const l10n  = collections["L10n"]
-  Meteor.subscribe(l10n._name)
-
-  const phraseQuery = {
-    $and: [
-      { type: { $eq: "phrase" }}
-    , { file: { $exists: false }}
+  const phraseSelect = {
+    $or: [
+      { cue: "choose_teacher" }
+    , { cue: "next" }
     ]
   }
-  const folderQuery = { folder: { $exists: 1 } }
-  const flagQuery  = {
-    $and: [
-      { file: { $exists: true } }
-    , { file: { $ne: "xxxx"} }
-    ]
+  const folderSelect = { folder: { $exists: 1 } }
+  const flagSelect  = {
+    file: { $exists: true }
   }
   const flagProjection = { cue: 1, file: 1, _id: 0 }
-  const phrases = l10n.find(phraseQuery).fetch()
-  const flags = l10n.find(flagQuery, flagProjection).fetch()
-  const flagsFolder = l10n.findOne(folderQuery)
+  const phrases = L10n.find(phraseSelect).fetch()
+  const flags = L10n.find(flagSelect, flagProjection).fetch()
+  const flagsFolder = L10n.findOne(folderSelect)
 
   // Teacher profiles
-  const collection = collections["Teachers"]
-  const teacherQuery = { type: { $eq: "profile" }}
-  const teachers = collection.find(teacherQuery).fetch()
-  const teachersFolder = collection.findOne(folderQuery)
+  const teacherSelect = { type: { $eq: "profile" }}
+  const teachers = Teachers.find(teacherSelect).fetch()
+  const teachersFolder = Teachers.findOne(folderSelect)
 
   // Folder paths
   const folders = {

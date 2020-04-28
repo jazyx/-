@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { L10n } from '../../api/collections'
 import Storage from '../../tools/storage'
 import { localize
        , getRandomFromArray
@@ -121,6 +121,7 @@ class Submit extends Component {
 
     Session.set("view",     data.view)
     Session.set("q_code",   data.q_code)
+    Session.set("q_color",  data.q_color)
     Session.set("user_id",  data.user_id)
     Session.set("group_id", data.group_id)
 
@@ -130,10 +131,11 @@ class Submit extends Component {
 
 
   saveToLocalStorage(data) {
-    const { user_id, q_code, group_id, view } = data
+    const { user_id, q_code, q_color, group_id, view } = data
 
     this.accountData.view = view
     this.accountData.q_code = q_code
+    this.accountData.q_color = q_color
     this.accountData.user_id = user_id
     this.accountData.group_id = group_id
 
@@ -169,16 +171,14 @@ class Submit extends Component {
 
 export default withTracker(() => {
   // Phrases and flags
-  const l10n  = collections["L10n"]
-  Meteor.subscribe(l10n._name)
-
-  const phraseQuery = {
-    $and: [
-      { type: { $eq: "phrase" }}
-    , { file: { $exists: false }}
+  const select = {
+    $or: [
+      { cue: "save_successful" }
+    , { cue: "save_not_stored" }
+    , { cue: "saving" }
     ]
   }
-  const phrases = l10n.find(phraseQuery).fetch()
+  const phrases = L10n.find(select).fetch()
 
   const props = {
     phrases

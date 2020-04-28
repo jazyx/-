@@ -154,7 +154,7 @@ class SaveDetails extends Component {
 
 
 export default withTracker(() => {
-  const phraseQuery = {
+  const select = {
    $or: [
       { cue: "preferences" }
     , { cue: "auto_login" }
@@ -163,7 +163,7 @@ export default withTracker(() => {
     , { cue: "start" }
     ]
   }
-  const phrases = L10n.find(phraseQuery).fetch()
+  const phrases = L10n.find(select).fetch()
 
   return {
     phrases

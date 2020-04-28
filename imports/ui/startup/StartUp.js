@@ -1,14 +1,15 @@
 
 import { Session } from 'meteor/session'
 
-// Subscriptions
+// Helpers
 import { removeFrom } from '../../tools/utilities'
+import { getD_code } from '../../tools/project'
+
+// Subscriptions
 import collections from '../../api/collections'
 
 // viewSize
-import { log
-       , reGroup
-       } from '../../api/methods/methods'
+import { logIn } from '../../api/methods/methods'
 import Storage from '../../tools/storage'
 
 
@@ -24,7 +25,8 @@ export default class StartUp {
 
     this.ready = this.ready.bind(this)
     this.hideSplash = this.hideSplash.bind(this)
-    this.groupsCallback = this.groupsCallback.bind(this)
+    this.callback = this.callback.bind(this)
+    // this.groupsCallback = this.groupsCallback.bind(this)
     this.connectionTimedOut = this.connectionTimedOut.bind(this)
 
     // Loading takes about 250ms when running locally
@@ -115,6 +117,7 @@ export default class StartUp {
       break
 
       case "user":
+        // console.log("prepareApp => reJoinGroups")
         this.reJoinGroups()
       break
 
@@ -136,6 +139,7 @@ export default class StartUp {
       Session.set("native",     teacher.language)
       Session.set("language",   teacher.language)
       Session.set("role",       "teacher")
+      Session.set("q_color",    "#f00") // red by default for Teachers
       // d_code, q_code, q_color
 
     } else if (keys.length) {
@@ -189,100 +193,111 @@ export default class StartUp {
   reJoinGroups() {
     // TODO: Integrate menu then remove the following 4 lines
     if (!window.location.pathname.startsWith("/*") ) {
-      // console.log("Returning user:", Session.get("username"))
+      // console.log("reJoinGroups Returning user:", Session.get("username"))
       this.go = "Profile"
       return this.hideSplash()
     }
 
-    const user_id = Session.get("user_id")
-    const teacher_id = Session.get("teacher")
-    const params = {
-      user_id
-    , teacher_id
-    , in: true
+    const d_code = getD_code()
+
+    const accountData = {
+      d_code
+    , username: Session.get("username")
+    , q_code:   Session.get("q_code")
+    , group_id: Session.get("group_id")
+
+    // , user_id: Session.get("user_id")
+    // , teacher: Session.get("teacher")
     }
-    const callback = this.groupsCallback
 
     // Update the User document
-    log.call(params)
+    logIn.call(accountData, this.callback)
 
     // // Log in to one-on-one group with teacher
-    // reGroup.call(params, callback)
+    // reGroup.call(params, this.groupsCallback)
   }
 
 
-  groupsCallback(error, groups) {
-    if (error) {
-      // Unable to join existing groups. No information about which
-      // group the user should be in. Go to the Activity page, with
-      // the Menu open, so that the user can choose to edit their
-      // Profile/Preferences
-      this.go = "Profile"
-    }
-
-    // // console.log(Session.keys)
-    // language: ""en-GB""
-    // native:   ""ru""
-    // role:     ""user""
-    // teacher:  ""jn""
-    // user_id:  ""y6sQmtm5DGqE27S95""
-    // username: ""Влад"
-    // +
-    // group_id: ""aKEisZAmCpPEq5qKC""
-
-    // Find the first group where this user is master. For now, this
-    // is the one-on-one teacher group only.
-    // TODO: When multiple group membership is enabled, create a
-    //       Choose Group landing page
-    groups.every(group => {
-      if (group.master === Session.get("user_id")) {
-        Session.set("group_id", group._id)
-        Session.set("isMaster", true)
-        this.go = group.view
-        this.hideSplash()
-
-        return false
-      }
-
-      return true
-    })
+  callback(error, data) {
+    this.go = data.view
+    this.hideSplash()
   }
 
 
-  msSinceLastSeen() {
-    let elapsed = 0
+  // groupsCallback(error, groups) {
+  //   if (error) {
+  //     // Unable to join existing groups. No information about which
+  //     // group the user should be in. Go to the Activity page, with
+  //     // the Menu open, so that the user can choose to edit their
+  //     // Profile/Preferences
+  //     this.go = "Profile"
+  //   }
 
-    const _id = Session.get("user_id")
-    const user = collections["Users"].findOne({ _id })
-    if (user) {
-      const loggedOut = new Date(user.loggedOut)
-      elapsed = + new Date() - loggedOut
-    }
+  //   // // console.log(Session.keys)
+  //   // language: ""en-GB""
+  //   // native:   ""ru""
+  //   // role:     ""user""
+  //   // teacher:  ""jn""
+  //   // user_id:  ""y6sQmtm5DGqE27S95""
+  //   // username: ""Влад"
+  //   // +
+  //   // group_id: ""aKEisZAmCpPEq5qKC""
 
-    console.log("elapsed:", elapsed)
+  //   // Find the first group where this user is master. For now, this
+  //   // is the one-on-one teacher group only.
+  //   // TODO: When multiple group membership is enabled, create a
+  //   //       Choose Group landing page
+  //   groups.every(group => {
+  //     if (group.master === Session.get("user_id")) {
+  //       Session.set("group_id", group._id)
+  //       Session.set("isMaster", true)
+  //       this.go = group.view
+  //       this.hideSplash()
 
-    return elapsed
-  }
+  //       return false
+  //     }
+
+  //     return true
+  //   })
+  // }
 
 
-  reconnect() {
-    let view = "Profile"
-    const id = Session.get("user_id")
+  // msSinceLastSeen() {
+  //   let elapsed = 0
 
-    if (id) {
-      // const elapsed = this.msSinceLastSeen()
+  //   const _id = Session.get("user_id")
+  //   const user = collections["Users"].findOne({ _id })
+  //   if (user) {
+  //     const loggedOut = new Date(user.loggedOut)
+  //     elapsed = + new Date() - loggedOut
+  //   }
 
-      // if (elapsed && elapsed < this.reconnectDelay) {
-        this.reJoinGroups()
-      // }
-    }
+  //   // console.log("elapsed:", elapsed)
 
-    return view
-  }
+  //   return elapsed
+  // }
+
+
+  // reconnect() {
+  //   let view = "Profile"
+  //   const id = Session.get("user_id")
+
+  //   if (id) {
+  //     // const elapsed = this.msSinceLastSeen()
+
+  //     // if (elapsed && elapsed < this.reconnectDelay) {
+  //       this.reJoinGroups()
+  //     // }
+  //   }
+
+  //   return view
+  // }
 
 
   hideSplash() {
+    // console.log("hideSplash — this.timeOut", this.timeOut)
     if (+ new Date() < this.showSplash) {
+      // console.log("Polling for", this.showSplash, "in", this.showSplash - + new Date())
       return setTimeout(this.hideSplash, 100)
     }
 
@@ -299,6 +314,8 @@ export default class StartUp {
     }
 
     this.showSplash = 0
+
+    // console.log("Hide splash and go", this.go)
 
     // Tell Share to replace the Splash screen will with an
     // interactive view (Profile, Activity or an activity-in-progress)

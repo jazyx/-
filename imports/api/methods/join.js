@@ -22,7 +22,7 @@ export default class JoinGroup {
 
     let { group_id, d_code, user_id } = accountData
     if (!group_id) {
-      group_id = this.findMostRecentGroup(user_id)
+      group_id = accountData.group_id = this.findLatestGroup(user_id)
     }
 
     let success = this.joinGroup(group_id, d_code)
@@ -43,12 +43,12 @@ export default class JoinGroup {
   }
 
 
-  findMostRecentGroup(user_id) {
+  findLatestGroup(user_id) {
     let latestId
 
-    const query = { _id: user_id }
+    const select  = { _id: user_id }
     const project = { fields: { history: 1 }}
-    const history = (Users.findOne(query, project) || {}).history
+    const history = (Users.findOne(select, project) || {}).history
 
     if (history) {
       // console.log("history:", history)
@@ -84,18 +84,18 @@ export default class JoinGroup {
 
 
   joinGroup( group_id, d_code) {
-    const query = { _id: group_id }
+    const select = { _id: group_id }
     const push = { $push: { loggedIn: d_code }}
-    const success = Groups.update(query, push)
+    const success = Groups.update(select, push)
 
     return success
   }
 
 
   getAccountView(group_id) {
-    const query = { _id: group_id }
+    const select = { _id: group_id }
     const project = { fields: { _id: 0, view: 1 }}
-    const view = Groups.findOne(query, project).view
+    const view = Groups.findOne(select, project).view
 
     return view
   }
@@ -103,7 +103,7 @@ export default class JoinGroup {
 
   addUserHistoryItem(group_id, d_code, user_id) {
     const index = getNextIndex("history") // could use a random value
-    const query = { _id: user_id }
+    const select = { _id: user_id }
     const item  = { in: index }
     const path  = "history." + group_id
     // { ...
@@ -118,29 +118,37 @@ export default class JoinGroup {
     //   }
     // , ...
     // }
+
+    // Insert the { in: <...> } history item at index position 0, so
+    // that a subsequent operation to add an out: <...> field to this
+    // item will find it.
+
     const push = {
       $push: {
-        [path]: item
+        [path]: {
+          $each: [item]
+        , $position: 0
+        }
       }
     }
 
-    let success = Users.update(query, push)
+    let success = Users.update(select, push)
 
     if (success) {
-      query[path + ".in"] = index
+      select[path + ".in"] = index
       const created = {
         $currentDate: { [path + ".$.in"]: true }
       }
 
       // console.log( "db.users.update("
-      //            + JSON.stringify(query)
+      //            + JSON.stringify(select)
       //            + ", "
       //            + JSON.stringify(created)
       //            + ")"
       //            )
 
       success = Users.update(
-        query
+        select
       , created
       )
     }

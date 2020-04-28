@@ -76,12 +76,14 @@ export default class LogIn {
   logInUserFromNameAndQCode() {
     const { username, q_code, d_code } = this.accountData
 
-    const query = { username, q_code }
+    const select = { username, q_code }
     const push = { $push: { loggedIn: d_code } }
-    const result = Users.update(query, push) // 1 = success; 0 = not
+    const result = Users.update(select, push) // 1 = success; 0 = not
 
     if (result) {
-      this.accountData.user_id = Users.findOne(query, {})._id
+      const project = { q_color: 1 }
+      const { _id: user_id, q_color } = Users.findOne(select, project)
+      Object.assign( this.accountData, { user_id, q_color } )
     }
 
     return result

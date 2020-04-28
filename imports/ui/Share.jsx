@@ -68,6 +68,7 @@ class Share extends Component {
   constructor(props) {
     super(props)
 
+    this.startedUp   = false
     this.isMaster    = undefined
     this.aspectRatio = undefined
 
@@ -100,6 +101,14 @@ class Share extends Component {
    * Action:
    */
   setViewSize(view) {
+    if (typeof view === "string") {
+      this.startedUp = true
+
+    } else {
+      // Ignore view when it is a resize event
+      view = undefined
+    }
+
     const viewSize = getViewSize()
     const { width, height } = viewSize
     const masterSize = this.isMaster
@@ -143,9 +152,15 @@ class Share extends Component {
     // Don't reset App's state.aspectRatio unnecessarily, or we get
     // an endless loop of renders
 
-    if (this.aspectRatio !== aspectRatio || newMaster) {
+    // console.log(
+    //   "setViewSize — aspect has changed?"
+    // , this.aspectRatio !== aspectRatio
+    // , "; newMaster?"
+    // , newMaster)
+
+    if (this.aspectRatio !== aspectRatio || newMaster || view) {
       // console.log(
-      //   "Share setViewSize"
+      //   "Share setViewSize (" + view + ")"
       // , newMaster
       // ? "triggered by a new master"
       // : this.aspectRatio
@@ -164,7 +179,7 @@ class Share extends Component {
       // resized, view will be a resize event, and should be ignored.
 
       const output = { aspectRatio, viewSize }
-      if (typeof view === "string") {
+      if (view) {
         output.view = view
       }
 
@@ -213,8 +228,13 @@ class Share extends Component {
   }
 
 
+  // This is required so that the master's new view size is shared
+  // with slaves immediately after its own render operation that was
+  // triggered by a new group, a new aspect ratio.
   componentDidUpdate() {
-    this.setViewSize()
+    if (this.startedUp) {
+      this.setViewSize()
+    }
   }
 
 

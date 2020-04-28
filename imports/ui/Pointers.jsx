@@ -10,7 +10,11 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import Points, { createTracker, update } from '../api/points'
+import Points
+     , { createTracker
+       , update
+       , destroyTracker
+     } from '../api/points'
 import { toneColor
        , translucify
        , getColor
@@ -27,12 +31,14 @@ class Pointers extends Component {
   constructor(props) {
     super(props)
 
-    this.isActive = false
-    this.tap = this.tap.bind(this)
-    this.callback = this.callback.bind(this)
-    this.trackPoint = this.trackPoint.bind(this)
+    this.groupIsActive   = false
+    this.pointerIsActive = false
+    this.pointer_id      = false
+    this.lastTouch = {}
 
-    this.state = { pointers: {} }
+    this.tap = this.tap.bind(this)
+    this.setPointerId = this.setPointerId.bind(this)
+    this.trackPoint = this.trackPoint.bind(this)
 
     this.style = {
       position: "fixed"
@@ -58,39 +64,81 @@ class Pointers extends Component {
   }
 
 
-  createTracker() {
-    const group_id = this.props.group_id
-    const query = { group_id }
-    createTracker.call(this.callback)
+  syncActive() {
+    if (this.props.active) {
+      if (!this.groupIsActive) {
+        this.createTracker()
+        this.groupIsActive = true
+
+        return 1
+      }
+    } else if (this.groupIsActive) {
+      this.destroyTracker()
+      this.groupIsActive = false
+
+      return -1
+    }
+
+    return 0
   }
 
 
-  callback(error, user_id) {
+  createTracker() {
+    const _id = Session.get("teacher_id") || Session.get("user_id")
+    const color = Session.get("q_color")
+    const group_id = this.props.group_id
+
+    console.log("createTracker: _id", _id, "color:", color, "group_id:", group_id)
+
+    createTracker.call({ _id, color, group_id }, this.setPointerId)
+  }
+
+
+  destroyTracker() {
+    const _id = this.id
+    const group_id = this.props.group_id
+    destroyTracker.call({ _id, group_id }, this.setPointerId)
+  }
+
+
+  setPointerId(error, pointer_id) {
     if (!error) {
-      this.user_id = user_id
+      this.pointer_id = pointer_id // === this.id | false
     }
   }
 
 
   getPointData(event) {
+    let data
+
     const touchend = event.type === "touchend"
 
-    const data = {
-      _id: this.user_id
-    , group_id: "test"
-    , active: this.isActive
-    , touchend
-    }
+    if (touchend) {
+      data = this.lastTouch
+      data.active = false
+      data.touchend = true
 
-    if (!touchend) {
+    } else {
+      const _id = this.pointer_id
+      const group_id = this.props.group_id
       const { x, y } = getXY(event)
-      data.x = x
-      data.y = y
+      const active = this.pointerIsActive
 
-      if (event.type.startsWith("touch")) {
+      data = {
+        _id
+      , group_id
+      , x
+      , y
+      , active
+      , touchend
+      }
+
+      if (event.type.startsWith("touch")) { // ~start, ~move
         const { radiusX, radiusY, rotationAngle } = event.touches[0]
         data.touch = { radiusX, radiusY, rotationAngle }
       }
+
+      this.lastTouch = Object.assign({}, data)
     }
 
     return data
@@ -98,7 +146,7 @@ class Pointers extends Component {
 
 
   trackPoint(event) {
-    if (!this.props.points.length) {
+    if (!this.pointer_id) {
       return
     }
 
@@ -108,12 +156,12 @@ class Pointers extends Component {
 
 
   tap(event) {
-    if (!this.props.points.length) {
+    if (!this.pointer_id) {
       return
     }
 
-    this.isActive = event.type === "mousedown"
-                 || event.type === "touchstart"
+    this.pointerIsActive = event.type === "mousedown"
+                        || event.type === "touchstart"
     const data = this.getPointData(event)
     update.call(data)
   }
@@ -147,9 +195,10 @@ class Pointers extends Component {
   getPoints(scale) { // window.devicePixelRatio
     return this.props.points
                      .filter(doc => (
-                         !doc.touchend
-                      && !isNaN(doc.x)
-                      && doc._id !== this.user_id
+                      //    !doc.touchend
+                      // && !isNaN(doc.x)
+                      // &&
+                        doc._id !== this.pointer_id
                       ))
                      .map(doc => {
       let top
@@ -220,9 +269,14 @@ class Pointers extends Component {
 
 
   render() {
+    const activeChange = this.syncActive()
+
     const scale = 1 // window.devicePixelRatio
     const status = this.getStatus()
     const points = this.getPoints(scale)
+
+
+    // console.log("Pointers activeChange", activeChange, points.length)
 
     return <div
       id="points"
@@ -240,20 +294,34 @@ class Pointers extends Component {
 
 
 export default withTracker(() => {
-  const id       = Session.get("teacher_id") || Session.get("user_id")
   const group_id = Session.get("group_id")
-  const points   = group_id
-                 ? Points.find({ group_id }).fetch()
-                 : []
+
+  // Groups .active is true
+  // * If this is a Community group
+  // * If the Teacher is logged in to a Teacher-managed group
+
+  let active   = groupIsActive(group_id)
+  const points = group_id && active
+               ? Points.find({ group_id }).fetch()
+               : []
+  // console.log("Points active:", active)
 
   // points will be [] if there is no group_id; there will be no
   // group_id if the user has not completed the basic choices yet, or
   // if no data was saved to localStorage after an earlier session.
-  // trackPoint() and tap() will not run until group_id is set.
 
   return {
-    id
-  , group_id
+    group_id
+  , active
   , points
   }
 })(Pointers)
+
+
+function groupIsActive(_id) {
+  const select  = { _id }
+  const project = { _id: 0, active: 1 }
+  const active  = (Groups.findOne(select, project) || {}).active
+
+  return active
+}

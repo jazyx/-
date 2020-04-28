@@ -78,7 +78,7 @@ const publishQueries = {
 
 if (Meteor.isServer) {
   for (name in collections) {
-    const query = publishQueries[name]
+    const select = publishQueries[name]
     const collection = collections[name]
 
     name = collection._name // name.toLowerCase()
@@ -91,7 +91,7 @@ if (Meteor.isServer) {
       // We need to use the classic function () syntax so that we can
       // use this to access the Meteor connection and use this.user_id
 
-      let items = collection.find(query) // (customQuery || query)
+      let items = collection.find(select) // (customSelect || select)
 
       if (typeof caller === "string") {
         console.log(
@@ -99,8 +99,8 @@ if (Meteor.isServer) {
         )
         console.log(
           "Items 1 - 4 /"
-        , collection.find(query).count()
-        , collection.find(query, { limit: 4 }).fetch()
+        , collection.find(select).count()
+        , collection.find(select, { limit: 4 }).fetch()
         )
       }
 

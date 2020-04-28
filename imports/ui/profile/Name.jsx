@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { L10n } from '../../api/collections'
 import { localize } from '../../tools/utilities'
 
 import { StyledProfile
@@ -131,17 +131,14 @@ class Name extends Component {
 
 
 export default withTracker(() => {
-  const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name)
-
-  const key         = "phrase"
-  const phraseQuery = {
+  const key    = "phrase"
+  const select = {
     $and: [
       { type: { $eq: key }}
     , { file: { $exists: false }}
     ]
   }
-  const phrases     = collection.find(phraseQuery).fetch()
+  const phrases = L10n.find(select).fetch()
 
   return {
     phrases

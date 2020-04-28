@@ -95,13 +95,13 @@ class CheckPIN extends Component {
 
 
 export default withTracker(() => {
-  const phraseQuery = {
+  const select = {
    $or: [
       { cue: "learn_pin" }
     , { cue: "pin_memorized" }
     ]
   }
-  const phrases = L10n.find(phraseQuery).fetch()
+  const phrases = L10n.find(select).fetch()
 
   return {
     phrases

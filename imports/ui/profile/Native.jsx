@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { L10n } from '../../api/collections'
 import { localize
        , getElementIndex
        } from '../../tools/utilities'
@@ -255,27 +255,24 @@ class Native extends Component {
 
 
 export default withTracker(() => {
-  const collection  = collections["L10n"]
-  Meteor.subscribe(collection._name) // , "Native", "in withTracker")
-
   const key         = "phrase"
-  const flagsQuery  = { $and: [
+  const flagsSelect = { $and: [
                           { file: { $exists: true } }
                         , { file: { $ne: "xxxx"} }
                         ]
                       }
-  const flags       = collection.find(flagsQuery).fetch()
+  const flags       = L10n.find(flagsSelect).fetch()
 
-  const phraseQuery = {
-    $and: [
-      { type: { $eq: key }}
-    , { file: { $exists: false }}
+  const phraseSelect = {
+    $or: [
+      { cue: "native_language" }
+    , { cue: "choose_language" }
     ]
   }
-  const phrases     = collection.find(phraseQuery).fetch()
+  const phrases = L10n.find(phraseSelect).fetch()
 
-  const folderQuery = { folder:  { $exists: true }}
-  const folder = collection.findOne(folderQuery).folder
+  const folderSelect = { folder:  { $exists: true }}
+  const folder = L10n.findOne(folderSelect).folder
 
   // ... and add the extracted data to the Game instance's this.props
   return {

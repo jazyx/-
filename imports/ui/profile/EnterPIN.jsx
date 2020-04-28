@@ -172,7 +172,7 @@ class EnterPIN extends Component {
 
 
 export default withTracker(() => {
-  const phraseQuery = {
+  const select = {
    $or: [
       { cue: "enter_pin" }
     , { cue: "wrong_pin" }
@@ -181,7 +181,7 @@ export default withTracker(() => {
     , { cue: "log_in" }
     ]
   }
-  const phrases = L10n.find(phraseQuery).fetch()
+  const phrases = L10n.find(select).fetch()
 
   return {
     phrases

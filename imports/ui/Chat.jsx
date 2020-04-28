@@ -4,12 +4,12 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../api/collections'
+import { Chat } from '../api/collections'
 
 
 
 
-class Chat extends Component {
+class Chatter extends Component {
   constructor(props) {
     super(props)
   }
@@ -26,14 +26,11 @@ class Chat extends Component {
 
 
 export default withTracker(() => {
-  // const collection  = collections["Chat"]
-  // Meteor.subscribe(collection._name, "Chat")
-
   const _id = Session.get("group_id")
-  const query = { /* Get message data for this group and admin */ }
-  const messages = [] // collection.find(query).fetch()
+  const select = { /* Get message data for this group and admin */ }
+  const messages = [] // Chat.find(select).fetch()
 
   return {
     messages
   }
-})(Chat)
+})(Chatter)

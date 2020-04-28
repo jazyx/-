@@ -4,7 +4,9 @@ import React, { Component } from 'react'
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { L10n
+       , Activities
+       } from '../../api/collections'
 import { localize
        , getElementIndex } from '../../tools/utilities'
 import { setView } from '../../api/methods/methods'
@@ -16,11 +18,6 @@ import { StyledProfile
        , StyledDescription
        , StyledButton
        } from './Styles'
-
-
-Meteor.subscribe(collections["L10n"]._name) //, "Activity")
-Meteor.subscribe(collections["Activities"]._name) //, "Activity")
-
 
 
 class Activity extends Component {
@@ -206,22 +203,17 @@ class Activity extends Component {
 
 export default withTracker(() => {
   // Phrases
-  const l10n  = collections["L10n"]
-
-  const phraseQuery = {
+  const phraseSelect = {
     $and: [
       { type: { $eq: "phrase" }}
     , { file: { $exists: false }}
     ]
   }
-  const phrases = l10n.find(phraseQuery).fetch()
-
+  const phrases = L10n.find(phraseSelect).fetch()
 
   // Activities
-  const collection  = collections["Activities"]
-
-  const activityQuery = {}
-  const activities = collection.find(activityQuery).fetch()
+  const activitySelect = {}
+  const activities = Activities.find(activitySelect).fetch()
 
   const props = {
     phrases

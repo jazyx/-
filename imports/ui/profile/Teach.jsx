@@ -15,7 +15,9 @@ import { localize
        , arrayOverlap
        } from '../../tools/utilities'
 import { getD_code } from '../../tools/project'
-import { logInTeacher } from '../../api/methods/methods'
+import { logInTeacher
+       , toggleActivation
+       } from '../../api/methods/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -69,6 +71,8 @@ class Teach extends Component {
     const { _id, view } = group
     Session.set("group_id", _id)
     this.props.setView(view)
+
+    toggleActivation.call({ _id, active: true })
   }
 
 
@@ -226,13 +230,13 @@ export default withTracker(() => {
 
 
 function getPhrases() {
-  const phraseQuery = {
-    $and: [
-      { type: { $eq: "phrase" }}
-    , { file: { $exists: false }} // no flags
+  const select = {
+    $or: [
+      { cue: "select_students" }
+    , { cue: "share" }
     ]
   }
-  const phrases = L10n.find(phraseQuery).fetch()
+  const phrases = L10n.find(select).fetch()
 
   return phrases
 }

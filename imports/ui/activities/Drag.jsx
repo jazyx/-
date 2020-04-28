@@ -9,7 +9,7 @@ import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import collections from '../../api/collections'
+import { Drag } from '../../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
@@ -246,7 +246,7 @@ const StyledMask = styled.div`
 `
 
 
-class Drag extends Component {
+class Dragger extends Component {
   constructor(props) {
     super(props)
 
@@ -572,24 +572,21 @@ class Drag extends Component {
 
 
 export default withTracker(() => {
-  const collection  = collections["Drag"]
-  Meteor.subscribe(collection._name) //, "Drag")
-
-  const key         = "furniture"
-  const code        = Session.get("language").replace(/-\w*/, "")
-  const imageQuery  = { type: { $eq: key }}
-  const folderQuery = { key:  { $eq: key }}
-  const items = collection.find(imageQuery).fetch()
+  const key          = "furniture"
+  const code         = Session.get("language").replace(/-\w*/, "")
+  const imageSelect  = { type: { $eq: key }}
+  const folderSelect = { key:  { $eq: key }}
+  const items = Drag.find(imageSelect).fetch()
 
   const images = items.map(document => [ document.file
                                        , document.text[code]
                                        ]
                            )
-  const folder = collection.findOne(folderQuery).folder
+  const folder = Drag.findOne(folderSelect).folder
 
   // ... and add the extracted data to the Game instance's this.props
   return {
     images
   , folder
   }
-})(Drag)
+})(Dragger)

@@ -95,16 +95,16 @@ class CollectJSON {
       return false
     }
 
-    let versionQuery = { version: { $exists: true }}
+    let versionSelect = { version: { $exists: true }}
     if (key = as_is.key) {
-      versionQuery = {
+      versionSelect = {
         $and: [
-          versionQuery
+          versionSelect
         , { key: { $eq: key }}
         ]
       }
     }
-    const document = collection.findOne(versionQuery)
+    const document = collection.findOne(versionSelect)
     // console.log("**",collection._name)
 
     if (document) {
@@ -124,12 +124,12 @@ class CollectJSON {
 
 
   _deleteOlderItems(collection, key, version) {
-    let deleteQuery = { version: { $lt: version } }
+    let deleteSelect = { version: { $lt: version } }
 
     if (key) {
-      deleteQuery = {
+      deleteSelect = {
        $and: [
-          deleteQuery
+          deleteSelect
         , { $or: [
               { key: { $eq: key }}   // deletes as_is entry
             , { type: { $eq: key }}  // deletes all associated images
@@ -141,7 +141,7 @@ class CollectJSON {
 
     const collectionName = key || collection._name
     const callback = (e, d) => this._checkResult(e, d, collectionName)
-    collection.remove(deleteQuery, callback)
+    collection.remove(deleteSelect, callback)
   }
 
 
