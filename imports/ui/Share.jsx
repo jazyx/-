@@ -108,7 +108,7 @@ class Share extends Component {
     // variables are set in the StartUp instance when all the
     // collections are available, just before the setViewSize method
     // below is called.
- 
+
     this.isTeacher   = Session.get("role") === "teacher"
     this.d_code      = Session.get("d_code")
   }
@@ -145,7 +145,7 @@ class Share extends Component {
     // calculate view ratios.
     const viewSize = getViewSize()
     const { width, height } = viewSize
-    const masterSize = isMaster
+    const masterSize = isMaster || !this.props.active
                      ? viewSize
                      : this.props.viewSize
     // this.props.viewSize is set by remote master if active. If no
@@ -305,7 +305,7 @@ export default withTracker(function tracker() {
   const group_id = Session.get("group_id") // may change
 
   let master = undefined // always undefined for a teacher
-  let active = undefined
+  let active = false
 
   if (group_id) {
     const select = { _id: group_id }

@@ -136,8 +136,6 @@ export default class CreateAccount {
     }
     fields.history = {}
     fields.loggedIn = []
-    fields.autoLogIn = true
-    fields.restoreAll = true
 
     // console.log("createUser accountData = ", this.accountData)
 

@@ -136,6 +136,11 @@ class Submit extends Component {
     this.accountData.user_id = user_id
     this.accountData.group_id = group_id
 
+    // /// <<< HARD-CODED: REMOVE WHEN MENU IS OPERATIONAL
+    // this.accountData.autoLogin = false
+    // this.accountData.restoreAll = false
+    // /// HARD-CODED >>>
+
     // Remove properties that won't be reused on next connection
     delete this.accountData.pin_given
     delete this.accountData.status

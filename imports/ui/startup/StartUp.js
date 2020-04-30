@@ -137,6 +137,11 @@ export default class StartUp {
     const teacher = this.checkURLForTeacherName()
     // TODO: Add test for admin
 
+    const autoLogin  = storedData.autoLogin || false
+    const restoreAll = autoLogin
+                     ? storedData.restoreAll || false
+                     : false
+
     this.sessionSetD_code()
 
     if (teacher) {
@@ -148,13 +153,40 @@ export default class StartUp {
       // d_code, q_code, q_color
 
     } else if (keys.length) {
-      Session.set("role",       "user")
+      Session.set("role", "user")
+
+      // native:   "en-GB"
+      // username: "James"
+      // language: "ru"
+      // teacher:  "aa"
+      // q_code:   "3819"
+      // q_color:  "#33cc60"
+      // user_id:  "6oRFpNLZEfkN4HfMj"
+      //
+      // group_id: "4Bd5yhRfstZ77zxAZ"
+      // view:     "Drag"
 
       for (let key in storedData) {
+        switch (key) {
+          case "group_id":
+            if (!autoLogin) {
+              return
+            }
+          break
+          case "view":
+            if (!restoreAll) {
+              // Special case: autologin but don't restore session
+              Session.set("view", "Activity")
+              return
+            }
+          break
+        }
+
         Session.set(key, storedData[key])
       }
+
     } else {
-      // First time user on this device
+      // First time user on this device. No storedData to treat
     }
   }
 
