@@ -306,7 +306,7 @@ class Pointers extends Component {
 let track = 0
 
 export default withTracker(() => {
-  console.log("Track:", track += 1)
+  // console.log("Pointer track:", track += 1)
 
   const group_id = Session.get("group_id")
 

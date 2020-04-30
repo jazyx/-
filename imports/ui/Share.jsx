@@ -79,17 +79,14 @@ class Share extends Component {
   constructor(props) {
     super(props)
 
-    // Fixed values for each session
-    this.isTeacher   = Session.get("role") === "teacher"
-    this.d_code      = Session.get("d_code")
-    // Variable values
-    this.startedUp   = false
-    this.aspectRatio = undefined
-
-    this.setViewSize = this.setViewSize.bind(this)
-
     // Debugging only
     console.log("Share instance", ++instance)
+
+    this.startedUp   = false
+    this.aspectRatio = undefined
+    this.view        = undefined
+
+    this.setViewSize = this.setViewSize.bind(this)
 
     // When the local window is resized one of two things should
     // happen:
@@ -101,6 +98,19 @@ class Share extends Component {
 
     // Subscribe to all collections, then hide Splash screen when done
     new StartUp(this.setViewSize)
+  }
+
+
+  initialize() {
+    this.startedUp = true
+
+    // These values remain fixed for this session. The Session
+    // variables are set in the StartUp instance when all the
+    // collections are available, just before the setViewSize method
+    // below is called.
+ 
+    this.isTeacher   = Session.get("role") === "teacher"
+    this.d_code      = Session.get("d_code")
   }
 
 
@@ -116,7 +126,13 @@ class Share extends Component {
    */
   setViewSize(view) {
     if (typeof view === "string") {
-      this.startedUp = true
+      if (!this.startedUp) {
+        this.initialize()
+      } else if ( this.view === view ) {
+        return
+      }
+
+      this.view = view
 
     } else {
       // Ignore view when it is a resize event
@@ -270,7 +286,9 @@ class Share extends Component {
 }
 
 
-export default withTracker(function track() {
+let track = 0
+
+export default withTracker(function tracker() {
   // Get the local size by default
   let viewSize   = getViewSize()
 
@@ -295,7 +313,7 @@ export default withTracker(function track() {
     const group_data = Groups.findOne(select, project)
 
     if (group_data) {
-      if (active = group_data.active) {
+      if (active = group_data.active || false) {
         master = group_data.loggedIn[0]
 
         if (group_data.viewSize) {
@@ -305,6 +323,14 @@ export default withTracker(function track() {
       }
     }
   }
+
+
+  console.log("Share track:", track += 1
+             , "group_id:", group_id
+             , "active:", active
+             , "master:", master
+             , "viewSize:", viewSize
+             )
 
   return { group_id, active, master, viewSize }
 })(Share)

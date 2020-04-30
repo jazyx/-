@@ -36,20 +36,3 @@ export const getCodeFrom = (angle) => {
 
   return code
 }
-
-
-export const getD_code= () => {
-  let d_code    = ""
-  const source = "0123456789&#"
-               + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-               + "abcdefghijklmnopqrstuvwxyz"
-  const length = source.length
-  const total  = 7 // Creates 4 398 046 511 104 possible strings
-  for ( let ii = 0; ii < total; ii += 1 ) {
-    d_code += getRandomFromArray(source)
-  }
-
-  Session.set("d_code", d_code)
-
-  return d_code
-}

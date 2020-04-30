@@ -14,7 +14,6 @@ import { localize
        , removeFrom
        , arrayOverlap
        } from '../../tools/utilities'
-import { getD_code } from '../../tools/project'
 import { logInTeacher
        , toggleActivation
        } from '../../api/methods/methods'
@@ -53,8 +52,7 @@ class Teach extends Component {
 
   logTeacherIn() {
     const id     = Session.get("teacher_id")
-    const d_code = getD_code()
-    Session.set("d_code", d_code)
+    const d_code = Session.get("d_code")
 
     logInTeacher.call({ id, d_code }) // no callback => synchronous
   }

@@ -173,7 +173,7 @@ export class App extends Component {
         view = "Native"
     }
 
-    console.log("App about to render view:", view, instance += 1)
+    // console.log("App about to render view:", view, instance += 1)
 
     return <Share
       rect={this.shareRect}

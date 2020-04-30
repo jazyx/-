@@ -3,7 +3,6 @@ import { Session } from 'meteor/session'
 
 // Helpers
 import { removeFrom } from '../../tools/utilities'
-import { getD_code } from '../../tools/project'
 
 // Subscriptions
 import collections from '../../api/collections'
@@ -11,6 +10,8 @@ import collections from '../../api/collections'
 // viewSize
 import { logIn } from '../../api/methods/methods'
 import Storage from '../../tools/storage'
+
+import { getRandomFromArray } from '../../tools/utilities'
 
 
 
@@ -129,10 +130,14 @@ export default class StartUp {
 
 
   setSessionData() {
+    console.log("setSessionData")
+
     const storedData = Storage.get()
     const keys = Object.keys(storedData)
     const teacher = this.checkURLForTeacherName()
     // TODO: Add test for admin
+
+    this.sessionSetD_code()
 
     if (teacher) {
       Session.set("teacher_id", teacher.id)
@@ -180,6 +185,21 @@ export default class StartUp {
   }
 
 
+  sessionSetD_code() {
+    let d_code    = ""
+    const source = "0123456789&#"
+                 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                 + "abcdefghijklmnopqrstuvwxyz"
+    const length = source.length
+    const total  = 7 // Creates 4 398 046 511 104 possible strings
+    for ( let ii = 0; ii < total; ii += 1 ) {
+      d_code += getRandomFromArray(source)
+    }
+
+    Session.set("d_code", d_code)
+  }
+
+
   /** Check if the connection just broke and if so, log back in
    *  to the shared group. Otherwise, go to the Teach view.
    */
@@ -198,10 +218,8 @@ export default class StartUp {
       return this.hideSplash()
     }
 
-    const d_code = getD_code()
-
     const accountData = {
-      d_code
+      d_code:   Session.get("d_code")
     , username: Session.get("username")
     , q_code:   Session.get("q_code")
     , group_id: Session.get("group_id")

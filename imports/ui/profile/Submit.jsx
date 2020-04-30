@@ -9,7 +9,6 @@ import Storage from '../../tools/storage'
 import { localize
        , getRandomFromArray
        } from '../../tools/utilities'
-import { getD_code } from '../../tools/project'
 import { logIn } from '../../api/methods/methods'
 
 import { StyledCentred } from './styles'
@@ -43,15 +42,13 @@ class Submit extends Component {
 
     // Add the data that we can be sure of having, through the user
     // input, or by calculation.
-    const d_code = getD_code()
-    Session.set("d_code", d_code)
 
     this.accountData = {
       native:   Session.get("native")
     , username: Session.get("username")
     , language: Session.get("language")
     , teacher:  Session.get("teacher")
-    , d_code:   d_code
+    , d_code:   Session.get("d_code")
     }
 
     // Add data that could have been read in from the localStorage
