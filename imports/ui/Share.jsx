@@ -1,16 +1,23 @@
 /**
  * imports/ui/Share.jsx
  *
- * The Share component has two purposes:
+ * The Share component has three purposes:
  * 1. To subscribe to all the non-activity collections, so that these
- *    will be immediately available elsewhere
+ *    will be immediately available elsewhere. This is delegated to
+ *    a StartUp instance.
  * 2. As detailed below, to preserve the aspect ratio of a student's
  *    device when it is shown on the teacher's (or another student's)
- *    screen.
+ *    screen. This means tracking both when the master changes and
+ *    when the aspect ratio of the master or the current device
+ *    changes.
+ * 3. To return the Teacher to the Teach view when the last student in
+ *    a group leaves.
  *
+ * Aspect ratio
+ * ============
  * The Share component provides a wrapper div for the whole interface.
- * Users who are teachers will, by design, join each group as a slave
- * so that their students can use their entire screen estate.
+ * Teachers will, by design, join each group as a slave so that their
+ * students can use their entire screen estate.
  *
  * In one-on-one sessions, the student will always be master. In
  * group lessons, only one student will be master. There will always
@@ -33,6 +40,10 @@
  *   tells App to request a new render
  * • Session group_id or isMaster changes, which will be detected
  *   in the withTracker() function
+ *
+ * Teacher Redirection
+ * ===================
+ *
  */
 
 
@@ -68,14 +79,17 @@ class Share extends Component {
   constructor(props) {
     super(props)
 
+    // Fixed values for each session
+    this.isTeacher   = Session.get("role") === "teacher"
+    this.d_code      = Session.get("d_code")
+    // Variable values
     this.startedUp   = false
-    this.isMaster    = undefined
     this.aspectRatio = undefined
 
     this.setViewSize = this.setViewSize.bind(this)
 
     // Debugging only
-    // console.log("Share instance", ++instance)
+    console.log("Share instance", ++instance)
 
     // When the local window is resized one of two things should
     // happen:
@@ -109,9 +123,13 @@ class Share extends Component {
       view = undefined
     }
 
+    const isMaster = this.props.master === this.d_code
+
+    // We need to compare masterSize and (local) viewSize, to
+    // calculate view ratios.
     const viewSize = getViewSize()
     const { width, height } = viewSize
-    const masterSize = this.isMaster
+    const masterSize = isMaster
                      ? viewSize
                      : this.props.viewSize
     // this.props.viewSize is set by remote master if active. If no
@@ -146,8 +164,6 @@ class Share extends Component {
     // aspectRatio
 
     const aspectRatio = w / h
-    const newMaster = this.props.isMaster && !this.isMaster
-    this.isMaster = this.props.isMaster
 
     // Don't reset App's state.aspectRatio unnecessarily, or we get
     // an endless loop of renders
@@ -158,18 +174,11 @@ class Share extends Component {
     // , "; newMaster?"
     // , newMaster)
 
-    if (this.aspectRatio !== aspectRatio || newMaster || view) {
-      // console.log(
-      //   "Share setViewSize (" + view + ")"
-      // , newMaster
-      // ? "triggered by a new master"
-      // : this.aspectRatio
-      //   ? "triggered by a change in aspect-ratio"
-      //   : "as aspect-ratio is initialized"
-      // )
-
+    if (this.aspectRatio !== aspectRatio || view) {
       this.aspectRatio = aspectRatio
-      this.shareViewSizeIfMaster(viewSize)
+      if (isMaster) {
+        this.shareMasterView(viewSize)
+      }
 
       this.convertToLocalArea(viewSize, h, w)
 
@@ -183,7 +192,7 @@ class Share extends Component {
         output.view = view
       }
 
-      this.props.setViewSize (output)
+      this.props.setViewSize(output)
     }
   }
 
@@ -194,14 +203,12 @@ class Share extends Component {
   }
 
 
-  shareViewSizeIfMaster(data) {
-    if (this.props.isMaster) {
-      share.call({
-        _id: this.props.group_id
-      , key: "viewSize"
-      , data
-      })
-    }
+  shareMasterView(data) {
+    share.call({
+      _id: this.props.group_id
+    , key: "viewSize"
+    , data
+    })
   }
 
 
@@ -228,12 +235,24 @@ class Share extends Component {
   }
 
 
-  // This is required so that the master's new view size is shared
-  // with slaves immediately after its own render operation that was
-  // triggered by a new group, a new aspect ratio.
+  // Changes detected in the wrapped track function will trigger a
+  // new render, using the unchanged values. We have to wait until
+  // after this unmodified render is complete before we use setState.
+  // A new viewSize sent from a remote master will be shown with a lag
+  // of one render.
+  //
+  // If the re-render was triggered by a new aspect ratio on this
+  // device, setView will already have been called. A new call will
+  // thus be redundant, and will not change anything, so a double
+  // render should not occur.
+  //
   componentDidUpdate() {
     if (this.startedUp) {
-      this.setViewSize()
+      const view = (this.isTeacher && !this.props.active)
+                 ? (console.log("Redirect teacher"), "Teach")
+                 : undefined
+
+      this.setViewSize(view)
     }
   }
 
@@ -265,24 +284,27 @@ export default withTracker(function track() {
   // changes, as handled by setViewSize() above.
 
   // group_id changes when user changes teacher or changes groups
-  const group_id = Session.get("group_id")
-  const d_code   = Session.get("d_code")
+  const group_id = Session.get("group_id") // may change
 
-  // isMaster only changes in bigger groups
-  let isMaster = false // always false for a teacher
+  let master = undefined // always undefined for a teacher
+  let active = undefined
 
   if (group_id) {
-    const group_data = Groups.findOne({ _id: group_id })
+    const select = { _id: group_id }
+    const project = { loggedIn: 1, active: 1, viewSize: 1, _id: 0 }
+    const group_data = Groups.findOne(select, project)
 
     if (group_data) {
-      isMaster = group_data.loggedIn[0] === d_code
+      if (active = group_data.active) {
+        master = group_data.loggedIn[0]
 
-      if (group_data.viewSize) {
-        // Use the size defined by the group's master if it exists
-        viewSize = group_data.viewSize
+        if (group_data.viewSize) {
+          // Use the size defined by the group's master if it exists
+          viewSize = group_data.viewSize
+        }
       }
     }
   }
 
-  return { group_id, isMaster, viewSize }
+  return { group_id, active, master, viewSize }
 })(Share)

@@ -54,6 +54,8 @@ import Drag from './activities/Drag.jsx';
 import Mimo from './activities/Mimo.jsx';
 
 
+let instance = 0
+
 
 export class App extends Component {
   constructor(props) {
@@ -171,7 +173,7 @@ export class App extends Component {
         view = "Native"
     }
 
-    // console.log("App about to render view:", view)
+    console.log("App about to render view:", view, instance += 1)
 
     return <Share
       rect={this.shareRect}

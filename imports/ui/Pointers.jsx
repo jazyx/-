@@ -26,10 +26,17 @@ import { Circle
        } from './img/svg'
 
 
+// Pointers gets re-instantiated, so all its internal properties get
+// reset
+let instance = 0
+let render = 0
+
 
 class Pointers extends Component {
   constructor(props) {
     super(props)
+
+    console.log("Pointers instance:", instance += 1)
 
     this.groupIsActive   = false
     this.pointerIsActive = false
@@ -67,14 +74,14 @@ class Pointers extends Component {
   syncActive() {
     if (this.props.active) {
       if (!this.groupIsActive) {
-        this.createTracker()
         this.groupIsActive = true
+        this.createTracker()
 
         return 1
       }
     } else if (this.groupIsActive) {
-      this.destroyTracker()
       this.groupIsActive = false
+      this.destroyTracker()
 
       return -1
     }
@@ -84,18 +91,21 @@ class Pointers extends Component {
 
 
   createTracker() {
-    const _id = Session.get("teacher_id") || Session.get("user_id")
+    const _id = Session.get("d_code")
     const color = Session.get("q_color")
     const group_id = this.props.group_id
 
-    console.log("createTracker: _id", _id, "color:", color, "group_id:", group_id)
+    console.log("createTracker: _id", _id
+               , "color:", color
+               , "group_id:", group_id
+               )
 
     createTracker.call({ _id, color, group_id }, this.setPointerId)
   }
 
 
   destroyTracker() {
-    const _id = this.id
+    const _id = this.pointer_id
     const group_id = this.props.group_id
     destroyTracker.call({ _id, group_id }, this.setPointerId)
   }
@@ -103,7 +113,7 @@ class Pointers extends Component {
 
   setPointerId(error, pointer_id) {
     if (!error) {
-      this.pointer_id = pointer_id // === this.id | false
+      this.pointer_id = pointer_id // === d_code | false
     }
   }
 
@@ -269,6 +279,7 @@ class Pointers extends Component {
 
 
   render() {
+    // console.log("Render:", render += 1)
     const activeChange = this.syncActive()
 
     const scale = 1 // window.devicePixelRatio
@@ -292,8 +303,11 @@ class Pointers extends Component {
 }
 
 
+let track = 0
 
 export default withTracker(() => {
+  console.log("Track:", track += 1)
+
   const group_id = Session.get("group_id")
 
   // Groups .active is true
@@ -309,6 +323,14 @@ export default withTracker(() => {
   // points will be [] if there is no group_id; there will be no
   // group_id if the user has not completed the basic choices yet, or
   // if no data was saved to localStorage after an earlier session.
+  // If it is not empty, points will be...
+  // [ { _id:      <d_code>
+  //   , color:    <#hex>
+  //   , group_id: "longHashString "
+  //   }
+  // , ...
+  // ]
+  // ... with an entry for each d_code in group .loggedIn
 
   return {
     group_id
@@ -323,5 +345,5 @@ function groupIsActive(_id) {
   const project = { _id: 0, active: 1 }
   const active  = (Groups.findOne(select, project) || {}).active
 
-  return active
+  return active || false
 }

@@ -7,11 +7,13 @@ import { Session } from 'meteor/session'
 import { Chat } from '../api/collections'
 
 
-
+let instance = 0
 
 class Chatter extends Component {
   constructor(props) {
     super(props)
+
+    console.log("Chat instance:", instance += 1)
   }
 
 

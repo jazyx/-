@@ -21,10 +21,14 @@ const StyledMenu = styled.div`
   pointer-events: none;
 `
 
+let instance = 0
+
 
 export default class Menu extends Component {
   constructor(props) {
     super(props)
+
+    console.log("Menu instance:", instance += 1)
 
     this.logOut = this.logOut.bind(this)
     window.addEventListener("beforeunload", this.logOut, false)

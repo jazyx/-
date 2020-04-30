@@ -21,7 +21,7 @@ export default class LeaveGroup {
 
     // Common actions for both Teachers and Users
     this.removeDeviceFromGroup(group_id, d_code)
-    destroyTracker.call({ _id: id, group_id })
+    destroyTracker.call({ _id: d_code, group_id })
 
     // Separate actions
     if (id.length < 5) {// "xxxx" => 456976 teacher id`s
@@ -166,6 +166,7 @@ export default class LeaveGroup {
 
     if (d_codeCount && d_codeCount === loggedIn.length) {
       // The teacher is the only person left
+      this.deactivateGroup(group_id)
 
     } else {
       this.promoteSlave(group_id, loggedIn, ownerD_codes)

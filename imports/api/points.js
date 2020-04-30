@@ -23,42 +23,7 @@ import SimpleSchema from 'simpl-schema'
 
 ///// COLLECTION //// COLLECTION //// COLLECTION //// COLLECTION /////
 
-let Points
-
-
-if (Meteor.isServer) {
-  Points = new Meteor.Collection('points', { connection: null })
-
-  Meteor.publish('overDPP', function(){
-    // `publish` requires the classic function() {} syntax for `this`
-    const subscription = this
-
-    const publication = Points.find({}).observeChanges({
-      added: function (id, fields) {
-        subscription.added("points", id, fields)
-      },
-      changed: function(id, fields) {
-        subscription.changed("points", id, fields)
-      },
-      removed: function (id) {
-        subscription.removed("points", id)
-      }
-    })
-
-    subscription.ready()
-
-    subscription.onStop(() => {
-      publication.stop()
-    })
-  })
-}
-
-
-if (Meteor.isClient) {
-  Points = new Meteor.Collection('points') // connection undefined
-  Meteor.subscribe('overDPP')
-  window.Points = Points // REMOVE
-}
+let Points // MongoDB-free collection
 
 
 
@@ -66,7 +31,7 @@ if (Meteor.isClient) {
 
 
 export const createTracker = {
-  name: "createTracker"
+  name: "points.createTracker"
 
 , call(trackerData, callback) {
     const options = {
@@ -79,7 +44,7 @@ export const createTracker = {
 
 , validate(trackerData) {
     new SimpleSchema({
-      _id:      { type: String }
+      _id:      { type: String } // d_code for user|teacher's device
     , color:    { type: String }
     , group_id: { type: String }
     }).validate(trackerData)
@@ -104,7 +69,7 @@ export const createTracker = {
 
 
 export const update = {
-  name: "update"
+  name: "points.update"
 
 , call(pointData, callback) {
     const options = {
@@ -143,7 +108,7 @@ export const update = {
 
 
 export const destroyTracker = {
-  name: "destroyTracker"
+  name: "points.destroyTracker"
 
 , call(trackerData, callback) {
     const options = {
@@ -156,7 +121,7 @@ export const destroyTracker = {
 
 , validate(trackerData) {
     new SimpleSchema({
-      _id:      { type: String }
+      _id:      { type: String } // d_code for user|teacher's device
     , group_id: { type: String }
     }).validate(trackerData)
   }
@@ -180,10 +145,35 @@ export const destroyTracker = {
 }
 
 
+export const clearPoints = {
+  name: "points.clear"
+
+, call(trackerData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [trackerData], options, callback)
+  }
+
+, validate() {}
+
+, run(trackerData) {
+    const result = Points.remove( {} )
+
+    console.log("Points.remove( {} ) =>"
+               + "result:", result)
+    return result
+  }
+}
+
+
 const methods = [
   createTracker
 , update
 , destroyTracker
+, clearPoints // Debug only
 ]
 
 
@@ -195,6 +185,44 @@ methods.forEach(method => {
     }
   })
 })
+
+
+if (Meteor.isServer) {
+  Points = new Meteor.Collection('points', { connection: null })
+
+  Meteor.publish('overDPP', function(){
+    // `publish` requires the classic function() {} syntax for `this`
+    const subscription = this
+
+    const publication = Points.find({}).observeChanges({
+      added: function (id, fields) {
+        subscription.added("points", id, fields)
+      },
+      changed: function(id, fields) {
+        subscription.changed("points", id, fields)
+      },
+      removed: function (id) {
+        subscription.removed("points", id)
+      }
+    })
+
+    subscription.ready()
+
+    subscription.onStop(() => {
+      publication.stop()
+    })
+  })
+}
+
+
+if (Meteor.isClient) {
+  Points = new Meteor.Collection('points') // connection undefined
+  Meteor.subscribe('overDPP')
+
+  // REMOVE Debug Only // REMOVE Debug Only // REMOVE Debug Only //
+  window.Points = Points
+  window.clearPoints = clearPoints
+}
 
 
 export default Points
