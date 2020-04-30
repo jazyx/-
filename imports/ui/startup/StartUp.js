@@ -22,6 +22,8 @@ export default class StartUp {
     /// <<< HARD-CODED
     const timeOutDelay = 10 * 1000 // 500 ms is enough in development
     const splashDelay = 1000 // min time (ms) to show Splash screen
+
+    this.hack = window.location.pathname.startsWith("/*")
     /// HARD-CODED >>>
 
     this.ready = this.ready.bind(this)
@@ -137,9 +139,9 @@ export default class StartUp {
     const teacher = this.checkURLForTeacherName()
     // TODO: Add test for admin
 
-    const autoLogin  = storedData.autoLogin || false
+    const autoLogin  = storedData.autoLogin || this.hack
     const restoreAll = autoLogin
-                     ? storedData.restoreAll || false
+                     ? storedData.restoreAll || this.hack
                      : false
 
     this.sessionSetD_code()
@@ -244,7 +246,7 @@ export default class StartUp {
 
   reJoinGroups() {
     // TODO: Integrate menu then remove the following 4 lines
-    if (!window.location.pathname.startsWith("/*") ) {
+    if (!this.hack) {
       // console.log("reJoinGroups Returning user:", Session.get("username"))
       this.go = "Profile"
       return this.hideSplash()

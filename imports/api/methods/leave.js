@@ -32,7 +32,7 @@ export default class LeaveGroup {
        *  As a result, the Points records are destroyed
        */
       this.deactivateGroup(group_id)
-      this.emptyTheGroup(group_id) // colls this class recursively
+      // this.emptyTheGroup(group_id) // calls this class recursively
 
     } else {
       this.userIsLeaving(id, group_id, dismissed)
@@ -72,50 +72,50 @@ export default class LeaveGroup {
   }
 
 
-  emptyTheGroup(group_id) {
-    // Get the array of loggedIn devices...
-    const select = { _id: group_id }
-    const project = { loggedIn: 1, _id: 0 }
-    const { loggedIn } = Groups.findOne(select, project)
+  // emptyTheGroup(group_id) {
+  //   // Get the array of loggedIn devices...
+  //   const select = { _id: group_id }
+  //   const project = { loggedIn: 1, _id: 0 }
+  //   const { loggedIn } = Groups.findOne(select, project)
 
-    // ... and for each device, find its owner and tell them to go
-    const tellUserToLeave = userData => {
-      const id = userData._id
-      const d_codes = arrayOverlap(loggedIn, userData.loggedIn)
+  //   // ... and for each device, find its owner and tell them to go
+  //   const tellUserToLeave = userData => {
+  //     const id = userData._id
+  //     const d_codes = arrayOverlap(loggedIn, userData.loggedIn)
 
-      d_codes.forEach(d_code => {
-        new LeaveGroup({ id, d_code, group_id, dismissed: true })
-      })
-    }
+  //     d_codes.forEach(d_code => {
+  //       new LeaveGroup({ id, d_code, group_id, dismissed: true })
+  //     })
+  //   }
 
-    const filter = { loggedIn: { $elemMatch: { $in: loggedIn }}}
+  //   const filter = { loggedIn: { $elemMatch: { $in: loggedIn }}}
 
-    console.log( "db.groups.find("
-               + JSON.stringify(filter)
-               + ", "
-               + JSON.stringify(project)
-               + ")"
-               )
-    // db.groups.find({
-    //     loggedIn: {
-    //       $elemMatch: {
-    //         $in: [
-    //           "0kigTBd"
-    //         , "PHD8Swq"
-    //         ]
-    //       }
-    //     }
-    //   }
-    // , {
-    //     loggedIn: 1
-    //   , _id: 0
-    //   }
-    // )
+  //   console.log( "db.groups.find("
+  //              + JSON.stringify(filter)
+  //              + ", "
+  //              + JSON.stringify(project)
+  //              + ")"
+  //              )
+  //   // db.groups.find({
+  //   //     loggedIn: {
+  //   //       $elemMatch: {
+  //   //         $in: [
+  //   //           "0kigTBd"
+  //   //         , "PHD8Swq"
+  //   //         ]
+  //   //       }
+  //   //     }
+  //   //   }
+  //   // , {
+  //   //     loggedIn: 1
+  //   //   , _id: 0
+  //   //   }
+  //   // )
 
-    Groups.find(filter, project)
-          .fetch()
-          .forEach(tellUserToLeave)
-  }
+  //   Groups.find(filter, project)
+  //         .fetch()
+  //         .forEach(tellUserToLeave)
+  // }
 
 
   // User actions

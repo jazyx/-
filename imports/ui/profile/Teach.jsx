@@ -115,8 +115,8 @@ class Teach extends Component {
 
   getGroups() {
     const groups = this.props.groups.map((group, index) => {
-
       const names = group.members.map(member => {
+        // TODO: Show username greyed out if user is not loggedIn
         const username = member.username
         return <p
           key={username}
