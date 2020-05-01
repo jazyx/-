@@ -80,7 +80,7 @@ class Share extends Component {
     super(props)
 
     // Debugging only
-    console.log("Share instance", ++instance)
+    // console.log("Share instance", ++instance)
 
     this.startedUp   = false
     this.aspectRatio = undefined
@@ -128,11 +128,15 @@ class Share extends Component {
     if (typeof view === "string") {
       if (!this.startedUp) {
         this.initialize()
+
       } else if ( this.view === view ) {
         return
       }
 
       this.view = view
+      if (view === "Teach") {
+        // console.log("setViewSize(\"Teach\")")
+      }
 
     } else {
       // Ignore view when it is a resize event
@@ -261,13 +265,14 @@ class Share extends Component {
   // device, setView will already have been called. A new call will
   // thus be redundant, and will not change anything, so a double
   // render should not occur.
-  //
+
   componentDidUpdate() {
     if (this.startedUp) {
-      const view = (this.isTeacher && !this.props.active)
-                 ? (console.log("Redirect teacher"), "Teach")
+      const view = this.isTeacher
+                 ? this.props.teacherView // <activity> | "Teach"
                  : undefined
 
+      // console.log("Share componentDidUpdate setViewSize(\"" + view + "\")")
       this.setViewSize(view)
     }
   }
@@ -279,7 +284,7 @@ class Share extends Component {
   // redundant.
   componentWillUnmount() {
     for (let subscriptionName in this.subscriptions) {
-      console.log("Unsubscribing from", subscriptionName)
+      // console.log("Unsubscribing from", subscriptionName)
       this.subscriptions[subscriptionName].stop()
     }
   }
@@ -288,7 +293,7 @@ class Share extends Component {
 
 let track = 0
 
-export default withTracker(function tracker() {
+export default withTracker(() => {
   // Get the local size by default
   let viewSize   = getViewSize()
 
@@ -301,36 +306,51 @@ export default withTracker(function tracker() {
   // However, a re-render will also be trigger if the view size
   // changes, as handled by setViewSize() above.
 
+  // HACK: If the last student leaves the group, .active is set to
+  // false, and teacherView will be set to "Teach", to redirect the
+  // Teacher back to Teach view. This will trigger a call to
+  // logInTeacher, but the d_code will not have changed, so nothing
+  // happens.
+  // However, if the Teacher logs out, group .active is also set to
+  // false, but we don't want to return to Teach view and log the
+  // Teacher in again. To solve this, the loggingOut Session variable
+  // is set in Menu logOut(), and the teacherView will not be changed.
+
+  let loggingOut  = Session.get("loggingOut") || false
+
   // group_id changes when user changes teacher or changes groups
   const group_id = Session.get("group_id") // may change
 
-  let master = undefined // always undefined for a teacher
-  let active = false
+  let teacherView = "Teach"
+  let group_data  = undefined
+  let master      = undefined // always undefined for a teacher
 
   if (group_id) {
     const select = { _id: group_id }
-    const project = { loggedIn: 1, active: 1, viewSize: 1, _id: 0 }
-    const group_data = Groups.findOne(select, project)
+    const project = { loggedIn: 1, active: 1, viewSize: 1, view: 1 }
+    group_data = Groups.findOne(select, project)
+  }
 
-    if (group_data) {
-      if (active = group_data.active || false) {
-        master = group_data.loggedIn[0]
+  let { active, loggedIn, view } = (group_data || {}) // undefined?
 
-        if (group_data.viewSize) {
-          // Use the size defined by the group's master if it exists
-          viewSize = group_data.viewSize
-        }
-      }
+   if (group_data && ((active = active || false) || loggingOut)) {
+    // If active or the Teacher is loggingOut, show the Activity view
+    master = loggedIn[0]
+    teacherView = view
+
+    if (group_data.viewSize) {
+      // Use the size defined by the group's master if it exists
+      viewSize = group_data.viewSize
     }
   }
 
+  // console.log("Share track:", track += 1
+  //            , "group_id:", group_id
+  //            , "active:", active
+  //            , "master:", master
+  //            , "teacherView:", teacherView
+  //            , "viewSize:", viewSize
+  //            )
 
-  console.log("Share track:", track += 1
-             , "group_id:", group_id
-             , "active:", active
-             , "master:", master
-             , "viewSize:", viewSize
-             )
-
-  return { group_id, active, master, viewSize }
+  return { group_id, active, master, teacherView, viewSize }
 })(Share)

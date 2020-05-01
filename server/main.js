@@ -68,7 +68,7 @@ class CollectJSON {
 
     const collection = collections[json.collection]
     if (!collection) {
-      console.log("Collection", json.collection)
+      // console.log("Collection", json.collection)
       return console.log("missing for", this.jsonFile)
     }
 
@@ -105,7 +105,7 @@ class CollectJSON {
       }
     }
     const document = collection.findOne(versionSelect)
-    // console.log("**",collection._name)
+    console.log("**",collection._name)
 
     if (document) {
       if (version <= document.version) {

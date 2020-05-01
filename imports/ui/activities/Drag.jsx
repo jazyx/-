@@ -399,6 +399,11 @@ class Dragger extends Component {
       setTrackedEvents(cancel)
       target.classList.remove("drag")
 
+      if (isNaN(this.lastX)) {
+        // The user just clicked and released, with no drag
+        return
+      }
+
       const elements = document.elementsFromPoint(
         this.lastX
       , this.lastY

@@ -33,7 +33,7 @@ class NewPIN extends Component {
       return
     }
 
-    console.log("NewPIN view", Session.get("view"))
+    // console.log("NewPIN view", Session.get("view"))
     this.props.setView(Session.get("view"))
     // this.props.setView("CheckPIN")
   }

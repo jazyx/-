@@ -71,7 +71,7 @@ class Submit extends Component {
 
 
   callback(error, data) {
-    console.log("Submit callback", "error:", error, "data:", data)
+    // console.log("Submit callback", "error:", error, "data:", data)
     // status:   <missing | "CreateAccount" | "RequestPIN"
     // loggedIn: <missing | true>
     // accountCreated: <missing | true>

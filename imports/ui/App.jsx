@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
+import { teacher } from '../api/teacher'
+
 //// VIEWS // VIEWS // VIEWS // VIEWS // VIEWS // VIEWS // VIEWS ////
 //
 // Share is a div that wraps all content. On the device that is
@@ -68,6 +70,13 @@ export class App extends Component {
       // Generic views
     , Profile
     , Activity
+    // Aliases for the Profile views, so that the Menu can show them
+    , Name: true
+    , Group: true
+    , Teach: true
+    , Native: true
+    , Teacher: true
+    , Language: true
       // ADD NEW ACTIVITY VIEWS HERE, AND ALSO ABOVE ^^^^
     , Drag
     , Mimo
@@ -76,9 +85,14 @@ export class App extends Component {
     this.state = { view: "Splash" }
 
     this.storePointMethod = this.storePointMethod.bind(this)
-    this.setViewAndSize = this.setViewAndSize.bind(this)
     this.setViewSize = this.setViewSize.bind(this)
     this.setView = this.setView.bind(this)
+
+    if (Session.get("role") === "teacher") {
+      teacher.setViewFunction(this.setView)
+    } else {
+      teacher = undefined
+    }
   }
 
 
@@ -87,32 +101,27 @@ export class App extends Component {
    *  state variables at once in order to avoid an unnecessary and
    *  disruptive re-render.
    */
-  setViewAndSize(viewAndSize) {
-    // console.log("App setViewAndSize(" + JSON.stringify(viewAndSize) + ")")
-    // { view
-    // , aspectRatio
-    // , shareRect
-    // }
+  setViewSize(viewAndSize) {
+    // console.log("App setViewSize(" + JSON.stringify(viewAndSize) + ")")
+    // { view        // string
+    // , aspectRatio // number (≈ 0.5 - 2.0)
+    // , shareRect   // { top, left
+    // }             // , width, height }
+
+    // Only use setState with values that have actually changed, to
+    // avoid creating an infinite loop
+    const pass = Object.keys(viewAndSize)
+                       .filter(
+                         key => this.state[key] === viewAndSize[key]
+                       )
+    for (let key in pass) {
+      delete viewAndSize[key]
+    }
+
+    // console.log( "App setState("
+    //            + JSON.stringify(viewAndSize)
+    //            + ")")
     this.setState(viewAndSize)
-  }
-
-
-  /** Called by the setViewSize method of the Share component
-   *  on initialization and when the window resizes
-   *
-   * @param  {object}  viewSize  { aspectRatio // number (≈ 0.5 - 2.0)
-   *                             , shareRect   // { top, left
-   *                             }             // , width, height }
-   */
-  setViewSize(viewSize) {
-    this.setState( viewSize )
-
-    // console.log(
-    //  "setViewSize — aspectRatio:"
-    // , viewSize.aspectRatio
-    // , "shareRect:"
-    // , viewSize.shareRect
-    // )
   }
 
 
@@ -120,8 +129,9 @@ export class App extends Component {
   setView(view) {
     if (this.views[view]) {
       this.setState({ view })
+
     } else {
-      console.log("Unknown view:", view)
+      // console.log("Unknown view:", view)
     }
   }
 
@@ -147,9 +157,9 @@ export class App extends Component {
     if (this.state.aspectRatio === undefined) {
       // When all the collections are ready and the best landing view
       // has been determined, we need to set view, aspectRatio and
-      // sharedRect all at once; we use this.setViewANDSize for that
+      // sharedRect all at once; we use this.setViewSize for that
       return <Share
-        setViewSize={this.setViewAndSize} // used to hide Splash view
+        setViewSize={this.setViewSize} // used to hide Splash view
         tag="solo" // debugging only
       >
         <View />

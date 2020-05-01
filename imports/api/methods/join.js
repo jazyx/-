@@ -23,7 +23,7 @@ export default class JoinGroup {
     let { group_id, d_code, user_id } = accountData
     if (!group_id) {
       group_id = accountData.group_id = this.findLatestGroup(user_id)
-    
+
       if (!group_id) {
         group_id = accountData.group_id = this.findAnyGroup(user_id)
       }
@@ -92,13 +92,13 @@ export default class JoinGroup {
     const project = {}
     const group_id = (Groups.findOne(select, project) || {})._id
 
-    console.log( "group_id:", group_id
-               , "<<< db.groups.findOne("
-               + JSON.stringify(select)
-               + ", "
-               + JSON.stringify(project)
-               + ")"
-               )
+    // console.log( "group_id:", group_id
+    //            , "<<< db.groups.findOne("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(project)
+    //            + ")"
+    //            )
 
     return group_id // will be undefined if there is no history
   }

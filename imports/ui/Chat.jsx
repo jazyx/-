@@ -13,7 +13,7 @@ class Chatter extends Component {
   constructor(props) {
     super(props)
 
-    console.log("Chat instance:", instance += 1)
+    // console.log("Chat instance:", instance += 1)
   }
 
 

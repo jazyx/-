@@ -4,6 +4,9 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
+import { teacher } from '../../api/teacher'
+console.log(teacher)
+
 import { L10n
        , Users
        , Groups
@@ -14,9 +17,6 @@ import { localize
        , removeFrom
        , arrayOverlap
        } from '../../tools/utilities'
-import { logInTeacher
-       , toggleActivation
-       } from '../../api/methods/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -42,19 +42,11 @@ class Teach extends Component {
     this.toggleLearner = this.toggleLearner.bind(this)
     this.scrollIntoView = this.scrollIntoView.bind(this)
 
-    this.logTeacherIn()
-
     // Allow Enter to accept the default/current language
     document.addEventListener("keydown", this.share, false)
     window.addEventListener("resize", this.scrollIntoView, false)
-  }
 
-
-  logTeacherIn() {
-    const id     = Session.get("teacher_id")
-    const d_code = Session.get("d_code")
-
-    logInTeacher.call({ id, d_code }) // no callback => synchronous
+    teacher.restore()
   }
 
 
@@ -66,11 +58,8 @@ class Teach extends Component {
     }
 
     const group = this.props.groups[this.state.selected]
-    const { _id, view } = group
-    Session.set("group_id", _id)
-    this.props.setView(view)
 
-    toggleActivation.call({ _id, active: true })
+    teacher.join(group)
   }
 
 

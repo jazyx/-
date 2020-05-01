@@ -22,7 +22,9 @@ export default class LogOut {
     let key
       , collection
 
-    if (id.length < 5) {// "xxxx" => 456976 teacher id`s
+    const isTeacher = (id.length < 5)
+
+    if (isTeacher) {// "xxxx" => 456976 teacher id`s
       key = "id"
       collection = Teachers
 
@@ -33,7 +35,7 @@ export default class LogOut {
 
     const select = { [key]: id }
 
-    if (group_id) {
+    if (group_id && !isTeacher) {
       // Also update entry in history
       const path = "history." + group_id
       const pathOut = path + ".$.out"
@@ -45,17 +47,19 @@ export default class LogOut {
       }
     }
 
-    // console.log("db.users.update("
-    //            + JSON.stringify(select)
-    //            + ", "
-    //            + JSON.stringify(update)
-    //            + ")")
-
     const result = collection.update(select, update)
     // 0 if no in without out
     // 1 if history entry updated
 
 
-    // console.log("result:", result, "<<< LogOut device", d_code, "from group", group_id )
+    // console.log( "result:", result
+    //            , "<<< LogOut device db."
+    //               + collection._name
+    //               + ".update("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(update)
+    //            + ")"
+    //            )
   }
 }

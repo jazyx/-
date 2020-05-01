@@ -132,7 +132,7 @@ export default class StartUp {
 
 
   setSessionData() {
-    console.log("setSessionData")
+    // console.log("setSessionData")
 
     const storedData = Storage.get()
     const keys = Object.keys(storedData)
@@ -371,6 +371,8 @@ export default class StartUp {
 
     // Tell Share to replace the Splash screen will with an
     // interactive view (Profile, Activity or an activity-in-progress)
+
+    // console.log("StartUp setViewAndSize(\"" + this.go + "\")")
     this.setViewAndSize(this.go)
   }
 }

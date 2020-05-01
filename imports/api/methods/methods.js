@@ -231,6 +231,7 @@ export const toggleActivation = {
 , validate(groupData) {
     new SimpleSchema({
       _id:    { type: String }
+    , d_code: { type: String }
     , active: { type: Boolean }
     }).validate(groupData)
   }

@@ -46,14 +46,14 @@ export default class LeaveGroup {
     const pull   = { $pull: { loggedIn: d_code }}
     const result = Groups.update(select, pull)
 
-    console.log( "result:", result
-               , ", group_id", group_id
-               , "db.groups.update("
-                 + JSON.stringify(select)
-                 + ", "
-                 + JSON.stringify(pull)
-                 + ")"
-               )
+    // console.log( "result:", result
+    //            , ", group_id", group_id
+    //            , "db.groups.update("
+    //              + JSON.stringify(select)
+    //              + ", "
+    //              + JSON.stringify(pull)
+    //              + ")"
+    //            )
   }
 
 
@@ -63,12 +63,12 @@ export default class LeaveGroup {
     const set    = { $set: { active: false }}
     const result = Groups.update(select, set)
 
-    console.log( "deactivateGroup:", result
-               , "db.groups.update("
-               + JSON.stringify(select)
-               + ", "
-               + JSON.stringify(set)
-               + ")")
+    // console.log( "deactivateGroup:", result
+    //            , "db.groups.update("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(set)
+    //            + ")")
   }
 
 
@@ -145,14 +145,14 @@ export default class LeaveGroup {
       }
     }
 
-    console.log( "updateUserHistory:"
-               , "db.users.update("
-               + JSON.stringify(select)
-               + ", "
-               + JSON.stringify(update)
-               + ")")
+    const result = Users.update(select, update)
 
-    Users.update(select, update)
+    // console.log( "updateUserHistory:", result
+    //            , "<<< db.users.update("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(update)
+    //            + ")")
   }
 
 
@@ -179,12 +179,12 @@ export default class LeaveGroup {
     const project = { loggedIn: 1, owner: 1, active: 1, _id: 0 }
     const status  = Groups.findOne(select, project)
 
-    console.log( "status:", status
-               , "db.groups.findOne("
-               + JSON.stringify(select)
-               + ", "
-               + JSON.stringify(project)
-               + ")")
+    // console.log( "status:", status
+    //            , "db.groups.findOne("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(project)
+    //            + ")")
 
     return status
   }
@@ -195,12 +195,12 @@ export default class LeaveGroup {
     const project = { fields: { loggedIn: 1 }, }
     const { loggedIn } = Teachers.findOne(select, project)
 
-    console.log( "getOwnerD_codes loggedIn:", loggedIn
-               , "db.teachers.findOne("
-               + JSON.stringify(select)
-               + ", "
-               + JSON.stringify(project)
-               + ")")
+    // console.log( "getOwnerD_codes loggedIn:", loggedIn
+    //            , "db.teachers.findOne("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(project)
+    //            + ")")
 
     d_codes = arrayOverlap(d_codes, loggedIn)
 
@@ -227,21 +227,21 @@ export default class LeaveGroup {
       const push = { $push: { loggedIn: {$each:[slave],$position:0}}}
       let result = Groups.update(select, pull)
 
-      console.log( "pull slave:", result
-                 , "db.groups.findOne("
-                 + JSON.stringify(select)
-                 + ", "
-                 + JSON.stringify(pull)
-                 + ")")
+      // console.log( "pull slave:", result
+      //            , "db.groups.findOne("
+      //            + JSON.stringify(select)
+      //            + ", "
+      //            + JSON.stringify(pull)
+      //            + ")")
 
       result = Groups.update(select, push)
 
-      console.log( "push slave:", result
-                 , "db.groups.findOne("
-                 + JSON.stringify(select)
-                 + ", "
-                 + JSON.stringify(push)
-                 + ")")
+      // console.log( "push slave:", result
+      //            , "db.groups.findOne("
+      //            + JSON.stringify(select)
+      //            + ", "
+      //            + JSON.stringify(push)
+      //            + ")")
     }
   }
 }

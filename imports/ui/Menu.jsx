@@ -28,7 +28,7 @@ export default class Menu extends Component {
   constructor(props) {
     super(props)
 
-    console.log("Menu instance:", instance += 1)
+    // console.log("Menu instance:", instance += 1)
 
     this.logOut = this.logOut.bind(this)
     window.addEventListener("beforeunload", this.logOut, false)
@@ -53,9 +53,15 @@ export default class Menu extends Component {
     }
 
     const group_id = Session.get("group_id")
+
+    if (Session.get("role") === "teacher") {
+      // HACK: Create a single-use Session variable so that when a
+      // Teacher logs out, Share does log them back in again
+      Session.set("loggingOut", true)
+    }
+
     const userAndDevice = { id, group_id, d_code }
-    // Without a callback, the operation is synchronous, which will
-    // prevent the app from closing. Does a callback prevent this?
+
     logOut.call(userAndDevice) // no callback = synchronous
   }
 

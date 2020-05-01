@@ -130,10 +130,10 @@ export const destroyTracker = {
     const { group_id } = trackerData
     const result = Points.remove( trackerData )
 
-    console.log("Points.remove("
-               + JSON.stringify(trackerData)
-               + ") =>"
-               + "result:", result)
+    // console.log("Points.remove("
+    //            + JSON.stringify(trackerData)
+    //            + ") =>"
+    //            + "result:", result)
 
     const members = Points.find({ group_id }, {}).fetch()
     if (members.length < 2) {
@@ -162,8 +162,8 @@ export const clearPoints = {
 , run(trackerData) {
     const result = Points.remove( {} )
 
-    console.log("Points.remove( {} ) =>"
-               + "result:", result)
+    // console.log("Points.remove( {} ) =>"
+    //            + "result:", result)
     return result
   }
 }

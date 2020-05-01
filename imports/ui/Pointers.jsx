@@ -36,7 +36,7 @@ class Pointers extends Component {
   constructor(props) {
     super(props)
 
-    console.log("Pointers instance:", instance += 1)
+    // console.log("Pointers instance:", instance += 1)
 
     this.groupIsActive   = false
     this.pointerIsActive = false
@@ -67,7 +67,7 @@ class Pointers extends Component {
 
 
   pointMethod(event) {
-    console.log("Points received", event.type, "from", event.target)
+    // console.log("Points received", event.type, "from", event.target)
   }
 
 
@@ -95,10 +95,10 @@ class Pointers extends Component {
     const color = Session.get("q_color")
     const group_id = this.props.group_id
 
-    console.log("createTracker: _id", _id
-               , "color:", color
-               , "group_id:", group_id
-               )
+    // console.log("createTracker: _id", _id
+    //            , "color:", color
+    //            , "group_id:", group_id
+    //            )
 
     createTracker.call({ _id, color, group_id }, this.setPointerId)
   }

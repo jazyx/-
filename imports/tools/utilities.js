@@ -645,7 +645,7 @@ export const trimImage = (image) => {
   , trimHeight
   )
 
-  console.log(bound)
+  // console.log(bound)
 
   copy.canvas.width = trimWidth
   copy.canvas.height = trimHeight
