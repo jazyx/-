@@ -306,18 +306,6 @@ export default withTracker(() => {
   // However, a re-render will also be trigger if the view size
   // changes, as handled by setViewSize() above.
 
-  // HACK: If the last student leaves the group, .active is set to
-  // false, and teacherView will be set to "Teach", to redirect the
-  // Teacher back to Teach view. This will trigger a call to
-  // logInTeacher, but the d_code will not have changed, so nothing
-  // happens.
-  // However, if the Teacher logs out, group .active is also set to
-  // false, but we don't want to return to Teach view and log the
-  // Teacher in again. To solve this, the loggingOut Session variable
-  // is set in Menu logOut(), and the teacherView will not be changed.
-
-  let loggingOut  = Session.get("loggingOut") || false
-
   // group_id changes when user changes teacher or changes groups
   const group_id = Session.get("group_id") // may change
 
@@ -333,8 +321,8 @@ export default withTracker(() => {
 
   let { active, loggedIn, view } = (group_data || {}) // undefined?
 
-   if (group_data && ((active = active || false) || loggingOut)) {
-    // If active or the Teacher is loggingOut, show the Activity view
+   if (group_data && (active = active || false)) {
+    // If active show the Activity view
     master = loggedIn[0]
     teacherView = view
 

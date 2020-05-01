@@ -53,13 +53,6 @@ export default class Menu extends Component {
     }
 
     const group_id = Session.get("group_id")
-
-    if (Session.get("role") === "teacher") {
-      // HACK: Create a single-use Session variable so that when a
-      // Teacher logs out, Share does log them back in again
-      Session.set("loggingOut", true)
-    }
-
     const userAndDevice = { id, group_id, d_code }
 
     logOut.call(userAndDevice) // no callback = synchronous

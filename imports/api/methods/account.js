@@ -34,8 +34,7 @@ export default class CreateAccount {
     // console.log("accountData after createUser:", accountData)
     // console.log("————————————————————————————")
     //
-    //d_code: "HABIg"
-    // loggedOut: []
+    // d_code: "HABIg"
     // native: "en-GB"
     // q_code: "3819"
     // q_color: "#33cc60"

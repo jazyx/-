@@ -5,7 +5,6 @@ import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
 import { teacher } from '../../api/teacher'
-console.log(teacher)
 
 import { L10n
        , Users
