@@ -271,6 +271,7 @@ export default class StartUp {
 
 
   callback(error, data) {
+    Session.set("isMaster", data.isMaster || false)
     this.go = data.view
     this.hideSplash()
   }

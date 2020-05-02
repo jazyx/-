@@ -9,12 +9,16 @@ import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import { Drag } from '../../api/collections'
+import { Drag } from '../../../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
-       } from '../../tools/utilities'
-import Sampler from '../../tools/sampler'
+       } from '../../../tools/utilities'
+import Sampler from '../../../tools/sampler'
+
+import { setViewData
+       , toggleShow
+       } from './methods'
 
 
 const StyledGame = styled.div`
@@ -261,15 +265,14 @@ class Dragger extends Component {
       array: props.images
     , sampleSize: 6
     })
-    const { layouts, show } = this._newDeal(true)
+
+    this._newDeal(true) // sets this.props.viewData
 
     this.dropTarget = React.createRef()
     this.gameFrame  = React.createRef()
 
     this.state = {
-      layouts
-    , show
-    , count: 0
+      count: 0
     , turn: 0
     , mask: 0
     }
@@ -291,22 +294,29 @@ class Dragger extends Component {
 
 
   _newDeal(startUp) {
+    if (!Session.get("isMaster")) {
+      return
+    }
+
     const items = this.sampler.getSample()
-    const layouts = this._getLayouts(items)
-    const show  = {}
-    layouts[6].hints.forEach(hint => {
+    const viewData = this._getLayouts(items)
+    viewData.show  = viewData[6].hints.reduce((show, hint) => {
       hint = this._hyphenate(hint)
       show[hint] = false
-    })
+      return show
+    }, {})
+    const group_id = Session.get("group_id")
+
+    setViewData.call({ group_id, viewData })
 
     if (startUp === true) {
-      return { layouts, show }
+      return // { viewData, show }
     }
 
     const turn = this.state.turn + 1
     const complete = 0
     const mask = 0
-    this.setState({ layouts, show, turn, complete, mask })
+    this.setState({ /*viewData, show,*/ turn, complete, mask })
     this.timeOut = 0
   }
 
@@ -420,28 +430,18 @@ class Dragger extends Component {
       if (onTarget) {
         target.classList.add("dropped")
 
-        const show = this.state.show
-        show[this.state.dropClass] = true
-        const complete = this._turnComplete(show)
-        this.setState({ show, complete })
+        const show = this.props.viewData.show
+        const showData = {
+          group_id: Session.get("group_id")
+        , hint: this.state.dropClass
+        }
+        toggleShow.call(showData)
       }
 
       this.setState({ dropClass: "" })
     }
 
     const cancel = setTrackedEvents({ event, drag, drop })
-  }
-
-
-  _turnComplete(show) {
-    const keys = Object.keys(show)
-    const complete = keys.reduce(
-      (counter, key) => counter + show[key]
-    , 0) + "" === this.state.count
-
-    return complete
-         ? + new Date()
-         : 0
   }
 
 
@@ -455,7 +455,7 @@ class Dragger extends Component {
       const src = this.props.folder + item
       const hint = layout.hints[index]
       const className = this._hyphenate(hint)
-      const show = this.state.show[className]
+      const show = this.props.viewData.show[className]
       const ref = className === this.state.dropClass
                 ? this.dropTarget
                 : null
@@ -492,7 +492,7 @@ class Dragger extends Component {
 
   _getNames(layout) {
     const names = layout.names.map((name, index) => {
-      const show = !this.state.show[name]
+      const show = !this.props.viewData.show[name]
 
       return <StyledDraggable
         key={index+"-"+name}
@@ -512,8 +512,8 @@ class Dragger extends Component {
   }
 
 
-  _newGame() {
-    if (this.state.complete) {
+  _newGame(complete) {
+    if (complete) {
       if (!this.timeOut) {
         this.timeOut = setTimeout(this._fadeMask, 0)
       }
@@ -537,17 +537,20 @@ class Dragger extends Component {
 
 
   render() {
-    if (!this.state.count) {
+    if (!this.props.viewData || !this.state.count) {
       // Force the gameFrame ref to become something
       return <StyledGame
         ref={this.gameFrame}
       />
     }
 
-    const layout = this.state.layouts[this.state.count]
+    const complete = this.props.completed === this.state.count
+                   ? + new Date()
+                   : 0
+    const layout = this.props.viewData[this.state.count]
     const frames = this._getFrames(layout)
     const names = this._getNames(layout)
-    const newGame = this._newGame()
+    const newGame = this._newGame(complete)
     const aspectRatio = this.props.aspectRatio
 
     return (
@@ -577,6 +580,16 @@ class Dragger extends Component {
 
 
 export default withTracker(() => {
+  function turnCompleted(show) {
+    const keys = Object.keys(show)
+    const completed = keys.reduce(
+      (counter, key) => counter + show[key]
+    , 0)
+
+    return "" + completed
+  }
+
+  // Images
   const key          = "furniture"
   const code         = Session.get("language").replace(/-\w*/, "")
   const imageSelect  = { type: { $eq: key }}
@@ -586,12 +599,22 @@ export default withTracker(() => {
   const images = items.map(document => [ document.file
                                        , document.text[code]
                                        ]
-                           )
+                          )
   const folder = Drag.findOne(folderSelect).folder
+
+  // viewData
+  const select  = { _id: Session.get("group_id") }
+  const project = { fields: { viewData: 1 } }
+  const { viewData } = Groups.findOne(select, project)
+  const completed = viewData
+                  ? turnCompleted(viewData.show)
+                  : false
 
   // ... and add the extracted data to the Game instance's this.props
   return {
     images
   , folder
+  , viewData
+  , completed
   }
 })(Dragger)

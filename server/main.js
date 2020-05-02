@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
-import {} from '../imports/api/methods/methods'
+import '../imports/api/methods/methods'
+import '../imports/ui/activities/combinedMethods'
 import collections from '../imports/api/collections.js'
 import Points from '../imports/api/points'
 
@@ -105,7 +106,7 @@ class CollectJSON {
       }
     }
     const document = collection.findOne(versionSelect)
-    console.log("**",collection._name)
+    // console.log("**",collection._name)
 
     if (document) {
       if (version <= document.version) {

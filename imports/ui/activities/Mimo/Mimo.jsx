@@ -4,15 +4,15 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import { L10n } from '../../api/collections'
-import { localize } from '../../tools/utilities'
+import { L10n } from '../../../api/collections'
+import { localize } from '../../../tools/utilities'
 
 import { StyledProfile
        , StyledPrompt
        , StyledButton
        , StyledNavArrow
        , StyledButtonBar
-       } from './Styles'
+       } from '../Styles'
 
 
 

@@ -32,7 +32,8 @@ export default class JoinGroup {
     let success = this.joinGroup(group_id, d_code)
 
     if (success) {
-      accountData.view = this.getAccountView(group_id)
+      const viewAndMastery = this.getViewAndMastery(group_id, d_code)
+      Object.assign(accountData, viewAndMastery)
       success = this.addUserHistoryItem(group_id, d_code, user_id)
 
       if (success) {
@@ -113,12 +114,13 @@ export default class JoinGroup {
   }
 
 
-  getAccountView(group_id) {
+  getViewAndMastery(group_id, d_code) {
     const select = { _id: group_id }
-    const project = { fields: { _id: 0, view: 1 }}
-    const view = Groups.findOne(select, project).view
+    const project = { fields: { _id: 0, view: 1, loggedIn: 1 }}
+    const { view, loggedIn } = Groups.findOne(select, project)
+    const isMaster = !loggedIn.indexOf(d_code)
 
-    return view
+    return { view, isMaster }
   }
 
 

@@ -121,6 +121,7 @@ class Submit extends Component {
     Session.set("q_color",  data.q_color)
     Session.set("user_id",  data.user_id)
     Session.set("group_id", data.group_id)
+    Session.set("isMaster", data.isMaster)
 
     // Show the save message...
     this.setState({ save })
@@ -143,6 +144,7 @@ class Submit extends Component {
 
     // Remove properties that won't be reused on next connection
     delete this.accountData.pin_given
+    delete this.accountData.isMaster
     delete this.accountData.status
     delete this.accountData.d_code
 

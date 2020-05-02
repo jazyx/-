@@ -92,12 +92,10 @@ class Teacher {
   // REACTIVE SUBSCRIPTION to this Groups .active field
 
   trackGroup(tracker) {
-    console.log(tracker)
     const select  = { _id: this.group_id }
     const project = { active: 1 }
     const { active } = Groups.findOne(select, project)
                     || { active: false }
-
     if (!active) {
       tracker.stop()
       this.leaveGroup()

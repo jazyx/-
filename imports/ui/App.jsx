@@ -52,8 +52,8 @@ import Profile from './profile/Profile.jsx';
 import Activity from './activities/Activity.jsx';
 
 // ADD NEW ACTIVITY VIEWS HERE...      AND ALSO BELOW vvvv
-import Drag from './activities/Drag.jsx';
-import Mimo from './activities/Mimo.jsx';
+import Drag from './activities/Drag/Drag.jsx';
+import Mimo from './activities/Mimo/Mimo.jsx';
 
 
 let instance = 0

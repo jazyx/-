@@ -27,13 +27,13 @@ export default class ToggleActivation {
     const result = Groups.update(select, update)
     // 1 = success; 0 = not
 
-    console.log( "ToggleActivation:", result
-               , "db.groups.update("
-               + JSON.stringify(select)
-               + ", "
-               + JSON.stringify(update)
-               + ")"
-               )
+    // console.log( "ToggleActivation:", result
+    //            , "db.groups.update("
+    //            + JSON.stringify(select)
+    //            + ", "
+    //            + JSON.stringify(update)
+    //            + ")"
+    //            )
 
 
   }
