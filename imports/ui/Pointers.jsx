@@ -232,7 +232,7 @@ class Pointers extends Component {
         top    = doc.y + "px"
         shadow = "drop-shadow(0 0 6px #f90)"
       }
-      const edge = getColor({ number: doc.number, format: "hex" })
+      const edge = doc.color
       const inner = toneColor(edge, 1.5)
       const opacity = 0.5
       const [ stroke
