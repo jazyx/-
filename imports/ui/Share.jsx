@@ -129,8 +129,8 @@ class Share extends Component {
       if (!this.startedUp) {
         this.initialize()
 
-      } else if ( this.view === view ) {
-        return
+      // } else if ( this.view === view ) {
+      //   return
       }
 
       this.view = view
@@ -197,7 +197,7 @@ class Share extends Component {
     if (this.aspectRatio !== aspectRatio || view) {
       this.aspectRatio = aspectRatio
       if (isMaster) {
-        this.shareMasterView(viewSize)
+        this.shareMasterView({ ...viewSize }) // clone before convert
       }
 
       this.convertToLocalArea(viewSize, h, w)
@@ -220,6 +220,8 @@ class Share extends Component {
   convertToLocalArea(viewSize, h, w) {
     viewSize.top = (viewSize.height - h * 100) / 2
     viewSize.left = (viewSize.width - w * 100) / 2
+    viewSize.width = w * 100
+    viewSize.height = h * 100
   }
 
 

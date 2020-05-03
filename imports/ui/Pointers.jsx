@@ -120,6 +120,7 @@ class Pointers extends Component {
 
   getPointData(event) {
     let data
+    const { top, left, width, height } = this.props.rect
 
     const touchend = event.type === "touchend"
 
@@ -131,8 +132,12 @@ class Pointers extends Component {
     } else {
       const _id = this.pointer_id
       const group_id = this.props.group_id
-      const { x, y } = getXY(event)
       const active = this.pointerIsActive
+      // Get x and y relative to the whole window...
+      let { x, y } = getXY(event)
+      // ... then adjust to fit the Share rect
+      x = Math.max(0, Math.min( ( x - left ) / width, 1 ))
+      y = Math.max(0, Math.min( ( y - top ) / height, 1 ))
 
       data = {
         _id
@@ -203,6 +208,13 @@ class Pointers extends Component {
 
 
   getPoints(scale) { // window.devicePixelRatio
+    // Get the dimensions of the rendered area, so we can use them to
+    // convert the relative position of the pointer...
+    //   ( 0.0 ≤ doc.x, doc.y ≤ 1.0)
+    // ... to absolute values.
+
+    const { width: w, height: h} = this.props.rect
+
     return this.props.points
                      .filter(doc => (
                       //    !doc.touchend
@@ -218,18 +230,18 @@ class Pointers extends Component {
         , shadow
       const touch = doc.touch
       if (touch) {
-        width = Math.max(15, touch.radiusX)
-        height = Math.max(20, touch.radiusY)
-        left   = doc.x - width / 2 + "px"
-        top    = doc.y - height / 2 + "px"
-        width  = width * 2 + "px"
-        height = height * 2 + "px"
+        width = Math.max(15, touch.radiusX)  // actually, use only
+        height = Math.max(20, touch.radiusY) // half the value first
+        left   = (doc.x * w) - width + "px"
+        top    = (doc.y * h) - height + "px"
+        width  = width * 2 + "px"            // and then
+        height = height * 2 + "px"           // double it
         shadow = ""
       } else {
         width  = 12 * scale + "px"
         height = 16 * scale + "px"
-        left   = doc.x + "px"
-        top    = doc.y + "px"
+        left   = (doc.x * w) + "px"
+        top    = (doc.y * h) + "px"
         shadow = "drop-shadow(0 0 6px #f90)"
       }
       const edge = doc.color
@@ -279,6 +291,7 @@ class Pointers extends Component {
 
 
   render() {
+    // console.log("Share this.props:", this.props)
     // console.log("Render:", render += 1)
     const activeChange = this.syncActive()
 
@@ -292,8 +305,13 @@ class Pointers extends Component {
     return <div
       id="points"
       style={{
-        height: "100vh"
-      , backgroundColor: "#ccc"
+        position: "absolute"
+      , height: "100%"
+      , width: "100%"
+      , top: "0"
+      , left: "0"
+      , backgroundColor: "rgba(204, 0, 204, 0.1)"
+      , pointerEvents: "none"
       }}
     >
       {status}

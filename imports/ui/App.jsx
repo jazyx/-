@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
 import { teacher } from '../api/teacher'
+import { removeFrom } from '../tools/utilities'
 
 //// VIEWS // VIEWS // VIEWS // VIEWS // VIEWS // VIEWS // VIEWS ////
 //
@@ -105,23 +106,51 @@ export class App extends Component {
     // console.log("App setViewSize(" + JSON.stringify(viewAndSize) + ")")
     // { view        // string
     // , aspectRatio // number (≈ 0.5 - 2.0)
-    // , shareRect   // { top, left
+    // , viewRect    // { top, left
     // }             // , width, height }
+
+    /**
+     * equivalent is not a generic solution to comparing two objects
+     * but it is good enough for comparing two viewRect`s with the
+     * keys top, left, width and height, whose values are all numbers
+     */
+    const equivalent = (objectA, objectB) => {
+      const keysA = Object.keys(objectA)
+      const keysB = Object.keys(objectB)
+      if (keysA.length !== keysB.length) {
+        return false
+      }
+
+      return keysA.every(key => objectA[key] === objectB[key])
+    }
 
     // Only use setState with values that have actually changed, to
     // avoid creating an infinite loop
-    const pass = Object.keys(viewAndSize)
-                       .filter(
-                         key => this.state[key] === viewAndSize[key]
-                       )
-    for (let key in pass) {
+    const keys = Object.keys(viewAndSize)
+    const pass = keys.filter(
+                        key => {
+                          const value = this.state[key]
+                          if (value === viewAndSize[key]) {
+                            return true
+                          } else if (typeof value === "object") {
+                            return equivalent(value, this.state[key])
+                          }
+
+                          return false
+                        }
+                      )
+    pass.forEach(key => {
       delete viewAndSize[key]
-    }
+      removeFrom(keys, key)
+    })
 
     // console.log( "App setState("
     //            + JSON.stringify(viewAndSize)
     //            + ")")
-    this.setState(viewAndSize)
+
+    if (keys.length) {
+      this.setState(viewAndSize)
+    }
   }
 
 
@@ -186,7 +215,6 @@ export class App extends Component {
     // console.log("App about to render view:", view, instance += 1)
 
     return <Share
-      rect={this.shareRect}
       setViewSize={this.setViewSize} // <View /> will set the view
       tag="view" // for debugging only
     >
@@ -203,7 +231,7 @@ export class App extends Component {
       />
       <Pointers
         ref={this.storePointMethod}
-        rect={this.shareRect}
+        rect={this.state.viewSize}
       />
       <Chat />
     </Share>
