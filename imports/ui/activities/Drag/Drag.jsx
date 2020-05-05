@@ -9,7 +9,9 @@ import styled, { css } from 'styled-components'
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import { Drag } from '../../../api/collections'
+import { Drag
+       , L10n
+       } from '../../../api/collections'
 import { shuffle
        , getPageXY
        , setTrackedEvents
@@ -19,7 +21,10 @@ import Sampler from '../../../tools/sampler'
 import { setViewData
        , toggleShow
        } from './methods'
+import { localize } from '../../../tools/utilities'
 
+ // ui/activities/Drag/Drag.jsx
+ // tools/utilities.js
 
 const StyledGame = styled.div`
   width: calc(100 * var(--w));
@@ -285,6 +290,12 @@ class Dragger extends Component {
   }
 
 
+  getPhrase(cue) {
+    const code = Session.get("native")
+    return localize(cue, code, this.props.phrases)
+  }
+
+
   _newDeal(startUp) {
     if (!Session.get("isMaster")) {
       return
@@ -511,6 +522,9 @@ class Dragger extends Component {
 
   _newGame(complete, aspectRatio) {
     if (complete) {
+      const prompt = this.getPhrase("congratulations")
+      const replay = this.getPhrase("play_again")
+
       if (!this.timeOut) {
         this.timeOut = setTimeout(this._fadeMask, 0)
       }
@@ -519,11 +533,11 @@ class Dragger extends Component {
         opacity={this.state.mask}
         aspectRatio={aspectRatio}
       >
-        <h1>Congratulations!</h1>
+        <h1>{prompt}!</h1>
         <button
           onMouseUp={this._newDeal}
         >
-          Play again
+          {replay}
         </button>
       </StyledMask>
 
@@ -586,7 +600,7 @@ export default withTracker(() => {
   // Images
   const key          = "furniture"
   const code         = Session.get("language").replace(/-\w*/, "")
-  const imageSelect  = { type: { $eq: key }}
+  let imageSelect  = { type: { $eq: key }}
   const folderSelect = { key:  { $eq: key }}
   const items = Drag.find(imageSelect).fetch()
 
@@ -597,12 +611,21 @@ export default withTracker(() => {
   const folder = Drag.findOne(folderSelect).folder
 
   // viewData
-  const select  = { _id: Session.get("group_id") }
+  const viewDataSelect  = { _id: Session.get("group_id") }
   const project = { fields: { viewData: 1 } }
-  const { viewData } = Groups.findOne(select, project)
+  const { viewData } = Groups.findOne(viewDataSelect, project)
   const completed = viewData
                   ? turnCompleted(viewData.show)
                   : false
+  // Localization
+  const phraseSelect = {
+    $or: [
+      { cue: "congratulations" }
+    , { cue: "play_again" }
+    ]
+  }
+  const phrases = L10n.find(phraseSelect).fetch()
+
 
   // ... and add the extracted data to the Game instance's this.props
   return {
@@ -610,5 +633,6 @@ export default withTracker(() => {
   , folder
   , viewData
   , completed
+  , phrases
   }
 })(Dragger)

@@ -1,7 +1,7 @@
 { "collection": "L10n"
 
 , "as_is": {
-    "version": 83
+    "version": 84
   , "folder": "img/flags/"
   }
 
@@ -331,6 +331,24 @@
     , "th": "th - xxx"
     , "zh": "zh - xxx"
     }
+  , { "cue": "congratulations"
+    , "ru":  "Отлично!"
+    , "en": "Congratulations!"
+    , "fr": "Félicitations!"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
+  , { "cue": "play_again"
+    , "ru":  "Ещё раз играть"
+    , "en": "Play Again"
+    , "fr": "Rejouer"
+    , "ja": "ja - xxx"
+    , "ko": "ko - xxx"
+    , "th": "th - xxx"
+    , "zh": "zh - xxx"
+    }
 
   , { "cue": "ru"
     , "ru": "Русский"
@@ -354,7 +372,7 @@
     , "file": "en-GB.png"
     }
   , { "cue": "en-US"
-    , "ru": "Амениканский"
+    , "ru": "Американский"
     , "en": "American English"
     , "fr": "Anglais des EU"
     , "file": "en-US.png"
