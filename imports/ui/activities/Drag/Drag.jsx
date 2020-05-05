@@ -291,7 +291,7 @@ class Dragger extends Component {
 
 
   getPhrase(cue) {
-    const code = Session.get("native")
+    const code = Session.get("language")
     return localize(cue, code, this.props.phrases)
   }
 
@@ -313,13 +313,13 @@ class Dragger extends Component {
     setViewData.call({ group_id, viewData })
 
     if (startUp === true) {
-      return // { viewData, show }
+      return
     }
 
     const turn = this.state.turn + 1
     const complete = 0
     const mask = 0
-    this.setState({ /*viewData, show,*/ turn, complete, mask })
+    this.setState({ turn, complete, mask })
     this.timeOut = 0
   }
 
@@ -548,8 +548,8 @@ class Dragger extends Component {
 
 
   render() {
-    const aspectRatio = this._aspectRatio()
-    if (!this.props.viewData || !aspectRatio) { // || !this.state.count) {
+    const aspectRatio = this.props.aspectRatio // _aspectRatio()
+    if (!this.props.viewData || !aspectRatio) {
       // Force the gameFrame ref to become something
       return <StyledGame
         ref={this.gameFrame}
@@ -564,7 +564,6 @@ class Dragger extends Component {
     const frames = this._getFrames(layout, aspectRatio)
     const names = this._getNames(layout, aspectRatio)
     const newGame = this._newGame(complete, aspectRatio)
-    // const aspectRatio = this.props.aspectRatio
 
     return (
       <StyledGame
@@ -627,7 +626,7 @@ export default withTracker(() => {
   const phrases = L10n.find(phraseSelect).fetch()
 
 
-  // ... and add the extracted data to the Game instance's this.props
+  // ... and add extracted data to the Game instance's this.props
   return {
     images
   , folder

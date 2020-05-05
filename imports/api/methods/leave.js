@@ -180,7 +180,6 @@ export default class LeaveGroup {
       loggedIn: 1
     , owner: 1
     , active: 1
-    , _id: 0
     }}
     const status  = Groups.findOne(select, project)
 

@@ -138,8 +138,10 @@ class Share extends Component {
       view = undefined
     }
 
-    const isMaster  = this.props.master === this.d_code
-    const newMaster = !this.isMaster && (this.isMaster = isMaster)
+    const isMaster  = this.props.active
+                   && this.props.master === this.d_code
+    const newMaster = !this.isMaster && isMaster
+    this.isMaster   = isMaster
     // true if isMaster is true and this.isMaster is false
     // false if this.isMaster is true or if isMaster is false
     // => only becomes true when isMaster first becomes true
