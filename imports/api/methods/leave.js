@@ -75,7 +75,7 @@ export default class LeaveGroup {
   // emptyTheGroup(group_id) {
   //   // Get the array of loggedIn devices...
   //   const select = { _id: group_id }
-  //   const project = { loggedIn: 1, _id: 0 }
+  //   const project = { fields: { loggedIn: 1 } }
   //   const { loggedIn } = Groups.findOne(select, project)
 
   //   // ... and for each device, find its owner and tell them to go
@@ -176,7 +176,12 @@ export default class LeaveGroup {
 
   getGroupMemberStatus(group_id) {
     const select  = { _id: group_id }
-    const project = { loggedIn: 1, owner: 1, active: 1, _id: 0 }
+    const project = { fields: {
+      loggedIn: 1
+    , owner: 1
+    , active: 1
+    , _id: 0
+    }}
     const status  = Groups.findOne(select, project)
 
     // console.log( "status:", status

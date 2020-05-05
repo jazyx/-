@@ -223,25 +223,25 @@ class Pointers extends Component {
                         doc._id !== this.pointer_id
                       ))
                      .map(doc => {
-      let top
-        , left
-        , width
+      let top  = Math.max(0, Math.min(doc.y * h, h - 2))
+      let left = Math.max(0, Math.min(doc.x * w, w - 1))
+      let width
         , height
         , shadow
       const touch = doc.touch
       if (touch) {
         width = Math.max(15, touch.radiusX)  // actually, use only
         height = Math.max(20, touch.radiusY) // half the value first
-        left   = (doc.x * w) - width + "px"
-        top    = (doc.y * h) - height + "px"
+        left   = left - width + "px"
+        top    = top - height + "px"
         width  = width * 2 + "px"            // and then
         height = height * 2 + "px"           // double it
         shadow = ""
       } else {
         width  = 12 * scale + "px"
         height = 16 * scale + "px"
-        left   = (doc.x * w) + "px"
-        top    = (doc.y * h) + "px"
+        left   = left + "px"
+        top    = top + "px"
         shadow = "drop-shadow(0 0 6px #f90)"
       }
       const edge = doc.color
@@ -360,7 +360,7 @@ export default withTracker(() => {
 
 function groupIsActive(_id) {
   const select  = { _id }
-  const project = { _id: 0, active: 1 }
+  const project = { fields: { active: 1 } }
   const active  = (Groups.findOne(select, project) || {}).active
 
   return active || false

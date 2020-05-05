@@ -77,7 +77,7 @@ export default class CreateAccount {
 
     let newest  = Users.findOne(
       {}
-    , { fields: { _id: 0, q_index: 1 }
+    , { fields: { q_index: 1 }
       , sort: { q_index: -1 }
       }
     )

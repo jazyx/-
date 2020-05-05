@@ -116,7 +116,7 @@ export default class JoinGroup {
 
   getViewAndMastery(group_id, d_code) {
     const select = { _id: group_id }
-    const project = { fields: { _id: 0, view: 1, loggedIn: 1 }}
+    const project = { fields: { view: 1, loggedIn: 1 }}
     const { view, loggedIn } = Groups.findOne(select, project)
     const isMaster = !loggedIn.indexOf(d_code)
 

@@ -106,12 +106,12 @@ export class App extends Component {
     // console.log("App setViewSize(" + JSON.stringify(viewAndSize) + ")")
     // { view        // string
     // , aspectRatio // number (≈ 0.5 - 2.0)
-    // , viewRect    // { top, left
+    // , viewSize    // { top, left
     // }             // , width, height }
 
     /**
      * equivalent is not a generic solution to comparing two objects
-     * but it is good enough for comparing two viewRect`s with the
+     * but it is good enough for comparing two viewSize`s with the
      * keys top, left, width and height, whose values are all numbers
      */
     const equivalent = (objectA, objectB) => {
@@ -129,11 +129,12 @@ export class App extends Component {
     const keys = Object.keys(viewAndSize)
     const pass = keys.filter(
                         key => {
-                          const value = this.state[key]
-                          if (value === viewAndSize[key]) {
+                          const value = viewAndSize[key]
+                          const current = this.state[key]
+                          if (value === current) {
                             return true
-                          } else if (typeof value === "object") {
-                            return equivalent(value, this.state[key])
+                          } else if (typeof current === "object") {
+                            return equivalent(value, current)
                           }
 
                           return false

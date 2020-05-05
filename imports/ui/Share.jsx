@@ -40,10 +40,6 @@
  *   tells App to request a new render
  * • Session group_id or isMaster changes, which will be detected
  *   in the withTracker() function
- *
- * Teacher Redirection
- * ===================
- *
  */
 
 
@@ -82,6 +78,7 @@ class Share extends Component {
     // Debugging only
     // console.log("Share instance", ++instance)
 
+    this.isMaster    = false
     this.startedUp   = false
     this.aspectRatio = undefined
     this.view        = undefined
@@ -128,14 +125,12 @@ class Share extends Component {
     if (typeof view === "string") {
       if (!this.startedUp) {
         this.initialize()
+      } else if (this.view !== view) {
+        this.view = view
 
-      // } else if ( this.view === view ) {
-      //   return
-      }
-
-      this.view = view
-      if (view === "Teach") {
-        // console.log("setViewSize(\"Teach\")")
+      } else {
+        // Ignore view if it has not changed
+        view = undefined
       }
 
     } else {
@@ -143,7 +138,11 @@ class Share extends Component {
       view = undefined
     }
 
-    const isMaster = this.props.master === this.d_code
+    const isMaster  = this.props.master === this.d_code
+    const newMaster = !this.isMaster && (this.isMaster = isMaster)
+    // true if isMaster is true and this.isMaster is false
+    // false if this.isMaster is true or if isMaster is false
+    // => only becomes true when isMaster first becomes true
 
     // We need to compare masterSize and (local) viewSize, to
     // calculate view ratios.
@@ -194,7 +193,7 @@ class Share extends Component {
     // , "; newMaster?"
     // , newMaster)
 
-    if (this.aspectRatio !== aspectRatio || view) {
+    if (this.aspectRatio !== aspectRatio || view || newMaster) {
       this.aspectRatio = aspectRatio
       if (isMaster) {
         this.shareMasterView({ ...viewSize }) // clone before convert
@@ -317,7 +316,14 @@ export default withTracker(() => {
 
   if (group_id) {
     const select = { _id: group_id }
-    const project = { loggedIn: 1, active: 1, viewSize: 1, view: 1 }
+    const project = {
+      fields: {
+        loggedIn: 1
+      , active: 1
+      , viewSize: 1
+      , view: 1
+      }
+    }
     group_data = Groups.findOne(select, project)
   }
 

@@ -280,16 +280,8 @@ class Dragger extends Component {
     this._startDrag = this._startDrag.bind(this)
     this._newDeal = this._newDeal.bind(this)
     this._fadeMask = this._fadeMask.bind(this)
-    this.resize = this.resize.bind(this)
-    window.addEventListener("resize", this.resize, false)
-  }
-
-
-  resize() {
-    const count = this._itemCount()
-    if (count !== this.state.count) {
-      this.setState({ count })
-    }
+    // this.resize = this.resize.bind(this)
+    // window.addEventListener("resize", this.resize, false)
   }
 
 
@@ -345,21 +337,26 @@ class Dragger extends Component {
   }
 
 
-  _itemCount() {
+  _aspectRatio() {
     const gameFrame = this.gameFrame.current
+
     if (!gameFrame) {
       return 0
     }
 
-    let count = 3
-    const rect = gameFrame.getBoundingClientRect()
-    const ratio = rect.width / rect.height
+    const { width, height } = gameFrame.getBoundingClientRect()
+    return width / height
+  }
 
-    if (ratio < 3/5) {
+
+  _itemCount(aspectRatio) {
+    let count = 3
+
+    if (aspectRatio <= 3/5) {
       count = 6
-    } else if (ratio < 5/4) {
+    } else if (aspectRatio <= 5/4) {
       count = 4
-    } else if (ratio < 3 / 2) {
+    } else if (aspectRatio <= 3 / 2) {
       count = 6
     }
 
@@ -450,7 +447,7 @@ class Dragger extends Component {
   }
 
 
-  _getFrames(layout) {
+  _getFrames(layout, aspectRatio) {
     const frames = layout.images.map((item, index) => {
       const src = this.props.folder + item
       const hint = layout.hints[index]
@@ -464,18 +461,18 @@ class Dragger extends Component {
         key={"frame"+index}
         ref={ref}
         className={className}
-        aspectRatio={this.props.aspectRatio}
+        aspectRatio={aspectRatio}
       >
         <StyledSquare
           key={item}
           src={src}
-          aspectRatio={this.props.aspectRatio}
+          aspectRatio={aspectRatio}
         />
         <StyledName
           className="can-select"
           show={show}
           key={hint}
-          aspectRatio={this.props.aspectRatio}
+          aspectRatio={aspectRatio}
         >
           {hint}
         </StyledName>
@@ -483,21 +480,21 @@ class Dragger extends Component {
     })
 
     return <StyledFrameSet
-      aspectRatio={this.props.aspectRatio}
+      aspectRatio={aspectRatio}
     >
       {frames}
     </StyledFrameSet>
   }
 
 
-  _getNames(layout) {
+  _getNames(layout, aspectRatio) {
     const names = layout.names.map((name, index) => {
       const show = !this.props.viewData.show[name]
 
       return <StyledDraggable
         key={index+"-"+name}
         show={show}
-        aspectRatio={this.props.aspectRatio}
+        aspectRatio={aspectRatio}
       >
         {name}
       </StyledDraggable>
@@ -512,7 +509,7 @@ class Dragger extends Component {
   }
 
 
-  _newGame(complete) {
+  _newGame(complete, aspectRatio) {
     if (complete) {
       if (!this.timeOut) {
         this.timeOut = setTimeout(this._fadeMask, 0)
@@ -520,7 +517,7 @@ class Dragger extends Component {
 
       return <StyledMask
         opacity={this.state.mask}
-        aspectRatio={this.props.aspectRatio}
+        aspectRatio={aspectRatio}
       >
         <h1>Congratulations!</h1>
         <button
@@ -537,21 +534,23 @@ class Dragger extends Component {
 
 
   render() {
-    if (!this.props.viewData || !this.state.count) {
+    const aspectRatio = this._aspectRatio()
+    if (!this.props.viewData || !aspectRatio) { // || !this.state.count) {
       // Force the gameFrame ref to become something
       return <StyledGame
         ref={this.gameFrame}
       />
     }
 
-    const complete = this.props.completed === this.state.count
+    const itemCount = this._itemCount(aspectRatio)
+    const complete = this.props.completed === itemCount
                    ? + new Date()
                    : 0
-    const layout = this.props.viewData[this.state.count]
-    const frames = this._getFrames(layout)
-    const names = this._getNames(layout)
-    const newGame = this._newGame(complete)
-    const aspectRatio = this.props.aspectRatio
+    const layout = this.props.viewData[itemCount]
+    const frames = this._getFrames(layout, aspectRatio)
+    const names = this._getNames(layout, aspectRatio)
+    const newGame = this._newGame(complete, aspectRatio)
+    // const aspectRatio = this.props.aspectRatio
 
     return (
       <StyledGame
@@ -570,11 +569,6 @@ class Dragger extends Component {
         {newGame}
       </StyledGame>
     )
-  }
-
-
-  componentDidMount() {
-    this.resize()
   }
 }
 

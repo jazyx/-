@@ -81,7 +81,7 @@ export default class LogIn {
     const result = Users.update(select, push) // 1 = success; 0 = not
 
     if (result) {
-      const project = { q_color: 1 }
+      const project = { fields: { q_color: 1 } }
       const { _id: user_id, q_color } = Users.findOne(select, project)
       Object.assign( this.accountData, { user_id, q_color } )
     }

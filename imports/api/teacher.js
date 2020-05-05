@@ -93,7 +93,7 @@ class Teacher {
 
   trackGroup(tracker) {
     const select  = { _id: this.group_id }
-    const project = { active: 1 }
+    const project = { fields: { active: 1 } }
     const { active } = Groups.findOne(select, project)
                     || { active: false }
     if (!active) {
