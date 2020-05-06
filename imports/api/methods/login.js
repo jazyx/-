@@ -77,7 +77,7 @@ export default class LogIn {
     const { username, q_code, d_code } = this.accountData
 
     const select = { username, q_code }
-    const push = { $push: { loggedIn: d_code } }
+    const push = { $push: { logged_in: d_code } }
     const result = Users.update(select, push) // 1 = success; 0 = not
 
     if (result) {

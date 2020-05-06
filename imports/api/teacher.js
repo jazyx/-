@@ -9,15 +9,15 @@
  *
  * When a teacher launches the app, and the app first shows the
  * Teach component, this singleton instance is initialized and the
- * teacher's device is added to the Teachers document's loggedIn
+ * teacher's device is added to the Teachers document's logged_in
  * field. Subsequent visits to the Teach view will have no effect;
- * there won't be multiple loggedIn records for this device.
+ * there won't be multiple logged_in records for this device.
  *
  * When the user chooses a group in the Teach view, the `join` method
  * is called. This adds the Teachers device code to the Groups
- * loggedIn field, and sets up a temporary Tracker to detect if
+ * logged_in field, and sets up a temporary Tracker to detect if
  * Group is deactivated. If this happens, the Teachers device code is
- * removed from the Groups loggedIn field, and the App is told to
+ * removed from the Groups logged_in field, and the App is told to
  * navigate back to the Teach view.
  *
  * Logging the teacher out is handled without any reference to this

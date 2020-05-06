@@ -52,7 +52,7 @@ import { Session } from 'meteor/session'
 // Subscriptions
 import { Groups } from '../api/collections'
 
-// viewSize
+// view_size
 import { share } from '../api/methods/methods'
 import StartUp from './startup/StartUp'
 
@@ -146,15 +146,15 @@ class Share extends Component {
     // false if this.isMaster is true or if isMaster is false
     // => only becomes true when isMaster first becomes true
 
-    // We need to compare masterSize and (local) viewSize, to
+    // We need to compare masterSize and (local) view_size, to
     // calculate view ratios.
-    const viewSize = getViewSize()
-    const { width, height } = viewSize
+    const view_size = getViewSize()
+    const { width, height } = view_size
     const masterSize = isMaster || !this.props.active
-                     ? viewSize
-                     : this.props.viewSize
-    // this.props.viewSize is set by remote master if active. If no
-    // remote master, is set locally and is identical to viewSize
+                     ? view_size
+                     : this.props.view_size
+    // this.props.view_size is set by remote master if active. If no
+    // remote master, is set locally and is identical to view_size
 
     const ratioH = height / masterSize.height
     const ratioW = width / masterSize.width
@@ -198,17 +198,17 @@ class Share extends Component {
     if (this.aspectRatio !== aspectRatio || view || newMaster) {
       this.aspectRatio = aspectRatio
       if (isMaster) {
-        this.shareMasterView({ ...viewSize }) // clone before convert
+        this.shareMasterView({ ...view_size }) // clone before convert
       }
 
-      this.convertToLocalArea(viewSize, h, w)
+      this.convertToLocalArea(view_size, h, w)
 
       // If the call comes from the StartUp instance, then view will
       // be a string, and this.props.setViewSize will point to
       // App.setViewAndSize, just this once. If the window is being
       // resized, view will be a resize event, and should be ignored.
 
-      const output = { aspectRatio, viewSize }
+      const output = { aspectRatio, view_size }
       if (view) {
         output.view = view
       }
@@ -218,18 +218,18 @@ class Share extends Component {
   }
 
 
-  convertToLocalArea(viewSize, h, w) {
-    viewSize.top = (viewSize.height - h * 100) / 2
-    viewSize.left = (viewSize.width - w * 100) / 2
-    viewSize.width = w * 100
-    viewSize.height = h * 100
+  convertToLocalArea(view_size, h, w) {
+    view_size.top = (view_size.height - h * 100) / 2
+    view_size.left = (view_size.width - w * 100) / 2
+    view_size.width = w * 100
+    view_size.height = h * 100
   }
 
 
   shareMasterView(data) {
     share.call({
       _id: this.props.group_id
-    , key: "viewSize"
+    , key: "view_size"
     , data
     })
   }
@@ -261,8 +261,8 @@ class Share extends Component {
   // Changes detected in the wrapped track function will trigger a
   // new render, using the unchanged values. We have to wait until
   // after this unmodified render is complete before we use setState.
-  // A new viewSize sent from a remote master will be shown with a lag
-  // of one render.
+  // A new view_size sent from a remote master will be shown with a
+  // lag of one render.
   //
   // If the re-render was triggered by a new aspect ratio on this
   // device, setView will already have been called. A new call will
@@ -298,7 +298,7 @@ let track = 0
 
 export default withTracker(() => {
   // Get the local size by default
-  let viewSize   = getViewSize()
+  let view_size   = getViewSize()
 
   // Accessing reactive Session variables ensures that the Share
   // component is re-rendered if one of the values changes. Both
@@ -320,25 +320,25 @@ export default withTracker(() => {
     const select = { _id: group_id }
     const project = {
       fields: {
-        loggedIn: 1
+        logged_in: 1
       , active: 1
-      , viewSize: 1
+      , view_size: 1
       , view: 1
       }
     }
     group_data = Groups.findOne(select, project)
   }
 
-  let { active, loggedIn, view } = (group_data || {}) // undefined?
+  let { active, logged_in, view } = (group_data || {}) // undefined?
 
    if (group_data && (active = active || false)) {
     // If active show the Activity view
-    master = loggedIn[0]
+    master = logged_in[0]
     teacherView = view
 
-    if (group_data.viewSize) {
+    if (group_data.view_size) {
       // Use the size defined by the group's master if it exists
-      viewSize = group_data.viewSize
+      view_size = group_data.view_size
     }
   }
 
@@ -347,8 +347,8 @@ export default withTracker(() => {
   //            , "active:", active
   //            , "master:", master
   //            , "teacherView:", teacherView
-  //            , "viewSize:", viewSize
+  //            , "view_size:", view_size
   //            )
 
-  return { group_id, active, master, teacherView, viewSize }
+  return { group_id, active, master, teacherView, view_size }
 })(Share)

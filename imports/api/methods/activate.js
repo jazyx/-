@@ -21,7 +21,7 @@ export default class ToggleActivation {
         active
       }
     , [action]: {
-        loggedIn: d_code
+        logged_in: d_code
       }
     }
     const result = Groups.update(select, update)

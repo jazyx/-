@@ -58,14 +58,14 @@ export default class CreateAccount {
     // = native:     "ru"
     // + q_color:    "#33cc60"
     // + q_index:    1
-    // + loggedIn:   []
+    // + logged_in:   []
 
     const notNeeded = [
       "language"
     , "native"
     , "q_color"
     , "q_index"
-    , "loggedIn"
+    , "logged_in"
     ]
 
     notNeeded.forEach(key => {delete accountData[key]})
@@ -134,7 +134,7 @@ export default class CreateAccount {
     , q_color
     }
     fields.history = {}
-    fields.loggedIn = []
+    fields.logged_in = []
 
     // console.log("createUser accountData = ", this.accountData)
 
@@ -155,11 +155,11 @@ export default class CreateAccount {
         this.accountData.user_id
       , this.accountData.teacher
       ]
-    , loggedIn: []
+    , logged_in: []
     , view
     // // Will be added by the Client
-    // , viewData: {}
-    // , viewSize: { width, height }
+    // , view_data: {}
+    // , view_size: { width, height }
     }
     this.accountData.group_id = Groups.insert(group)
   }

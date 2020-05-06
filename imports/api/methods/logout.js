@@ -15,7 +15,7 @@ export default class LogOut {
 
     const update = {
       $pull: {
-        loggedIn: d_code
+        logged_in: d_code
       }
     }
 

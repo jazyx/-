@@ -107,7 +107,7 @@ export default class JoinGroup {
 
   joinGroup( group_id, d_code) {
     const select = { _id: group_id }
-    const push = { $push: { loggedIn: d_code }}
+    const push = { $push: { logged_in: d_code }}
     const success = Groups.update(select, push)
 
     return success
@@ -116,9 +116,9 @@ export default class JoinGroup {
 
   getViewAndMastery(group_id, d_code) {
     const select = { _id: group_id }
-    const project = { fields: { view: 1, loggedIn: 1 }}
-    const { view, loggedIn } = Groups.findOne(select, project)
-    const isMaster = !loggedIn.indexOf(d_code)
+    const project = { fields: { view: 1, logged_in: 1 }}
+    const { view, logged_in } = Groups.findOne(select, project)
+    const isMaster = !logged_in.indexOf(d_code)
 
     return { view, isMaster }
   }

@@ -348,7 +348,7 @@ export default withTracker(() => {
   //   }
   // , ...
   // ]
-  // ... with an entry for each d_code in group .loggedIn
+  // ... with an entry for each d_code in group .logged_in
 
   return {
     group_id

@@ -48,7 +48,7 @@ const collections = {
 , Groups
 , Teachers
 , Activities
-
+// Specific activities
 , Drag
 }
 

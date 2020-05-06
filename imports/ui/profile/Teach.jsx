@@ -104,7 +104,7 @@ class Teach extends Component {
   getGroups() {
     const groups = this.props.groups.map((group, index) => {
       const names = group.members.map(member => {
-        // TODO: Show username greyed out if user is not loggedIn
+        // TODO: Show username greyed out if user is not logged_in
         const username = member.username
         return <p
           key={username}
@@ -114,7 +114,7 @@ class Teach extends Component {
       })
       const selected = this.state.selected === index
       const ref = selected ? this.scrollTo : ""
-      const disabled = !group.loggedIn.length
+      const disabled = !group.logged_in.length
 
       return <StyledLearner
         key={index}
@@ -134,7 +134,7 @@ class Teach extends Component {
   getButtonBar() {
     const disabled = ( this.state.selected < 0 )
                    || !this.props.groups[this.state.selected]
-                                        .loggedIn.length
+                                        .logged_in.length
     const name = disabled
                ? undefined
                : this.props.groups[this.state.selected].group_name
@@ -240,7 +240,7 @@ function getGroups() {
   //   "chat_room" : "",
   //
   //   "members" :   [ <user_id>,     ...,    <teacher_id> ],
-  //   "loggedIn" :  [ <user d_code>, ... <teacher d_code> ],
+  //   "logged_in" : [ <user d_code>, ... <teacher d_code> ],
   //   "view" :      "Activity"
   // }
 
@@ -250,7 +250,7 @@ function getGroups() {
   //   , members: [
   //       { _id: <user_id>
   //       , username: <string>
-  //       , loggedIn: <boolean>
+  //       , logged_in: <boolean>
   //       }
   //     , ...
   //     ]
@@ -259,8 +259,8 @@ function getGroups() {
   // ]
 
   // Get a list of Groups that the Teacher owns, with their members
-  // (which will include the Teacher), loggedIn details and view.
-  // Sort the groups so that groups with loggedIn users appear first
+  // (which will include the Teacher), logged_in details and view.
+  // Sort the groups so that groups with logged_in users appear first
 
   const teacher_id = Session.get("teacher_id")
   const d_code = Session.get("d_code")
@@ -268,7 +268,7 @@ function getGroups() {
   const project = {
     fields: {
       members: 1
-    , loggedIn: 1
+    , logged_in: 1
     , view: 1
     }
   }
@@ -282,8 +282,8 @@ function getGroups() {
   let groups = Groups.find(query, project)
                      .fetch()
                      .sort((a, b) => ( // non-zero lengths first
-                         ( b.loggedIn.length > 1)
-                       - ( a.loggedIn.length > 1)
+                         ( b.logged_in.length > 1)
+                       - ( a.logged_in.length > 1)
                       ))
   const user_ids = getUniqueValues(groups, "members", teacher_id)
   const userMap  = getUserMap(user_ids)
@@ -312,7 +312,7 @@ function getUniqueValues(groups, key, exclude) {
 
 function getUserMap(user_ids) {
   const map = {}
-  const project = { fields: { username: 1, loggedIn: 1 }}
+  const project = { fields: { username: 1, logged_in: 1 }}
 
   user_ids.forEach(_id => {
     const user = Users.findOne({ _id }, project)
@@ -325,12 +325,12 @@ function getUserMap(user_ids) {
 
 function addUserNamesTo(groups, userMap, exclude) {
   groups.forEach(group => {
-    const loggedIn = group.loggedIn
+    const logged_in = group.logged_in
     const members  = group.members.filter( _id => _id !== exclude )
                                   .map( _id => {
-      const userData    = userMap[_id] // vvv array vvv
-      const overlap     = arrayOverlap(userData.loggedIn, loggedIn)
-      userData.loggedIn = overlap.length // <<< Boolean
+      const userData     = userMap[_id] // vvv array vvv
+      const overlap      = arrayOverlap(userData.logged_in, logged_in)
+      userData.logged_in = overlap.length // <<< Boolean
 
       return userData
     })

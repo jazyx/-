@@ -1,5 +1,35 @@
 /**
  * Drag.jsx
+ *
+ * Creates a layout with up to 6 images, each with a space below for
+ * the name of the image, and up to six <p> elements, containing the
+ * names.
+ *
+ * When no-one else is interacting with the shared screen, a user may
+ * start to drag a name, by this action become the temporary pilot for
+ * the activity. The pilot's mouse|touch (pointer) does not actually
+ * move the name. The pointer moves and so defines the values this.x
+ * and this.y, which represent the top-left corner of the dragged p
+ * element relative to the gameFrame. These values are converted to
+ * numbers between 0.0 and 1.0 and saved in the MongoDB database as
+ *   { _id: <group_id>
+ *   , view_data: {
+ *       x:       <0.0 - 1.0>
+ *     , y:       <0.0 - 1.0>
+ *     , drag_id: <id of dragged p element>
+ *     , pilot;   <d_code> of this user's device>
+ *     }
+ *   }
+ * The position of this user's pointer is transferred independently by
+ * the Pointers component. The pointer position does not pass through
+ * the MongoDB database, so it is not delayed. The Pointers component
+ * may update the pointer more often than this Drag component updates
+ * the position of the p element that it is dragging, so the p element
+ * may appear to move jerkily while the pointer moves smoothly.
+ *
+ * On the pilot's screen, the dragName() method calculates the new
+ * position of the dragged element, and sends this data to the
+ * database. The actual position is set in the render() method.
  */
 
 
@@ -13,18 +43,22 @@ import { Drag
        , L10n
        } from '../../../api/collections'
 import { shuffle
-       , getPageXY
+       , getXY
        , setTrackedEvents
        } from '../../../tools/utilities'
 import Sampler from '../../../tools/sampler'
 
 import { setViewData
+       , setDragTarget
+       , updateDragTarget
+       , dropDragTarget
        , toggleShow
        } from './methods'
 import { localize } from '../../../tools/utilities'
 
  // ui/activities/Drag/Drag.jsx
  // tools/utilities.js
+
 
 const StyledGame = styled.div`
   width: calc(100 * var(--w));
@@ -106,7 +140,6 @@ const StyledSquare = styled.div`
 const StyledName = styled.p`
   width: 96%;
   height: 1.4em;
-  margin: 0;
   text-align: center;
   box-sizing: border-box;
 
@@ -220,6 +253,30 @@ const StyledDraggable = styled.p`
    }
 `
 
+const StyledDragged = styled.p`
+  position: fixed;
+
+  width: 48%;
+  height: 1.4em;
+  text-align: center;
+  box-sizing: border-box;
+
+  margin: 0.05em 0.3em;
+  box-sizing: border-box;
+  border: 0.05em dashed #888;
+  cursor: grabbing;
+  background: rgba(255, 0, 0, 0.5);
+  color: #fff;
+
+  left: ${props => props.x};
+  top: ${props => props.y};
+
+  ${props => (props.aspectRatio > 5/4)
+   ? "width: 32%;"
+   : ""
+   }
+`
+
 const StyledMask = styled.div`
   position: fixed;
   display: flex;
@@ -271,10 +328,12 @@ class Dragger extends Component {
     , sampleSize: 6
     })
 
-    this._newDeal(true) // sets this.props.viewData
+    this._newDeal(true) // sets this.props.view_data
 
+    this.dragged    = React.createRef()
     this.dropTarget = React.createRef()
     this.gameFrame  = React.createRef()
+    this.frameRect  = undefined // => ClientBoundingRect of gameFrame
 
     this.state = {
       count: 0
@@ -282,9 +341,12 @@ class Dragger extends Component {
     , mask: 0
     }
 
-    this._startDrag = this._startDrag.bind(this)
-    this._newDeal = this._newDeal.bind(this)
-    this._fadeMask = this._fadeMask.bind(this)
+    this._newDeal    = this._newDeal.bind(this)
+    this._startDrag  = this._startDrag.bind(this)
+    this.dragStarted = this.dragStarted.bind(this)
+    this.dragName    = this.dragName.bind(this)
+    this.dropName    = this.dropName.bind(this)
+    this._fadeMask   = this._fadeMask.bind(this)
     // this.resize = this.resize.bind(this)
     // window.addEventListener("resize", this.resize, false)
   }
@@ -302,15 +364,15 @@ class Dragger extends Component {
     }
 
     const items = this.sampler.getSample()
-    const viewData = this._getLayouts(items)
-    viewData.show  = viewData[6].hints.reduce((show, hint) => {
+    const view_data = this._getLayouts(items)
+    view_data.show  = view_data[6].hints.reduce((show, hint) => {
       hint = this._hyphenate(hint)
       show[hint] = false
       return show
     }, {})
     const group_id = Session.get("group_id")
 
-    setViewData.call({ group_id, viewData })
+    setViewData.call({ group_id, view_data })
 
     if (startUp === true) {
       return
@@ -376,6 +438,10 @@ class Dragger extends Component {
 
 
   _startDrag(event) {
+    if (this.props.view_data.pilot) {
+      return console.log("Can't start dragging")
+    }
+
     const target = event.target
     if (target.tagName !== "P") {
       return
@@ -395,62 +461,207 @@ class Dragger extends Component {
         }
     }
 
-    // Highlight dragged element
-    target.classList.add("drag")
+    this.eventType = event.type
+    this.drag_id   = target.id
 
-    // Choose target
-    const dropClass = this._hyphenate(target.innerText)
-    this.setState({ dropClass })
+    // Store the absolute mouse position at the start of the drag
+    const { x: startX, y: startY } = getXY(event, "client")
 
-    const { x: startX, y: startY } = getPageXY(event)
+    // Remember the rect of the gameFrame
+    const gameFrame = this.gameFrame.current
+    this.frameRect  = gameFrame.getBoundingClientRect()
 
-    const drag = (event) => {
-      const { x, y } = getPageXY(event)
-      target.style.left = (x - startX) + "px"
-      target.style.top = (y - startY) + "px"
+    // Find the starting position of the dragged element, in the
+    // client frame of reference
+    let { x, y } = target.getBoundingClientRect()
 
-      this.lastX = x
-      this.lastY = y
+    // Remember the offset of the top-left, relative to the pointer.
+    // Just add the current pointer position to get the element
+    // position
+    this.offset = {
+      x: x - startX
+    , y: y - startY
     }
 
-    const drop = (event) => {
-      setTrackedEvents(cancel)
-      target.classList.remove("drag")
+    // Share the top left corner of the dragged element relative to
+    // the gameFrame, as a ratio of width and height
 
-      if (isNaN(this.lastX)) {
-        // The user just clicked and released, with no drag
-        return
-      }
-
-      const elements = document.elementsFromPoint(
-        this.lastX
-      , this.lastY
-      )
-      if (elements.length < 3) {
-        return
-      }
-
-      const onTarget = !(elements.indexOf(this.dropTarget.current)<0)
-
-      target.style.removeProperty("left")
-      target.style.removeProperty("top")
-
-      if (onTarget) {
-        target.classList.add("dropped")
-
-        const show = this.props.viewData.show
-        const showData = {
-          group_id: Session.get("group_id")
-        , hint: this.state.dropClass
-        }
-        toggleShow.call(showData)
-      }
-
-      this.setState({ dropClass: "" })
+    const dragData = {
+      drag_id:  target.id
+    , group_id: Session.get("group_id")
+    , pilot:    Session.get("d_code")
+    , x
+    , y
     }
+    this._mapToGameFrame(dragData)
 
-    const cancel = setTrackedEvents({ event, drag, drop })
+    setDragTarget.call(dragData, this.dragStarted)
   }
+
+
+  _mapToGameFrame(dragData) {
+    const { top, left, width, height } = this.frameRect
+    dragData.x = (dragData.x - left) / width
+    dragData.y = (dragData.y - top) / height
+  }
+
+
+  dragStarted(error, data) {
+    if (error) {
+      return console.log("dragStarted", error)
+    } else if (!data) {
+      return console.log("drag not started")
+      // We could forget...
+      // * this.eventType
+      // * this.offset
+      // * this.frameRect
+      // ... but there's no pressing need
+    } // else data should be 1
+
+    this.cancel = setTrackedEvents({
+      event: {
+        type: this.eventType
+      }
+    , drag: this.dragName
+    , drop: this.dropName
+    })
+
+    // console.log("Drag .cancel:", this.cancel)
+    // { actions: {
+    //     move: "mousemove"
+    //   , end: "mouseup"
+    //   }
+    // , drag: this.dragName
+    // , drop: this.dropName
+    // }
+  }
+
+
+  dragName(event) {
+    let { x, y } = getXY(event)
+    x += this.offset.x
+    y += this.offset.y
+
+    this.lastPosition = { x, y } // use a different object
+    const dragData    = {
+      x
+    , y
+    , group_id:Session.get("group_id")
+    , pilot:Session.get("d_code")
+    }
+
+    // // Place the element physically under the pilot's mouse...
+    // target.style.left = x + "px"
+    // target.style.top  = y + "px"
+
+    // ... then tell everyone else about it
+    this._mapToGameFrame(dragData)
+
+    const result = updateDragTarget.call(dragData)
+
+    console.log("dragName result:", result, x, y)
+  }
+
+
+  dropName(event) {
+    const result = dropDragTarget.call({
+      group_id: Session.get("group_id")
+    })
+
+    console.log("dropName result:", result)
+    setTrackedEvents(this.cancel)
+
+  //     target.classList.remove("drag")
+
+  //     if (isNaN(this.lastPosition.x)) {
+  //       // The user just clicked and released, with no drag
+  //       return
+  //     }
+
+    const elements = document.elementsFromPoint(
+      this.lastPosition.x
+    , this.lastPosition.y
+    )
+    if (elements.length < 3) {
+      return
+    }
+
+    const onTarget = !(elements.indexOf(this.dropTarget.current)<0)
+
+    // target.style.removeProperty("left")
+    // target.style.removeProperty("top")
+
+    if (onTarget) {
+      const target = this.dragged.current
+      target.classList.add("dropped")
+
+      const show = this.props.view_data.show
+      const showData = {
+        group_id: Session.get("group_id")
+      , hint:     this.drag_id // this.state.dropClass
+      }
+      toggleShow.call(showData)
+    }
+
+    this.drag_id = undefined // this.setState({ dropClass: "" })
+  }
+
+
+
+  // xxx() {
+  //   // Choose target
+  //   const dropClass = this._hyphenate(target.innerText)
+  //   this.setState({ dropClass })
+
+  //   const { x: startX, y: startY } = getXY(event)
+
+  //   const drag = (event) => {
+  //     const { x, y } = getXY(event)
+  //     target.style.left = (x - startX) + "px"
+  //     target.style.top = (y - startY) + "px"
+
+  //     this.lastX = x
+  //     this.lastY = y
+  //   }
+
+  //   const drop = (event) => {
+  //     setTrackedEvents(cancel)
+  //     target.classList.remove("drag")
+
+  //     if (isNaN(this.lastPosition.x)) {
+  //       // The user just clicked and released, with no drag
+  //       return
+  //     }
+
+  //     const elements = document.elementsFromPoint(
+  //       this.lastPosition.x
+  //     , this.lastPosition.y
+  //     )
+  //     if (elements.length < 3) {
+  //       return
+  //     }
+
+  //     const onTarget = !(elements.indexOf(this.dropTarget.current)<0)
+
+  //     target.style.removeProperty("left")
+  //     target.style.removeProperty("top")
+
+  //     if (onTarget) {
+  //       target.classList.add("dropped")
+
+  //       const show = this.props.view_data.show
+  //       const showData = {
+  //         group_id: Session.get("group_id")
+  //       , hint: this.state.dropClass
+  //       }
+  //       toggleShow.call(showData)
+  //     }
+
+  //     this.setState({ dropClass: "" })
+  //   }
+
+  //   const cancel = setTrackedEvents({ event, drag, drop })
+  // }
 
 
   _hyphenate(expression) {
@@ -463,8 +674,8 @@ class Dragger extends Component {
       const src = this.props.folder + item
       const hint = layout.hints[index]
       const className = this._hyphenate(hint)
-      const show = this.props.viewData.show[className]
-      const ref = className === this.state.dropClass
+      const show = this.props.view_data.show[className]
+      const ref = className === this.drag_id // this.state.dropClass
                 ? this.dropTarget
                 : null
 
@@ -499,12 +710,22 @@ class Dragger extends Component {
 
 
   _getNames(layout, aspectRatio) {
+    const view_data = this.props.view_data || {}
     const names = layout.names.map((name, index) => {
-      const show = !this.props.viewData.show[name]
+      const id = this._hyphenate(name)
+
+      if (view_data.drag_id === id) {
+        return this.draggedName(name, index, aspectRatio, view_data)
+      }
+
+      const className = this.props.view_data.show[id]
+                      ? "dropped"
+                      : ""
 
       return <StyledDraggable
         key={index+"-"+name}
-        show={show}
+        id={id}
+        className={className}
         aspectRatio={aspectRatio}
       >
         {name}
@@ -512,6 +733,31 @@ class Dragger extends Component {
     })
 
     return names
+  }
+
+
+  draggedName(name, index, aspectRatio, view_data) {
+    let { pilot, drag_id } = view_data
+    const target = document.getElementById(drag_id)
+    const { top, left, width, height } = this.frameRect
+
+    // Use position created on the last mouse|touch move by the pilot
+    let { x, y } = view_data
+    x = x * width + left
+    y = y * height + top
+
+    return <StyledDragged
+      key={index+"-"+name}
+      id={drag_id}
+      className="drag"
+      show={false}
+      aspectRatio={aspectRatio}
+      x={x + "px"}
+      y={y + "px"}
+      ref={this.dragged}
+    >
+      {name}
+    </StyledDragged>
   }
 
 
@@ -548,8 +794,9 @@ class Dragger extends Component {
 
 
   render() {
+    console.log("Drag render props", this.props)
     const aspectRatio = this.props.aspectRatio // _aspectRatio()
-    if (!this.props.viewData || !aspectRatio) {
+    if (!this.props.view_data || !aspectRatio) {
       // Force the gameFrame ref to become something
       return <StyledGame
         ref={this.gameFrame}
@@ -560,7 +807,7 @@ class Dragger extends Component {
     const complete = this.props.completed === itemCount
                    ? + new Date()
                    : 0
-    const layout = this.props.viewData[itemCount]
+    const layout = this.props.view_data[itemCount]
     const frames = this._getFrames(layout, aspectRatio)
     const names = this._getNames(layout, aspectRatio)
     const newGame = this._newGame(complete, aspectRatio)
@@ -609,12 +856,12 @@ export default withTracker(() => {
                           )
   const folder = Drag.findOne(folderSelect).folder
 
-  // viewData
+  // view_data
   const viewDataSelect  = { _id: Session.get("group_id") }
-  const project = { fields: { viewData: 1 } }
-  const { viewData } = Groups.findOne(viewDataSelect, project)
-  const completed = viewData
-                  ? turnCompleted(viewData.show)
+  const project = { fields: { view_data: 1 } }
+  const { view_data } = Groups.findOne(viewDataSelect, project)
+  const completed = view_data
+                  ? turnCompleted(view_data.show)
                   : false
   // Localization
   const phraseSelect = {
@@ -630,7 +877,7 @@ export default withTracker(() => {
   return {
     images
   , folder
-  , viewData
+  , view_data
   , completed
   , phrases
   }

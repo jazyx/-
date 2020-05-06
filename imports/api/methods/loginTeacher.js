@@ -27,7 +27,7 @@ export default class LogInTeacher {
     const select = { id }
     const addToSet = {
       $addToSet: {
-        loggedIn: d_code
+        logged_in: d_code
       }
     }
     const result = Teachers.update(select, addToSet) // 1 = success; 0 = not
@@ -45,10 +45,10 @@ export default class LogInTeacher {
 
 
   leaveAllGroups(id, d_code) {
-    const select = { members: id, loggedIn: d_code }
+    const select = { members: id, logged_in: d_code }
     const pull = {
       $pull: {
-        loggedIn: d_code
+        logged_in: d_code
       }
     }
     const result = Groups.update(select, pull) // 1 = success; 0 = not

@@ -42,8 +42,8 @@ export default class LeaveGroup {
 
   // Common actions
   removeDeviceFromGroup(group_id, d_code) {
-    const select = { _id: group_id, loggedIn: d_code }
-    const pull   = { $pull: { loggedIn: d_code }}
+    const select = { _id: group_id, logged_in: d_code }
+    const pull   = { $pull: { logged_in: d_code }}
     const result = Groups.update(select, pull)
 
     // console.log( "result:", result
@@ -73,22 +73,22 @@ export default class LeaveGroup {
 
 
   // emptyTheGroup(group_id) {
-  //   // Get the array of loggedIn devices...
+  //   // Get the array of logged_in devices...
   //   const select = { _id: group_id }
-  //   const project = { fields: { loggedIn: 1 } }
-  //   const { loggedIn } = Groups.findOne(select, project)
+  //   const project = { fields: { logged_in: 1 } }
+  //   const { logged_in } = Groups.findOne(select, project)
 
   //   // ... and for each device, find its owner and tell them to go
   //   const tellUserToLeave = userData => {
   //     const id = userData._id
-  //     const d_codes = arrayOverlap(loggedIn, userData.loggedIn)
+  //     const d_codes = arrayOverlap(logged_in, userData.logged_in)
 
   //     d_codes.forEach(d_code => {
   //       new LeaveGroup({ id, d_code, group_id, dismissed: true })
   //     })
   //   }
 
-  //   const filter = { loggedIn: { $elemMatch: { $in: loggedIn }}}
+  //   const filter = { logged_in: { $elemMatch: { $in: logged_in }}}
 
   //   console.log( "db.groups.find("
   //              + JSON.stringify(filter)
@@ -97,7 +97,7 @@ export default class LeaveGroup {
   //              + ")"
   //              )
   //   // db.groups.find({
-  //   //     loggedIn: {
+  //   //     logged_in: {
   //   //       $elemMatch: {
   //   //         $in: [
   //   //           "0kigTBd"
@@ -107,7 +107,7 @@ export default class LeaveGroup {
   //   //     }
   //   //   }
   //   // , {
-  //   //     loggedIn: 1
+  //   //     logged_in: 1
   //   //   , _id: 0
   //   //   }
   //   // )
@@ -157,19 +157,19 @@ export default class LeaveGroup {
 
 
   closeGroupIfDone(group_id) {
-    const { loggedIn
+    const { logged_in
           , owner
           , active // should always be true
           } = this.getGroupMemberStatus(group_id)
-    const ownerD_codes = this.getOwnerD_codes(owner, loggedIn)
+    const ownerD_codes = this.getOwnerD_codes(owner, logged_in)
     const d_codeCount = ownerD_codes.length
 
-    if (d_codeCount && d_codeCount === loggedIn.length) {
+    if (d_codeCount && d_codeCount === logged_in.length) {
       // The teacher is the only person left
       this.deactivateGroup(group_id)
 
     } else {
-      this.promoteSlave(group_id, loggedIn, ownerD_codes)
+      this.promoteSlave(group_id, logged_in, ownerD_codes)
     }
   }
 
@@ -177,7 +177,7 @@ export default class LeaveGroup {
   getGroupMemberStatus(group_id) {
     const select  = { _id: group_id }
     const project = { fields: {
-      loggedIn: 1
+      logged_in: 1
     , owner: 1
     , active: 1
     }}
@@ -196,27 +196,27 @@ export default class LeaveGroup {
 
   getOwnerD_codes(owner, d_codes) {
     const select = { id: owner }
-    const project = { fields: { loggedIn: 1 }, }
-    const { loggedIn } = Teachers.findOne(select, project)
+    const project = { fields: { logged_in: 1 }, }
+    const { logged_in } = Teachers.findOne(select, project)
 
-    // console.log( "getOwnerD_codes loggedIn:", loggedIn
+    // console.log( "getOwnerD_codes logged_in:", logged_in
     //            , "db.teachers.findOne("
     //            + JSON.stringify(select)
     //            + ", "
     //            + JSON.stringify(project)
     //            + ")")
 
-    d_codes = arrayOverlap(d_codes, loggedIn)
+    d_codes = arrayOverlap(d_codes, logged_in)
 
     return d_codes
   }
 
 
-  promoteSlave(group_id, loggedIn, ownerD_codes) {
-    // Make sure the teacher is not master (= first in loggedIn)
+  promoteSlave(group_id, logged_in, ownerD_codes) {
+    // Make sure the teacher is not master (= first in logged_in)
     let slave
 
-    loggedIn.every((d_code, index) => {
+    logged_in.every((d_code, index) => {
       if (ownerD_codes.includes(d_code)) {
         return true
       } else {
@@ -227,8 +227,8 @@ export default class LeaveGroup {
 
     if (slave) {
       const select = { _id: group_id }
-      const pull = { $pull: { loggedIn: slave }}
-      const push = { $push: { loggedIn: {$each:[slave],$position:0}}}
+      const pull = { $pull: { logged_in: slave }}
+      const push = { $push: { logged_in: {$each:[slave],$position:0}}}
       let result = Groups.update(select, pull)
 
       // console.log( "pull slave:", result

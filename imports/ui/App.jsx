@@ -106,12 +106,12 @@ export class App extends Component {
     // console.log("App setViewSize(" + JSON.stringify(viewAndSize) + ")")
     // { view        // string
     // , aspectRatio // number (≈ 0.5 - 2.0)
-    // , viewSize    // { top, left
+    // , view_size   // { top, left
     // }             // , width, height }
 
     /**
      * equivalent is not a generic solution to comparing two objects
-     * but it is good enough for comparing two viewSize`s with the
+     * but it is good enough for comparing two view_size`s with the
      * keys top, left, width and height, whose values are all numbers
      */
     const equivalent = (objectA, objectB) => {
@@ -232,7 +232,7 @@ export class App extends Component {
       />
       <Pointers
         ref={this.storePointMethod}
-        rect={this.state.viewSize}
+        rect={this.state.view_size}
       />
       <Chat />
     </Share>

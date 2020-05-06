@@ -7,7 +7,7 @@ import { removeFrom } from '../../tools/utilities'
 // Subscriptions
 import collections from '../../api/collections'
 
-// viewSize
+// view_size
 import { logIn } from '../../api/methods/methods'
 import Storage from '../../tools/storage'
 

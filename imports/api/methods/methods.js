@@ -9,10 +9,10 @@
  * createAccount() is called from the Submit view after the user has
  *   selected a native language, a username and a teacher. It creates
  *   a User record and a Groups record with the chosen teacher, and
- *   indicates a loggedIn status in both.
+ *   indicates a logged_in status in both.
  *
- *   User:  { $set: { loggedIn: true } }
- *   Group: { $push { loggedIn: user_id } }
+ *   User:  { $set: { logged_in: true } }
+ *   Group: { $push { logged_in: user_id } }
  *
  *   If it is called more than once with the same username and native
  *   language/teacher, the  existing records are used. If the user
@@ -26,13 +26,13 @@
  *   Called from Teach (constructor => logTeacherIn) and Menu
  *   (beforeunload => logOut)
  *
- *   When anyone logs in, the loggedIn status of their profile record
+ *   When anyone logs in, the logged_in status of their profile record
  *   (Teacher or User) is set to true
- *   When anyone logs out, their loggedIn status is set to false and
+ *   When anyone logs out, their logged_in status is set to false and
  *   their loggedOut status is set to an ISODate, so that we can
  *   calculated how long ago they were last seen
  *   When users log in or out, their id is push to or pulled from
- *   the loggedIn array of all the groups they belong to
+ *   the logged_in array of all the groups they belong to
  *   When teachers log out, the active state of their current group
  *   is set to false.
  *
@@ -281,7 +281,7 @@ export const logOut = {
 
 
 
-/** Allows the master to share viewSize with slaves
+/** Allows the master to share view_size with slaves
  */
 export const share = {
   name: 'vdvoyom.share'

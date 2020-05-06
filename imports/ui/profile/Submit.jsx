@@ -38,7 +38,7 @@ class Submit extends Component {
     // user_id:  "g5Q3geSR2KuigZybJ" // created on Server
     // q_code:   "0294"              //        —"—
     // view:     "Activity"          // —"— but updated on Client
-    // viewData: {...}               // created on Client
+    // view_data: {...}               // created on Client
 
     // Add the data that we can be sure of having, through the user
     // input, or by calculation.
