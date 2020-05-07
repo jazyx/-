@@ -165,63 +165,63 @@
   , { "file": "balcony.jpg"
     , "text": {
         "en": "balcony"
-      , "fr": "balcony"
+      , "fr": "un balcon"
       , "ru": "балкон"
       }
     }
   , { "file": "barbecue.jpg"
     , "text": {
         "en": "barbecue"
-      , "fr": "barbecue"
+      , "fr": "un barbecue"
       , "ru": "барбекю"
       }
     }
   , { "file": "bedroom.jpg"
     , "text": {
         "en": "bedroom"
-      , "fr": "bedroom"
+      , "fr": "une chambre"
       , "ru": "спальная комната"
       }
     }
   , { "file": "flats.jpg"
     , "text": {
         "en": "flats"
-      , "fr": "flats"
+      , "fr": "des appartements"
       , "ru": "квартиры"
       }
     }
   , { "file": "house.jpg"
     , "text": {
         "en": "house"
-      , "fr": "house"
+      , "fr": "une maison"
       , "ru": "дом"
       }
     }
   , { "file": "living_room.jpg"
     , "text": {
         "en": "living room"
-      , "fr": "living_room"
+      , "fr": "un salon"
       , "ru": "гостинная"
       }
     }
   , { "file": "garden.jpg"
     , "text": {
         "en": "garden"
-      , "fr": "garden"
+      , "fr": "un jardin"
       , "ru": "сад"
       }
     }
   , { "file": "train.jpg"
     , "text": {
         "en": "train"
-      , "fr": "train"
+      , "fr": "un train"
       , "ru": "поезд"
       }
     }
   , { "file": "shops.jpg"
     , "text": {
         "en": "shops"
-      , "fr": "shops"
+      , "fr": "des magasins"
       , "ru": "магазины"
       }
     }
