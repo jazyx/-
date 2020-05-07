@@ -12,7 +12,8 @@ import { Users
 export default class LogIn {
   constructor(accountData) {
     this.accountData = accountData
-    // console.log(accountData)
+    console.log("accountData before Login:", accountData)
+    console.log("=========================================")
 
     const nameExists = this.userWithThisNameExists()
 
@@ -50,7 +51,8 @@ export default class LogIn {
       // This might be:
       // [x] A new user for whom a q_code has just been created
       // [ ] A returning user on a device with so. else's localStorage
-      // [ ] A returning user logging in manually
+      // [ ] A returning user logging in manually...
+      // [ ] ... perhaps to start with a new teacher
       // [ ] A returning user logging in automatically
 
       const existingUser = this.logInUserFromNameAndQCode()
@@ -58,7 +60,15 @@ export default class LogIn {
         accountData.status = "RequestPIN"
 
       } else {
-        accountData.status = "loggedIn"
+        // const teacherGroup = this.userHasTeacherGroup()
+
+        // if (!teacherGroup) {
+        //   accountData.status = "CreateGroup"
+
+        // } else {
+          accountData.status = "loggedIn"
+        // }
+        
         accountData.loggedIn = true
       }
     }
@@ -67,9 +77,9 @@ export default class LogIn {
 
   userWithThisNameExists() {
     const username = this.accountData.username
-    const nameExists = !!Users.findOne({ username }, {})
+    const nameExists = Users.findOne({ username }, {})
 
-    return nameExists
+    return !!nameExists
   }
 
 
@@ -88,4 +98,22 @@ export default class LogIn {
 
     return result
   }
+
+
+  // userHasTeacherGroup() {
+  //   const { user_id, teacher } = this.accountData
+  //   const select = {
+  //     members: { 
+  //       $all: [ 
+  //         user_id
+  //       , teacher
+  //       ]
+  //     , $size: 2
+  //     }
+  //   }
+
+  //   const groupWithTeacherOnlyExists = Groups.findOne(select)
+
+  //   return !!groupWithTeacherOnlyExists
+  // }
 }

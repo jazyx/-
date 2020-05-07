@@ -2,7 +2,7 @@
 
 , "as_is": {
     "key": "furniture"
-  , "version": 7
+  , "version": 8
   , "parent": "home"
   , "root": "drag"
   , "name": {

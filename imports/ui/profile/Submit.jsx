@@ -44,11 +44,12 @@ class Submit extends Component {
     // input, or by calculation.
 
     this.accountData = {
-      native:   Session.get("native")
-    , username: Session.get("username")
-    , language: Session.get("language")
-    , teacher:  Session.get("teacher")
-    , d_code:   Session.get("d_code")
+      native:      Session.get("native")
+    , username:    Session.get("username")
+    , language:    Session.get("language")
+    , teacher:     Session.get("teacher")
+    , d_code:      Session.get("d_code")
+    , restore_all: Session.get("restore_all")
     }
 
     // Add data that could have been read in from the localStorage
@@ -138,8 +139,8 @@ class Submit extends Component {
     this.accountData.group_id = group_id
 
     // /// <<< HARD-CODED: REMOVE WHEN MENU IS OPERATIONAL
-    // this.accountData.autoLogin = false
-    // this.accountData.restoreAll = false
+    this.accountData.auto_login  = false
+    this.accountData.restore_all = false
     // /// HARD-CODED >>>
 
     // Remove properties that won't be reused on next connection

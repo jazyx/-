@@ -53,6 +53,7 @@ import LogIn from './login'
 import LogOut from './logout'
 import JoinGroup from './join'
 import LeaveGroup from './leave'
+import CreateGroup from './group'
 import LogInTeacher from './loginTeacher'
 import CreateAccount from './account'
 import ToggleActivation from './activate'
@@ -68,8 +69,8 @@ import { Groups } from '../collections' // used by share & setView
 // }
 
 
-/** Creates or updates User and Group records for after profiling
- *  Calling the method a second time reuses the existing groups
+/** Creates or updates a User record after profiling
+ *  Calling the method a second time reuses the existing records
  */
 export const createAccount = {
   name: 'vdvoyom.createAccount'
@@ -102,9 +103,47 @@ export const createAccount = {
     // console.log("After CreateAccount accountData is", accountData)
 
     new LogIn(accountData)     // , action: "loggedIn"
-    new JoinGroup(accountData)
 
     // console.log("Data to return from CreateAccount", accountData)
+
+    return accountData
+  }
+}
+
+
+
+/** Creates or updates a Group record with a teacher after profiling
+ *  Calling the method a second time reuses the existing group
+ */
+export const createGroup = {
+  name: 'vdvoyom.createGroup'
+
+, call(accountData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [accountData], options, callback)
+  }
+
+, validate(accountData) {
+    new SimpleSchema({
+      user_id: { type: String }
+    , teacher:  { type: String }
+    , language: { type: String }
+
+    // Other properties may exist but will not be used
+    , username: { type: String, optional: true }
+    , native:   { type: String, optional: true }
+    , d_code:   { type: String, optional: true }
+    , action:   { type: String, optional: true }
+    }).validate(accountData)
+  }
+
+, run(accountData) {
+    new CreateGroup(accountData) // modifies accountData
+    new JoinGroup(accountData)   // action 
 
     return accountData
   }
@@ -134,6 +173,8 @@ export const logIn = {
       username: { type: String }
     , d_code:   { type: String }
 
+    , restore_all: { type: Boolean, optional: true }
+
     // Sent only if automatic login is NOT used
     , native:   { type: String, optional: true } // for Users doc
     , teacher:  { type: String, optional: true } // for Groups doc
@@ -161,15 +202,24 @@ export const logIn = {
 , run(logInData) {
     new LogIn(logInData)
 
-    const { status } = logInData
+    let { status } = logInData
 
     switch (status) {
+      // New user
       case "CreateAccount":
-        createAccount.run(logInData) // logInData modified
+        createAccount.run(logInData) // fall through to createGroup
+      case "CreateGroup":
+        createGroup.run(logInData)   // logInData modified
         return logInData
 
+      // Existing user, perhaps with a new teacher
       case "loggedIn":
         new JoinGroup(logInData) // fall through; action: loggedIn
+        if (logInData.status === "CreateGroup") {
+          createGroup.run(logInData)
+        }
+
+      // Name that matches an existing user, but invalid q_code
       case "RequestPIN":
         return logInData
 
@@ -361,6 +411,7 @@ export const setView = {
 // To register a new method with Meteor's DDP system, add it here
 const methods = [
   createAccount
+, createGroup
 , logIn
 , logOut
 , logInTeacher

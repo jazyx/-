@@ -139,11 +139,6 @@ export default class StartUp {
     const teacher = this.checkURLForTeacherName()
     // TODO: Add test for admin
 
-    const autoLogin  = storedData.autoLogin || this.hack
-    const restoreAll = autoLogin
-                     ? storedData.restoreAll || this.hack
-                     : false
-
     this.sessionSetD_code()
 
     if (teacher) {
@@ -157,35 +152,29 @@ export default class StartUp {
     } else if (keys.length) {
       Session.set("role", "user")
 
-      // native:   "en-GB"
-      // username: "James"
-      // language: "ru"
-      // teacher:  "aa"
-      // q_code:   "3819"
-      // q_color:  "#33cc60"
-      // user_id:  "6oRFpNLZEfkN4HfMj"
-      //
-      // group_id: "4Bd5yhRfstZ77zxAZ"
-      // view:     "Drag"
+      // native:      "en-GB"
+      // username:    "James"
+      // language:    "ru"
+      // teacher:     "aa"
+      // q_code:      "3819"
+      // q_color:     "#33cc60"
+      // user_id:     "6oRFpNLZEfkN4HfMj"
+      // group_id:    "4Bd5yhRfstZ77zxAZ"
+      // view:        "Drag"
+      // auto_login:  false
+      // restore_all: false
 
       for (let key in storedData) {
-        switch (key) {
-          case "group_id":
-            if (!autoLogin) {
-              return
-            }
-          break
-          case "view":
-            if (!restoreAll) {
-              // Special case: autologin but don't restore session
-              Session.set("view", "Activity")
-              return
-            }
-          break
-        }
-
         Session.set(key, storedData[key])
       }
+
+      /// <<< TEMPORARY HACK UNTIL MENU IS WORKING
+      const auto_login  = storedData.auto_login || this.hack
+      const restore_all = storedData.restore_all || this.hack
+
+      Session.set("auto_login", auto_login)
+      Session.set("restore_all", restore_all)
+      /// TEMPORARY HACK >>>
 
     } else {
       // First time user on this device. No storedData to treat
@@ -246,27 +235,22 @@ export default class StartUp {
 
   reJoinGroups() {
     // TODO: Integrate menu then remove the following 4 lines
-    if (!this.hack) {
+    if (!Session.get("auto_login")) {
       // console.log("reJoinGroups Returning user:", Session.get("username"))
       this.go = "Profile"
       return this.hideSplash()
     }
 
+    // Log in automatically
     const accountData = {
-      d_code:   Session.get("d_code")
-    , username: Session.get("username")
-    , q_code:   Session.get("q_code")
-    , group_id: Session.get("group_id")
-
-    // , user_id: Session.get("user_id")
-    // , teacher: Session.get("teacher")
+      d_code:      Session.get("d_code")
+    , username:    Session.get("username")
+    , q_code:      Session.get("q_code")
+    , group_id:    Session.get("group_id")
+    , restore_all: Session.get("restore_all")
     }
 
-    // Update the User document
     logIn.call(accountData, this.callback)
-
-    // // Log in to one-on-one group with teacher
-    // reGroup.call(params, this.groupsCallback)
   }
 
 

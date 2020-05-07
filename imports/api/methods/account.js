@@ -27,9 +27,9 @@ export default class CreateAccount {
 
     this.createUniqueQCode()
     this.createUser()
-    this.createGroupWithTeacher()
 
     accountData.accountCreated = true
+    accountData.status = "CreateGroup"
 
     // console.log("accountData after createUser:", accountData)
     // console.log("————————————————————————————")
@@ -139,28 +139,5 @@ export default class CreateAccount {
     // console.log("createUser accountData = ", this.accountData)
 
     this.accountData.user_id  = Users.insert(fields)
-  }
-
-
-  createGroupWithTeacher() {
-    const view = "Activity" // <<< HARD-CODED default value
-
-    const group = {
-      language:   this.accountData.language
-    , owner:      this.accountData.teacher
-    , active:     false // becomes true if Teacher logs in personally
-    , lobby:      ""
-    , chat_room:  ""
-    , members: [
-        this.accountData.user_id
-      , this.accountData.teacher
-      ]
-    , logged_in: []
-    , view
-    // // Will be added by the Client
-    // , view_data: {}
-    // , view_size: { width, height }
-    }
-    this.accountData.group_id = Groups.insert(group)
   }
 }

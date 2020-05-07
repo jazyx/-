@@ -363,7 +363,7 @@ class Dragger extends Component {
 
 
   newDeal(startUp) {
-    if (startUp === true && !Session.get("isMaster")) {
+    if (startUp === true && !this.props.isMaster) {
       return
     }
 
@@ -622,9 +622,10 @@ class Dragger extends Component {
                       ? "dropped"
                       : ""
 
-      return <div>
+      return <div
+        key={id}
+      >
         <StyledDraggable
-          key={index+"-"+name}
           id={id}
           className={className}
           aspectRatio={aspectRatio}
@@ -749,7 +750,7 @@ export default withTracker(() => {
   // Images
   const key          = "furniture"
   const code         = Session.get("language").replace(/-\w*/, "")
-  let imageSelect  = { type: { $eq: key }}
+  let imageSelect    = { type: { $eq: key }}
   const folderSelect = { key:  { $eq: key }}
   const items = Drag.find(imageSelect).fetch()
 
@@ -760,11 +761,14 @@ export default withTracker(() => {
   const folder = Drag.findOne(folderSelect).folder
 
   // view_data
-  const viewDataSelect  = { _id: Session.get("group_id") }
-  const project = { fields: { view_data: 1 } }
-  const { view_data } = Groups.findOne(viewDataSelect, project)
+  const select  = { _id: Session.get("group_id") }
+  const project = { fields: { view_data: 1, logged_in: 1 } }
+  const { view_data, logged_in } = Groups.findOne(select, project)
   const completed = view_data
                   ? turnCompleted(view_data.show)
+                  : false
+  const isMaster  = logged_in
+                  ? logged_in[0] === Session.get("d_code")
                   : false
   // Localization
   const phraseSelect = {
@@ -781,6 +785,7 @@ export default withTracker(() => {
     images
   , folder
   , view_data
+  , isMaster
   , completed
   , phrases
   }
