@@ -110,6 +110,9 @@ class Teacher {
     , active: false         // It's already false. Leave it that way.
     })
 
+    // We can unset the group_id Session variable already, because
+    // the Pointer tracker no longer needs it to remove the Pointers
+    // record for this teacher.
     Session.set("group_id", undefined)
     delete Session.keys.group_id
   }
