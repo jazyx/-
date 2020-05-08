@@ -38,7 +38,7 @@ class Pointers extends Component {
 
     // console.log("Pointers instance:", instance += 1)
 
-    this.groupIsActive   = false
+    this.group_id        = false // set to string when group is active
     this.pointerIsActive = false
     this.pointer_id      = false
     this.lastTouch = {}
@@ -72,16 +72,16 @@ class Pointers extends Component {
 
 
   syncActive() {
-    if (this.props.active) {
-      if (!this.groupIsActive) {
-        this.groupIsActive = true
+    if (this.props.group_id) {
+      if (!this.group_id) {
+        this.group_id = this.props.group_id
         this.createTracker()
 
         return 1
       }
-    } else if (this.groupIsActive) {
-      this.groupIsActive = false
+    } else if (this.group_id) {
       this.destroyTracker()
+      this.group_id = false
 
       return -1
     }
@@ -93,7 +93,7 @@ class Pointers extends Component {
   createTracker() {
     const _id = Session.get("d_code")
     const color = Session.get("q_color")
-    const group_id = this.props.group_id
+    const group_id = this.group_id
 
     // console.log("createTracker: _id", _id
     //            , "color:", color
@@ -106,7 +106,7 @@ class Pointers extends Component {
 
   destroyTracker() {
     const _id = this.pointer_id
-    const group_id = this.props.group_id
+    const group_id = this.group_id
     destroyTracker.call({ _id, group_id }, this.setPointerId)
   }
 
@@ -130,9 +130,9 @@ class Pointers extends Component {
       data.touchend = true
 
     } else {
-      const _id = this.pointer_id
+      const _id      = this.pointer_id
       const group_id = this.props.group_id
-      const active = this.pointerIsActive
+      const active   = this.pointerIsActive
       // Get x and y relative to the whole window...
       let { x, y } = getXY(event)
       // ... then adjust to fit the Share rect
@@ -351,8 +351,7 @@ export default withTracker(() => {
   // ... with an entry for each d_code in group .logged_in
 
   return {
-    group_id
-  , active
+    group_id: active && group_id
   , points
   }
 })(Pointers)
@@ -361,7 +360,15 @@ export default withTracker(() => {
 function groupIsActive(_id) {
   const select  = { _id }
   const project = { fields: { active: 1 } }
-  const active  = (Groups.findOne(select, project) || {}).active
+  const { active  } = (Groups.findOne(select, project) || {})
+
+  console.log( "Pointer active for", _id, ":", active
+             , "<<< db.groups.findOne("
+             , JSON.stringify(select)
+             , ", "
+             , JSON.stringify(project)
+             , ")"
+             )
 
   return active || false
 }

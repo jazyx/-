@@ -73,26 +73,24 @@ class Teacher {
   join(group) {
     const { _id, view } = group
 
-    this.group_id = _id
     Session.set("group_id", _id)
-
-    this.setAppView(view)
-    const active = this.active = true
 
     toggleActivation.call({
       _id
-    , active
     , d_code: this.d_code
+    , active: true
     })
 
     Tracker.autorun(this.trackGroup)
+
+    this.setAppView(view)
   }
 
 
   // REACTIVE SUBSCRIPTION to this Groups .active field
 
   trackGroup(tracker) {
-    const select  = { _id: this.group_id }
+    const select  = { _id: Session.get("group_id") }
     const project = { fields: { active: 1 } }
     const { active } = Groups.findOne(select, project)
                     || { active: false }
@@ -105,11 +103,15 @@ class Teacher {
 
 
   leaveGroup() {
+    // Remove this teacher's d_code from the Groups logged_in array
     toggleActivation.call({
-      _id:    this.group_id
-    , active: false
+      _id:    Session.get("group_id")
     , d_code: this.d_code
+    , active: false         // It's already false. Leave it that way.
     })
+
+    Session.set("group_id", undefined)
+    delete Session.keys.group_id
   }
 }
 

@@ -3,7 +3,7 @@
 
 , "as_is": {
     "key": "mimo"
-  , "version": 2
+  , "version": 12
   , "name": {
       "en": "Minimal pairs"
     , "fr": "Paires minimales"

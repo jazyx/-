@@ -2,7 +2,7 @@
 
 , "as_is": {
     "key": "furniture"
-  , "version": 8
+  , "version": 9
   , "parent": "home"
   , "root": "drag"
   , "name": {
@@ -151,7 +151,7 @@
   , { "file": "wardrobe.jpg"
     , "text": {
         "en": "wardrobe"
-      , "fr": "un garderobe"
+      , "fr": "une garde-robe"
       , "ru": "гардероб"
       }
     }

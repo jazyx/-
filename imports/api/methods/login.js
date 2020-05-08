@@ -12,8 +12,7 @@ import { Users
 export default class LogIn {
   constructor(accountData) {
     this.accountData = accountData
-    console.log("accountData before Login:", accountData)
-    console.log("=========================================")
+    // console.log("accountData before Login:", accountData)
 
     const nameExists = this.userWithThisNameExists()
 

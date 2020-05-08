@@ -90,6 +90,7 @@ export const StyledTeacher = styled.li`
     text-align: center;
     font-size: calc(7.5 * var(--min));
     margin: 0;
+    pointer-events: none;
   }
 
   &:hover {

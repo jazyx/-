@@ -21,18 +21,14 @@ export default class LeaveGroup {
 
     // Common actions for both Teachers and Users
     this.removeDeviceFromGroup(group_id, d_code)
-    destroyTracker.call({ _id: d_code, group_id })
+    // destroyTracker.call({ _id: d_code, group_id })
 
     // Separate actions
     if (id.length < 5) {// "xxxx" => 456976 teacher id`s
-      /** When the teacher leaves, the group is dissolved
-       *
-       *  The group .active is set to false
-       *  All the users are made to leave
-       *  As a result, the Points records are destroyed
-       */
-      this.deactivateGroup(group_id)
-      // this.emptyTheGroup(group_id) // calls this class recursively
+      const teacherViews = this.getTeacherViewCount(id, group_id)
+      if (!teacherViews) {
+        this.deactivateGroup(group_id)
+      }
 
     } else {
       this.userIsLeaving(id, group_id, dismissed)
@@ -57,6 +53,39 @@ export default class LeaveGroup {
   }
 
 
+  getTeacherViewCount(id, group_id) {
+     let select  = { id }
+     const project = { fields: { logged_in: 1 } }
+     const teacher = Teachers.findOne(select, project)
+                  || { logged_in: [], fake: true }
+     const d_codes = teacher.logged_in
+
+     console.log( "teacher", teacher
+                , "teacher's d_codes:", teacher.logged_in
+                , "db.teachers.findOne("
+                , JSON.stringify(select)
+                , ", "
+                , JSON.stringify(project)
+                , ")"
+                )
+
+     select = { _id: group_id }
+     const { logged_in } = Groups.findOne(select, project)
+
+     console.log( "group's d_codes:", logged_in
+                , "db.groups.findOne("
+                , JSON.stringify(select)
+                , ", "
+                , JSON.stringify(project)
+                , ")"
+                )
+
+     const t_codes = arrayOverlap(logged_in, d_codes)
+
+     return t_codes.length  
+  }
+
+
   // Teacher actions
   deactivateGroup(group_id) {
     const select = { _id: group_id }
@@ -70,52 +99,6 @@ export default class LeaveGroup {
     //            + JSON.stringify(set)
     //            + ")")
   }
-
-
-  // emptyTheGroup(group_id) {
-  //   // Get the array of logged_in devices...
-  //   const select = { _id: group_id }
-  //   const project = { fields: { logged_in: 1 } }
-  //   const { logged_in } = Groups.findOne(select, project)
-
-  //   // ... and for each device, find its owner and tell them to go
-  //   const tellUserToLeave = userData => {
-  //     const id = userData._id
-  //     const d_codes = arrayOverlap(logged_in, userData.logged_in)
-
-  //     d_codes.forEach(d_code => {
-  //       new LeaveGroup({ id, d_code, group_id, dismissed: true })
-  //     })
-  //   }
-
-  //   const filter = { logged_in: { $elemMatch: { $in: logged_in }}}
-
-  //   console.log( "db.groups.find("
-  //              + JSON.stringify(filter)
-  //              + ", "
-  //              + JSON.stringify(project)
-  //              + ")"
-  //              )
-  //   // db.groups.find({
-  //   //     logged_in: {
-  //   //       $elemMatch: {
-  //   //         $in: [
-  //   //           "0kigTBd"
-  //   //         , "PHD8Swq"
-  //   //         ]
-  //   //       }
-  //   //     }
-  //   //   }
-  //   // , {
-  //   //     logged_in: 1
-  //   //   , _id: 0
-  //   //   }
-  //   // )
-
-  //   Groups.find(filter, project)
-  //         .fetch()
-  //         .forEach(tellUserToLeave)
-  // }
 
 
   // User actions
@@ -211,6 +194,8 @@ export default class LeaveGroup {
     return d_codes
   }
 
+
+  // UNTESTED // UNTESTED // UNTESTED // UNTESTED // UNTESTED //
 
   promoteSlave(group_id, logged_in, ownerD_codes) {
     // Make sure the teacher is not master (= first in logged_in)

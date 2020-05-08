@@ -14,7 +14,7 @@ export default class CreateGroup {
     // , language: <>
     // }
 
-    console.log("accountData before CreateGroup:", accountData)
+    // console.log("accountData before CreateGroup:", accountData)
 
     const view = "Activity" // <<< HARD-CODED default value
 
@@ -37,6 +37,6 @@ export default class CreateGroup {
     accountData.group_id = Groups.insert(group)
     accountData.groupCreated = true
 
-    console.log("accountData after CreateGroup:", accountData)
+    // console.log("accountData after CreateGroup:", accountData)
   }
 }

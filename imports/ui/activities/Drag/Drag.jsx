@@ -700,7 +700,7 @@ class Dragger extends Component {
 
   render() {
     const aspectRatio = this.props.aspectRatio
-    if (!this.props.view_data || !aspectRatio) {
+    if (!this.props.view_data || !this.gameFrame.current) {
       // Force the gameFrame ref to become something
       return <StyledGame
         ref={this.gameFrame}

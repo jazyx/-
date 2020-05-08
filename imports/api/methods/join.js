@@ -11,7 +11,7 @@ import { Users
 
 export default class JoinGroup {
   constructor(accountData) {
-    console.log("JoinGroup", accountData)
+    // console.log("JoinGroup", accountData)
     // 
     // { user_id: "YZ2xJoHf5SDzZPQED"
     // , d_code: "dm4eN"
@@ -34,7 +34,10 @@ export default class JoinGroup {
       group_id = this.groupWithThisTeacher(user_id, teacher)
     }
 
-    if (!group_id) {
+    if (group_id) {
+      // The user might have chosen a different group from last time
+      accountData.group_id = group_id
+    } else {
       return accountData.status = "CreateGroup"
       // We'll be back
     }
