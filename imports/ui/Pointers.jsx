@@ -362,13 +362,13 @@ function groupIsActive(_id) {
   const project = { fields: { active: 1 } }
   const { active  } = (Groups.findOne(select, project) || {})
 
-  console.log( "Pointer active for", _id, ":", active
-             , "<<< db.groups.findOne("
-             , JSON.stringify(select)
-             , ", "
-             , JSON.stringify(project)
-             , ")"
-             )
+  // console.log( "Pointer active for", _id, ":", active
+  //            , "<<< db.groups.findOne("
+  //            , JSON.stringify(select)
+  //            , ", "
+  //            , JSON.stringify(project)
+  //            , ")"
+  //            )
 
   return active || false
 }

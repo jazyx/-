@@ -54,7 +54,7 @@ import Activity from './activities/Activity.jsx';
 
 // ADD NEW ACTIVITY VIEWS HERE...      AND ALSO BELOW vvvv
 import Drag from './activities/Drag/Drag.jsx';
-import Mimo from './activities/Mimo/Mimo.jsx';
+import Cloze from './activities/Cloze/Cloze.jsx';
 
 
 let instance = 0
@@ -80,7 +80,7 @@ export class App extends Component {
     , Language: true
       // ADD NEW ACTIVITY VIEWS HERE, AND ALSO ABOVE ^^^^
     , Drag
-    , Mimo
+    , Cloze
     }
 
     this.state = { view: "Splash" }

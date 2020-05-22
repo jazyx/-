@@ -35,6 +35,8 @@ export default class ToggleActivation {
     //            + ")"
     //            )
 
-
+    if (result) {
+      groupData.teacher_logged_in = true
+    }
   }
 }

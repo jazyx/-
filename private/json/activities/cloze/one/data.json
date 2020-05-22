@@ -1,0 +1,58 @@
+{ "collection": "Cloze"
+
+, "as_is": {
+    "key": "one"
+  , "version": 1
+  , "parent": "cloze"
+  , "root": "cloze"
+  , "name": {
+      "en": "one"
+    , "fr": "un"
+    , "ru": "один"
+    }
+  , "folder": "cloze/one/"
+  , "icon": "icon.jpg"
+  }
+
+, "furniture": [ { "phrase": {
+        "en": "Good morning, did you sleep _well?"
+      , "ru": "Доброе утро, ты _хорошо спала?"
+      , "fr": "์Bonjour! As-tu _bien dormi ?"
+      }
+    , "image": "wakeup.jpg"
+    , "audio": ""
+    }
+  , { "phrase": {
+        "en": "Bacon and eggs for _breakfast"
+      , "ru": "Бекон и яйца на _завтрак"
+      , "fr": "Des oeufs aux bacon pour le _petit-déjeuner"
+      }
+    , "image": "bacon&eggs.jpg"
+    , "audio": ""
+    }
+  , { "phrase": {
+        "en": "It's three o'_clock"
+      , "ru": "Сейчас три _часа"
+      , "fr": "Il est trois _heures"
+      }
+    , "image": "/activities/shared/clock.jpg"
+    , "audio": ""
+    }
+  , { "phrase": {
+        "en": "a bowl of _soup"
+      , "ru": "тарелка _супа"
+      , "fr": "un bol de _soupe"
+      }
+    , "image": "/activities/shared/soup.jpg"
+    , "audio": ""
+    }
+  , { "phrase": {
+        "en": "_bread"
+      , "ru": "_хлеб"
+      , "fr": "du _pain"
+      }
+    , "image": "/activities/shared/bread.jpg"
+    , "audio": ""
+    }
+  ]
+}

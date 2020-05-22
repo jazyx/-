@@ -8,7 +8,9 @@ import { L10n
        , Activities
        } from '../../api/collections'
 import { localize
-       , getElementIndex } from '../../tools/utilities'
+       , getElementIndex
+       , substitute
+       } from '../../tools/utilities'
 import { setView } from '../../api/methods/methods'
 
 import { StyledProfile
@@ -107,7 +109,9 @@ class Activity extends Component {
 
   getActivities() {
     const activities = this.props.activities.map((activity, index) => {
-      const src         = activity.folder + activity.icon
+      const lang        = Session.get("native").replace(/-.*/, "")
+      const icon        = substitute(activity.icon, { "^0": lang })
+      const src         = activity.folder + icon
       const name        = this.getPhrase("name", activity)
       const description = this.getPhrase("description", activity)
       const disabled    = !!activity.disabled

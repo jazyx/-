@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import SimpleSchema from 'simpl-schema'
-import { Groups
-       , Permits
-       } from '../../../api/collections'
+import { Groups } from '../../../api/collections'
 
 
 

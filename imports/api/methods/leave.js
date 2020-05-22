@@ -13,10 +13,14 @@ import { arrayOverlap } from '../../tools/utilities'
 
 export default class LeaveGroup {
   constructor(deviceData) {
-    const { id, group_id, d_code, dismissed=false } = deviceData
+    let { id, d_code, group_id, dismissed=false } = deviceData
 
     if (!group_id) {
-      return
+      group_id = this.getGroup_id(d_code)
+
+      if (!group_id) {
+        return
+      }
     }
 
     // Common actions for both Teachers and Users
@@ -36,6 +40,20 @@ export default class LeaveGroup {
   }
 
 
+  getGroup_id(d_code) {
+    const select = { logged_in: d_code }
+    const project = {}
+    const _ids = Groups.find(select, project)
+                       .fetch()
+                       .map(doc => doc._id)
+    if (_ids.length > 1) {
+      // console.log("Leaving multiple groups?", _ids)
+    }
+
+    return _ids[0] // may be undefined
+  }
+
+
   // Common actions
   removeDeviceFromGroup(group_id, d_code) {
     const select = { _id: group_id, logged_in: d_code }
@@ -43,13 +61,13 @@ export default class LeaveGroup {
     const result = Groups.update(select, pull)
 
     // console.log( "result:", result
-    //            , ", group_id", group_id
-    //            , "db.groups.update("
-    //              + JSON.stringify(select)
-    //              + ", "
-    //              + JSON.stringify(pull)
-    //              + ")"
-    //            )
+               // , ", group_id", group_id
+               // , "db.groups.update("
+               //   + JSON.stringify(select)
+               //   + ", "
+               //   + JSON.stringify(pull)
+               //   + ")"
+               // )
   }
 
 
@@ -60,29 +78,31 @@ export default class LeaveGroup {
                   || { logged_in: [], fake: true }
      const d_codes = teacher.logged_in
 
-     console.log( "teacher", teacher
-                , "teacher's d_codes:", teacher.logged_in
-                , "db.teachers.findOne("
-                , JSON.stringify(select)
-                , ", "
-                , JSON.stringify(project)
-                , ")"
-                )
+     // console.log( "teacher", teacher
+     //            , "teacher's d_codes:", teacher.logged_in
+     //            , "db.teachers.findOne("
+     //            , JSON.stringify(select)
+     //            , ", "
+     //            , JSON.stringify(project)
+     //            , ")"
+     //            )
 
      select = { _id: group_id }
      const { logged_in } = Groups.findOne(select, project)
 
-     console.log( "group's d_codes:", logged_in
-                , "db.groups.findOne("
-                , JSON.stringify(select)
-                , ", "
-                , JSON.stringify(project)
-                , ")"
-                )
+     // console.log( "group's d_codes:", logged_in
+     //            , "db.groups.findOne("
+     //            , JSON.stringify(select)
+     //            , ", "
+     //            , JSON.stringify(project)
+     //            , ")"
+     //            )
 
      const t_codes = arrayOverlap(logged_in, d_codes)
 
-     return t_codes.length  
+     return t_codes.length
+
+
   }
 
 
@@ -135,7 +155,8 @@ export default class LeaveGroup {
     //            + JSON.stringify(select)
     //            + ", "
     //            + JSON.stringify(update)
-    //            + ")")
+    //            + ")"
+    //            )
   }
 
 
@@ -146,6 +167,14 @@ export default class LeaveGroup {
           } = this.getGroupMemberStatus(group_id)
     const ownerD_codes = this.getOwnerD_codes(owner, logged_in)
     const d_codeCount = ownerD_codes.length
+
+    // console.log(
+    //   "closeGroupIfDone — logged_in:", logged_in
+    // , "owner:", owner
+    // , "active:", active
+    // , "ownerD_codes:", ownerD_codes
+    // , "d_codeCount:", d_codeCount
+    // )
 
     if (d_codeCount && d_codeCount === logged_in.length) {
       // The teacher is the only person left
@@ -187,7 +216,8 @@ export default class LeaveGroup {
     //            + JSON.stringify(select)
     //            + ", "
     //            + JSON.stringify(project)
-    //            + ")")
+    //            + ")"
+    //            )
 
     d_codes = arrayOverlap(d_codes, logged_in)
 

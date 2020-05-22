@@ -290,7 +290,7 @@ export const shuffle = (a) => {
 
 
 export const getRandom = (max, min = 0) => {
-  return Math.floor(Math.random() * (max - min)) + min
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 
@@ -302,8 +302,11 @@ export const getRandomFromArray = (array) => {
 
 
 export const arrayOverlap = (array1, array2) => {
-  const overlap = array1.filter( item => array2.includes(item) )
-  return overlap
+  if (!array1 || !array1.length || !array2 || !array2.length) {
+    return []
+  }
+
+  return array1.filter( item => array2.includes(item) )
 }
 
 
@@ -664,6 +667,25 @@ export const trimImage = (image) => {
 
 // STRINGS //
 
+export const substitute = (phrase, options) => {
+  if (options && typeof options === "object") {
+    if (typeof phrase === "object") {
+      phrase = phrase.replace
+    }
+
+    for (key in options) {
+      phrase = phrase.replace(key, options[key])
+    }
+
+  } else if (typeof phrase === "object") {
+    phrase = phrase.simple
+  }
+
+  return phrase
+}
+
+
+
 export const localize = (cue, code, corpus, options) => {
   let phrase
 
@@ -689,18 +711,7 @@ export const localize = (cue, code, corpus, options) => {
     phrase = "***" + cue + "***"
   }
 
-  if (options) {
-    if (typeof phrase === "object") {
-      phrase = phrase.replace
-    }
-
-    for (key in options) {
-      phrase = phrase.replace(key, options[key])
-    }
-
-  } else if (typeof phrase === "object") {
-    phrase = phrase.simple
-  }
+  phrase = substitute(phrase, options)
 
   // Replace underscores with non-breaking spaces
   phrase = phrase.replace(/_/g, " ")

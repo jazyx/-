@@ -1,0 +1,20 @@
+{
+  "collection": "Activities"
+
+, "as_is": {
+    "key": "Cloze"
+  , "version": 2
+  , "name": {
+      "en": "Cloze"
+    , "fr": "Cloze"
+    , "ru": "Заполнить"
+    }
+  , "description": {
+      "en": "Type the right word in the blank space."
+    , "fr": "Combler le trou avec le mot approprié."
+    , "ru": "Заполните пробел правильным словом."
+    }
+  , "folder": "activities/cloze/"
+  , "icon": "icon/^0.jpg"
+  }
+}

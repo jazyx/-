@@ -27,7 +27,6 @@ export const getNextIndex = (_id) => {
   return index
 }
 
-
 // <<< DEVELOPMENT ONLY // DEVELOPMENT ONLY // DEVELOPMENT ONLY //
 if (Meteor.isClient) {
   window.Users = Users
@@ -51,6 +50,8 @@ const collections = {
 // Specific activities
 , Drag
 }
+
+// console.log(collections)
 
 
 // Define the queries that will be used to publish these collections

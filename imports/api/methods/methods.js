@@ -58,7 +58,6 @@ import LogInTeacher from './loginTeacher'
 import CreateAccount from './account'
 import ToggleActivation from './activate'
 
-
 import { Groups } from '../collections' // used by share & setView
 
 // // SUBSCRIPTION IS TAKEN CARE OF IN Share.jsx ON THE CLIENT // //
@@ -143,7 +142,7 @@ export const createGroup = {
 
 , run(accountData) {
     new CreateGroup(accountData) // modifies accountData
-    new JoinGroup(accountData)   // action 
+    new JoinGroup(accountData)   // action
 
     return accountData
   }
@@ -317,7 +316,7 @@ export const logOut = {
       // 'xxxx' => 456976 combinations
     , d_code:   { type: String }
       // A Teacher might log out without being part of a group
-    , group_id: { type: String, optional: true }
+    // , group_id: { type: String, optional: true }
     }).validate(logOutData)
   }
 

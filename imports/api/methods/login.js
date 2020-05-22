@@ -67,7 +67,7 @@ export default class LogIn {
         // } else {
           accountData.status = "loggedIn"
         // }
-        
+
         accountData.loggedIn = true
       }
     }
@@ -102,8 +102,8 @@ export default class LogIn {
   // userHasTeacherGroup() {
   //   const { user_id, teacher } = this.accountData
   //   const select = {
-  //     members: { 
-  //       $all: [ 
+  //     members: {
+  //       $all: [
   //         user_id
   //       , teacher
   //       ]

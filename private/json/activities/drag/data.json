@@ -3,7 +3,7 @@
 
 , "as_is": {
     "key": "Drag"
-  , "version": 4
+  , "version": 5
   , "name": {
       "en": "Drag"
     , "fr": "Glisser"
@@ -15,6 +15,7 @@
     , "ru": "Перетащите название каждого предмета на картинку, чтобы выучить новые слова."
     }
   , "folder": "activities/drag/"
-  , "icon": "icon.jpg"
+  , "icon": "icon/^0.jpg"
+
   }
 }

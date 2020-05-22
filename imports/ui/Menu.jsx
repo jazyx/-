@@ -52,8 +52,8 @@ export default class Menu extends Component {
       return
     }
 
-    const group_id = Session.get("group_id")
-    const userAndDevice = { id, group_id, d_code }
+    // const group_id = Session.get("group_id")
+    const userAndDevice = { id, d_code } //, group_id }
 
     logOut.call(userAndDevice) // no callback = synchronous
   }

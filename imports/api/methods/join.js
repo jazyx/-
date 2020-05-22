@@ -12,10 +12,10 @@ import { Users
 export default class JoinGroup {
   constructor(accountData) {
     // console.log("JoinGroup", accountData)
-    // 
+    //
     // { user_id: "YZ2xJoHf5SDzZPQED"
     // , d_code: "dm4eN"
-    // 
+    //
     // // Manual log in will use teacher to find group_id, or will
     // // create a new group using user_id, teacher and language
     // // (group_id will be overridden, because it might refer to
@@ -23,7 +23,7 @@ export default class JoinGroup {
     // //  this teacher)
     // , teacher:  "aa"
     // , language: "ru"
-    // 
+    //
     // // auto_login will not have teacher or language, so requires
     // // group_id
     // , group_id: "97NS2hDEYntEhXXbr"
@@ -72,8 +72,8 @@ export default class JoinGroup {
 
   groupWithThisTeacher(user_id, teacher) {
     const select = {
-      members: { 
-        $all: [ 
+      members: {
+        $all: [
           user_id
         , teacher
         ]

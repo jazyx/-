@@ -341,7 +341,7 @@ class Dragger extends Component {
     // this.eventType   "mousedown" | "touchstart" for setTrackedEvent
     // this.touch       prevents mouse events if action is touch
     // this.dragId      id of dragged <p> element
-    // this.offset      offset from pointer to topleft of dragged item  
+    // this.offset      offset from pointer to topleft of dragged item
     // this.cancel      data to end setTrackedEvent
     //                  { actions: {
     //                      move: "mousemove"
@@ -752,7 +752,7 @@ export default withTracker(() => {
   const code         = Session.get("language").replace(/-\w*/, "")
   let imageSelect    = { type: { $eq: key }}
   const folderSelect = { key:  { $eq: key }}
-  const items = Drag.find(imageSelect).fetch()
+  const items        = Drag.find(imageSelect).fetch()
 
   const images = items.map(document => [ document.file
                                        , document.text[code]

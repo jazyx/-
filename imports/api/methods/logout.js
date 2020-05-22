@@ -11,7 +11,7 @@ import { Users
 
 export default class LogOut {
   constructor(logOutData) {
-    const { id, d_code, group_id } = logOutData
+    const { id, d_code } = logOutData
 
     const update = {
       $pull: {
@@ -35,22 +35,7 @@ export default class LogOut {
 
     const select = { [key]: id }
 
-    if (group_id && !isTeacher) {
-      // Also update entry in history
-      const path = "history." + group_id
-      const pathOut = path + ".$.out"
-      select[path+".in"] = { $exists: true }
-      select[pathOut]    = { $exists: false }
-
-      update.$currentDate = {
-        [pathOut]: true
-      }
-    }
-
     const result = collection.update(select, update)
-    // 0 if no in without out
-    // 1 if history entry updated
-
 
     // console.log( "result:", result
     //            , "<<< LogOut device db."

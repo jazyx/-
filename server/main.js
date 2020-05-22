@@ -4,6 +4,7 @@ import '../imports/ui/activities/combinedMethods'
 import collections from '../imports/api/collections.js'
 import Points from '../imports/api/points'
 
+// console.log("Server's main.js instanciated")
 
 // Required by CollectJSON
 const fs = require('fs')
