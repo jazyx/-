@@ -38,7 +38,7 @@ export const StyledTextArea = styled.textarea`
 export const StyledPhrase = styled.div`
   font-size: ${fontSize};
   font-family: ${fontFamily};
-  text-align: left;
+  text-align: center;
 `
 
 
@@ -192,4 +192,12 @@ export const StyledSubmit = styled.button`
                     ? "inline-block;"
                     : "none;"
             }
+`
+
+
+export const StyledImage = styled.img`
+  width: 80vmin;
+  height: 80vmin;
+  margin: auto;
+  object-fit: contain;
 `

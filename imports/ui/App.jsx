@@ -55,6 +55,7 @@ import Activity from './activities/Activity.jsx';
 // ADD NEW ACTIVITY VIEWS HERE...      AND ALSO BELOW vvvv
 import Drag from './activities/Drag/Drag.jsx';
 import Cloze from './activities/Cloze/Cloze.jsx';
+import Spiral from './activities/Spiral/Spiral.jsx';
 
 
 let instance = 0
@@ -81,6 +82,7 @@ export class App extends Component {
       // ADD NEW ACTIVITY VIEWS HERE, AND ALSO ABOVE ^^^^
     , Drag
     , Cloze
+    , Spiral
     }
 
     this.state = { view: "Splash" }

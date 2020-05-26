@@ -1,0 +1,45 @@
+{ "collection": "Spiral"
+
+, "as_is": {
+    "key": "anning"
+  , "version": 1
+  , "parent": "<none>"
+  , "root": "spiral"
+  , "name": {
+      "en": "Mary Anning"
+    , "fr": "Mary Anning"
+    , "ru": "Мэри Эннинг"
+    }
+  , "folder": "activities/spiral/MaryAnning/"
+  , "icon": "icon.jpg"
+  }
+
+, "anning": [
+    { "file": "00_Mary.jpg" }
+  , { "file": "01_furniture.jpg" }
+  , { "file": "02_Europe.jpg" }
+  , { "file": "03_UK.jpg" }
+  , { "file": "04_beach.jpg" }
+  , { "file": "05_LymeRegis.jpg" }
+  , { "file": "06_snakeStones.jpg" }
+  , { "file": "07_ichthyosaurvertebrae.jpg" }
+  , { "file": "07_ladyFingers.jpg" }
+  , { "file": "08_devilsToenails.jpg" }
+  , { "file": "09_house.jpg" }
+  , { "file": "10_table.jpg" }
+  , { "file": "11_icthyosaurJ.jpg" }
+  , { "file": "12_tray.jpg" }
+  , { "file": "13_icthyosaurA.jpg" }
+  , { "file": "14_stamp.jpg" }
+  , { "file": "15_drawing.jpg" }
+  , { "file": "16_plipli.jpg" }
+  , { "file": "17_belemnite.jpg" }
+  , { "file": "18_Dapedium.jpg" }
+  , { "file": "19_dimorphodon.jpg" }
+  , { "file": "20_Pterosaur.jpg" }
+  , { "file": "21_Squaloraja.jpg" }
+  , { "file": "22_fossilShop.jpg" }
+  , { "file": "23_MaryAnning.jpg" }
+  , { "file": "24_AmelieRosser.jpg" }
+  ]
+}

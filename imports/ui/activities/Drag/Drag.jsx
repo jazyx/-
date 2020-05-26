@@ -700,7 +700,9 @@ class Dragger extends Component {
 
   render() {
     const aspectRatio = this.props.aspectRatio
-    if (!this.props.view_data || !this.gameFrame.current) {
+    if ( !this.props.view_data
+      || !this.gameFrame.current
+      ) {
       // Force the gameFrame ref to become something
       return <StyledGame
         ref={this.gameFrame}
@@ -739,10 +741,14 @@ class Dragger extends Component {
 
 export default withTracker(() => {
   function turnCompleted(show) {
-    const keys = Object.keys(show)
-    const completed = keys.reduce(
-      (counter, key) => counter + show[key]
-    , 0)
+    let completed = 0
+
+    if (typeof show === "object") {
+      const keys = Object.keys(show)
+      completed = keys.reduce(
+        (counter, key) => counter + show[key]
+      , completed)
+    }
 
     return "" + completed
   }

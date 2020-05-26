@@ -16,7 +16,7 @@ const StyledMenu = styled.div`
   width: calc(25 * var(--min));
   height: calc(100 * var(--h));
   background-color: #f00;
-  opacity: 0.1;
+  opacity: 0.0;
 
   pointer-events: none;
 `

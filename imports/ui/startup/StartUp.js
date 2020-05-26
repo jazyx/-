@@ -14,6 +14,8 @@ import Storage from '../../tools/storage'
 import { getRandomFromArray } from '../../tools/utilities'
 
 
+window.collections = collections
+
 
 export default class StartUp {
   constructor(setViewAndSize) {
@@ -60,8 +62,6 @@ export default class StartUp {
       const handle   = Meteor.subscribe(collection._name, callback)
       this.subscriptions[collectionName] = handle
     }
-
-    // console.log("Subscriptions", this.subscriptions)
   }
 
 

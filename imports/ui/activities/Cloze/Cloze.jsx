@@ -1,6 +1,15 @@
 /**
  * Cloze.jsx
  *
+ * The Clozer class uses componentDidUpdate() to synchronous new
+ * phrases. This seems to run in to a React bug that is described
+ * here:
+ *
+ *   https://github.com/facebook/react/issues/13424
+ *
+ * To work around it, we temporarily show the answer in the Input
+ * field, and then immediately remove it. Search for "hack" below
+ * for details.
  */
 
 
@@ -21,6 +30,9 @@ import { Cloze
 import LSS from './lss'
 import { localize } from '../../../tools/utilities'
 import Sampler from '../../../tools/sampler'
+import { setViewData
+       , updateInput
+       } from './methods'
 
 
 
@@ -31,6 +43,11 @@ class Clozer extends Component {
     /// <<< HARD-CODED
     this.maxExtraChars = 2
     /// HARD-CODED >>>
+
+    this.sampler = new Sampler({
+      array: props.tasks
+    , sampleSize: 1
+    })
 
     this.newPhrase    = this.newPhrase.bind(this)
     this.checkSize    = this.checkSize.bind(this)
@@ -53,21 +70,50 @@ class Clozer extends Component {
     this.timeout        = 0
     this.lastIndexDelay = 1000
 
-    const startUp       = true
-    const phrase        = "Here"
-    const initialState  = this.treatPhrase(phrase, startUp)
-    this.state          = initialState
+    this.input          = ""
+    this.state          = {
+      start:    ""
+    , expected: ""
+    , cloze:    ""
+    , end:      ""
+    , maxLength: 0
+    , minWidth:  0
+    , width:     0
+    , error:     false
+    , correct:   false
+    , reveal:    false
+    , fix:       false
+    }
+
+    this.newPhrase()
   }
 
 
-  newPhrase(event) {
-    const phrase = event.target.value
-    this.setState({ phrase })
-    this.treatPhrase(phrase)
+  newPhrase() {
+    if (!this.props.isMaster) {
+      return
+    }
+
+    const group_id = Session.get("group_id")
+
+    let [ src, phrase ] = this.sampler.getSample()[0]
+    src = this.props.folder + src
+
+    const view_data = {
+      phrase
+    , src
+      // React Hack: we must momentarily show (any) text, to make the
+      // input respond to onChange. We will remove the text in the
+      // setSize ref callback.
+    , input: phrase
+    , requireSubmit: false /// TODO
+    }
+
+    setViewData.call({ group_id, view_data })
   }
 
 
-  treatPhrase(phrase, startUp) {
+  treatPhrase(phrase) {
     const match  = this.regex.exec(phrase)
 
     let start = match[1]
@@ -93,42 +139,36 @@ class Clozer extends Component {
     , cloze
     , end
     , fromNewPhrase: true
-    , input: ""
     , width: 0
     , requireSubmit: false
     }
-    // console.log( "\""
-    //            + start
-    //            + this.state.expected
-    //            + end
-    //            + "\""
-    //            )
-
-    console.log("phrase data:", data)
-    if (startUp) {
-      // Don't setState on startUp
-      // console.log("phrase data:", data)
-      return data
-    }
 
     this.setState(data)
+
+    // Don't call treatPhrase again until the phrase changes
+    this.phrase = phrase
   }
 
 
   updateInput(event) {
     const input = event.target.value.replace(this.zeroWidthSpace, "")
 
-    this.setState({ input })
+    const group_id = Session.get("group_id")
+    const update = { group_id, input }
+    updateInput.call(update)
 
-    if (this.state.requireSubmit) {
-      this.prepareToSubmit(input)
+    // this.setState({ input })
+    // console.log("t่his.state:", this.state)
 
-    } else {
-      clearTimeout(this.timeout)
-      this.timeout = setTimeout(this.refreshInput, this.lastIndexDelay)
+    // if (this.state.requireSubmit) {
+    //   this.prepareToSubmit(input)
 
-      this.treatInput(input, true)
-    }
+    // } else {
+    //   clearTimeout(this.timeout)
+    //   this.timeout = setTimeout(this.refreshInput, this.lastIndexDelay)
+
+    //   this.treatInput(input, true)
+    // }
   }
 
 
@@ -140,6 +180,7 @@ class Clozer extends Component {
   treatInput(input, ignoreLastIndex) {
     // console.log("treat input:", input)
     // console.log("t่his.state:", this.state)
+    // this.setState({ input })
 
     let error = false
     let correct = false
@@ -437,6 +478,8 @@ class Clozer extends Component {
     const fix = (this.state.requireSubmit && error) || reveal
 
     this.setState({ cloze, error, correct, maxLength, reveal, fix })
+
+    this.input = input
   }
 
 
@@ -487,6 +530,14 @@ class Clozer extends Component {
         , cloze: this.zeroWidthSpace
         , fromNewPhrase: false
         })
+        // React Hack. In newPhrase, we had to add (some) text to the
+        // input field, otherwise it would not show any user input and
+        // would not therefore not trigger its onChange method.
+        this.updateInput({
+          target: {
+            value: ""
+          }
+        })
 
       } else {
         this.setState({ width })
@@ -516,8 +567,16 @@ class Clozer extends Component {
 
 
   render() {
+    // console.log(this.props)
+    const { src, input }= (this.props.view_data || {})
+    if (!src) {
+      return ""
+    }
+
     return (
       <Cloze
+        src={src}
+        input={input}
         phrase={this.state}
         size={this.checkSize}
         change={this.updateInput}
@@ -525,9 +584,48 @@ class Clozer extends Component {
       />
     )
   }
+
+
+  componentDidUpdate() {
+    const { src, phrase, input } = this.props.view_data
+
+    if (!src) {
+      // Wait until the src is defined
+    } else if (this.phrase !== phrase) {
+      this.treatPhrase(phrase)
+    } else if (this.input !== input) {
+      this.treatInput(input)
+    }
+  }
 }
 
 
 
 export default withTracker(() => {
+  const key          = "furniture"
+  const code         = Session.get("language").replace(/-\w*/, "")
+  const taskSelect   = { type: { $eq: key }}
+  const folderSelect = { key:  { $eq: key }}
+  const items        = Drag.find(taskSelect).fetch()
+
+  const tasks    = items.map(document => [ document.file
+                                         , document.text[code]
+                                         ]
+                            )
+  const folder   = Drag.findOne(folderSelect).folder
+
+  // view_data
+  const select   = { _id: Session.get("group_id") }
+  const project  = { fields: { view_data: 1, logged_in: 1 } }
+  const { view_data, logged_in } = Groups.findOne(select, project)
+
+  const isMaster = logged_in
+                 ? logged_in[0] === Session.get("d_code")
+                 : false
+  return {
+    tasks
+  , folder
+  , view_data
+  , isMaster
+  }
 })(Clozer)

@@ -1,3 +1,5 @@
-import { setViewData, toggleShow } from './Drag/methods'
+import * as drag from './Drag/methods'
+import * as cloze from './Cloze/methods'
+import * as spiral from './Spiral/methods'
 
-export { setViewData, toggleShow }
+export { drag, cloze }

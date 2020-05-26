@@ -38,6 +38,8 @@ if (Meteor.isClient) {
 
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
 export const Drag       = new Mongo.Collection('drag')
+export const Cloze      = new Mongo.Collection('cloze')
+export const Spiral     = new Mongo.Collection('spiral')
 
 // Export a collections map: import arbitraryName from '...'
 const collections = {
@@ -49,6 +51,8 @@ const collections = {
 , Activities
 // Specific activities
 , Drag
+, Cloze
+, Spiral
 }
 
 // console.log(collections)
@@ -74,6 +78,7 @@ const publishQueries = {
                 , { folder: { $exists: true } }
                 ]
               }
+, Spiral:     {}
 }
 
 

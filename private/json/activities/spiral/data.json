@@ -1,0 +1,21 @@
+{
+  "collection": "Activities"
+
+, "as_is": {
+    "key": "Spiral"
+  , "version": 1
+  , "name": {
+      "en": "Spiral"
+    , "fr": "Spirale"
+    , "ru": "Спираль"
+    }
+  , "description": {
+      "en": "Pictures to stimulate a conversation"
+    , "fr": "Des images pour stimuler une discussion"
+    , "ru": "Изображения для стимулирования разговора"
+    }
+  , "folder": "activities/spiral/"
+  , "icon": "icon.jpg"
+
+  }
+}

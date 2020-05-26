@@ -17,6 +17,7 @@ import { StyledDiv
        , StyledFlip
        , StyledToggle
        , StyledSubmit
+       , StyledImage
        } from './styles'
 
 
@@ -51,7 +52,6 @@ export class Cloze extends Component {
     const { start
           , cloze
           , end
-          , input
           , minWidth
           , width
           , error
@@ -61,15 +61,24 @@ export class Cloze extends Component {
           , reveal
           , fix
           } = this.props.phrase
-    const { size
+    const { src
+          , input
+          , size
           , change
           , inputRef
           } = this.props
+
+     window.change = change
+
+    // console.log(this.props)
 
     return (
       <StyledPhrase
         id="answer"
       >
+        <StyledImage
+          src={src}
+        />
         <span>{start}</span>
 
         <StyledInputDiv
@@ -78,7 +87,7 @@ export class Cloze extends Component {
           width={width}
         >
           <StyledInput
-            className="input"
+            className="input can-select"
             error={error}
             correct={correct}
             requireSubmit={requireSubmit}

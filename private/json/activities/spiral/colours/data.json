@@ -1,0 +1,59 @@
+{ "collection": "Spiral"
+
+, "as_is": {
+    "key": "colours"
+  , "version": 1
+  , "parent": "<none>"
+  , "root": "spiral"
+  , "name": {
+      "en": "Colours"
+    , "fr": "Couleurs"
+    , "ru": "Цвета"
+    }
+  , "folder": "activities/spiral/Colours/"
+  , "icon": "icon.jpg"
+  }
+
+, "colours": [
+    { "file": "00Black_owl.jpg" }
+  , { "file": "03_Black_nightSky.jpg" }
+  , { "file": "04_Black_pencilGlass.jpg" }
+  , { "file": "08_Blue_dancer.jpg" }
+  , { "file": "09_Blue_tango.jpg" }
+  , { "file": "10_Blue_jellyfish.jpg" }
+  , { "file": "12_Blue_noctilucent.jpg" }
+  , { "file": "15_Blue_bearGirl.jpg" }
+  , { "file": "19_Blue_krabi.jpg" }
+  , { "file": "20_Teal_pigBird.jpg" }
+  , { "file": "29_Green_seal.jpg" }
+  , { "file": "30_Green_birdOrator.jpg" }
+  , { "file": "32_Green_babyShoes.jpg" }
+  , { "file": "35_Green_forest.jpg" }
+  , { "file": "37_Green_girl.jpg" }
+  , { "file": "38_Green_disguise.jpg" }
+  , { "file": "39_Green_tightrope.jpg" }
+  , { "file": "40Yellow_lionCub.jpg" }
+  , { "file": "45_Yellow_cat.jpg" }
+  , { "file": "48_Brown_archaeologist.jpg" }
+  , { "file": "49_Brown_sparrows.jpg" }
+  , { "file": "50_Orange_clothes.jpg" }
+  , { "file": "55_Orange_hiphop.jpg" }
+  , { "file": "60_Orange_rider.jpg" }
+  , { "file": "65_Brown_horse.jpg" }
+  , { "file": "66_Red_lightning.jpg" }
+  , { "file": "67_Red_ballet.jpg" }
+  , { "file": "68_Red_dancers.jpg" }
+  , { "file": "70_Red_umbrellas.jpg" }
+  , { "file": "75_Pink_balloon.jpg" }
+  , { "file": "76_Pink-painting.jpg" }
+  , { "file": "81_Purple_woman.jpg" }
+  , { "file": "90_White_ZhangDi.jpg" }
+  , { "file": "92_White_snowboard.jpg" }
+  , { "file": "94_Grey_microscope.jpg" }
+  , { "file": "94_Grey_rotifer.jpg" }
+  , { "file": "95_Grey_labMouse.jpg" }
+  , { "file": "96_Grey_skateboard.jpg" }
+  , { "file": "97_Grey_waterDance.jpg" }
+  , { "file": "99_Grey_iceBubble.jpg" }
+  ]
+}
