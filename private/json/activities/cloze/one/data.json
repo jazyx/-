@@ -1,10 +1,11 @@
 { "collection": "Cloze"
 
 , "as_is": {
-    "key": "one"
-  , "version": 1
-  , "parent": "cloze"
-  , "root": "cloze"
+    "version": 1
+  , "parent": "Cloze"
+  , "tags": [
+      "one"
+    ]
   , "name": {
       "en": "one"
     , "fr": "un"
@@ -14,7 +15,7 @@
   , "icon": "icon.jpg"
   }
 
-, "furniture": [ { "phrase": {
+, "one": [ { "phrase": {
         "en": "Good morning, did you sleep _well?"
       , "ru": "Доброе утро, ты _хорошо спала?"
       , "fr": "์Bonjour! As-tu _bien dormi ?"
@@ -47,8 +48,8 @@
     , "audio": ""
     }
   , { "phrase": {
-        "en": "_bread"
-      , "ru": "_хлеб"
+        "en": "bread"
+      , "ru": "хлеб"
       , "fr": "du _pain"
       }
     , "image": "/activities/shared/bread.jpg"

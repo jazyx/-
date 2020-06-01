@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react';
 
+import '../tools/shim'
+
 import { teacher } from '../api/teacher'
 import { removeFrom } from '../tools/utilities'
 

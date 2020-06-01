@@ -29,7 +29,7 @@ const path = require('path')
 class CollectJSON {
   constructor (jsonFile) {
     this.jsonFile = jsonFile
-    console.log("CollectJSON", jsonFile)
+    // console.log("CollectJSON", jsonFile)
     this._treatJSON = this._treatJSON.bind(this)
     this._checkResult = this._checkResult.bind(this)
     Assets.getText(jsonFile, this._treatJSON)

@@ -22,7 +22,7 @@ export default class CreateAccount {
     /// <<< HARD-CODED
     this.saturation = 60
     this.luminosity = 50
-    // accountData.view = "Activity"
+    // accountData.path = []
     /// HARD-CODED >>>
 
     this.createUniqueQCode()
@@ -42,7 +42,7 @@ export default class CreateAccount {
     // status: "CreateAccount"
     // user_id: "DcMNnhN7meZ7hmSr4"
     // username: "James"
-    // view: "Activity"
+    // path:  []
     //
     // = username:   "Влад"
     // = teacher:    "jn"
@@ -51,7 +51,7 @@ export default class CreateAccount {
     // + user_id:    "BqKkMjjBSRzedasyT"
     // + group_id:   "PWwknSiHCGmsivSXg"
     // + newAccount: true
-    // + view:       "Activity"
+    // + path:       []
     //
     // // Not needed in the return value
     // = language:   "en-GB"

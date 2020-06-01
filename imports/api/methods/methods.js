@@ -407,6 +407,46 @@ export const setView = {
 
 
 
+
+
+export const setPath = {
+  name: 'vdvoyom.setPath'
+
+, call(setPathData, callback) {
+    const options = {
+      returnStubValue: true
+    , throwStubExceptions: true
+    }
+
+    Meteor.apply(this.name, [setPathData], options, callback)
+  }
+
+, validate(setPathData) {
+    new SimpleSchema({
+      path:     { type: Array } // [<string>, ..., <string|array>]
+    , group_id: { type: String }
+    }).validate(setPathData)
+  }
+
+, run(setPathData) {
+    const { group_id: _id, path } = setPathData
+    const select = { _id }
+    const set    = { $set: { path } }
+    Groups.update(select, set)
+
+    // console.log(
+    //   'db.groups.update('
+    // + JSON.stringify(select)
+    // + ", "
+    // + JSON.stringify(set)
+    // + ")"
+    // // , setPathData
+    // )
+  }
+}
+
+
+
 // To register a new method with Meteor's DDP system, add it here
 const methods = [
   createAccount
@@ -417,6 +457,7 @@ const methods = [
 , toggleActivation
 , share
 , setView
+, setPath
 ]
 
 methods.forEach(method => {

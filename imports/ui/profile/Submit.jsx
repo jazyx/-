@@ -96,7 +96,7 @@ class Submit extends Component {
       if (data.accountCreated) {
         view = "NewPIN"
       } else { // Returning user: go to preferred location TODO
-        view = data.view
+        view = this.getInitialView(data.path)
       }
 
     } else { // if (data.status === "RequestPIN") {
@@ -158,6 +158,23 @@ class Submit extends Component {
 
   goErrorPage(error) {
     // TODO
+  }
+
+
+  getInitialView(path) {
+    // Go to the "Activity" view, unless specific tags are given
+    let view = "Activity"
+
+    if (Array.isArray(path)) {
+      const index = path.length - 1
+      if (index < 0) {
+        // No activity is chosen
+      } else if (Array.isArray(path[index])) {
+        view = path[0]
+      }
+    }
+
+    return view
   }
 
 

@@ -14,8 +14,6 @@
     , "fr": "Des images pour stimuler une discussion"
     , "ru": "Изображения для стимулирования разговора"
     }
-  , "folder": "activities/spiral/"
-  , "icon": "icon.jpg"
-
+  , "icon": "activities/spiral/icon.jpg"
   }
 }

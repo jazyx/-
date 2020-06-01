@@ -3,7 +3,7 @@
 
 , "as_is": {
     "key": "Drag"
-  , "version": 5
+  , "version": 1
   , "name": {
       "en": "Drag"
     , "fr": "Glisser"
@@ -14,8 +14,6 @@
     , "fr": "Glisser des mots sur des images pour apprendre du vocabulaire."
     , "ru": "Перетащите название каждого предмета на картинку, чтобы выучить новые слова."
     }
-  , "folder": "activities/drag/"
-  , "icon": "icon/^0.jpg"
-
+  , "icon": "activities/drag/icon/^0.jpg"
   }
 }

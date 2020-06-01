@@ -2,15 +2,14 @@
   "collection": "Drag"
 
 , "as_is": {
-    "key": "home"
+    "parent": "Drag"
+  , "key": "home"
   , "version": 1
-  , "root": "drag"
   , "name": {
       "en": "Home"
     , "fr": "À la maison"
     , "ru": "Дом"
     }
-  , "folder": "activities/drag/home"
-  , "icon": "icon.jpg"
+  , "icon": "activities/drag/home/icon.jpg"
   }
 }

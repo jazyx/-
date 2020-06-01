@@ -1,10 +1,11 @@
 { "collection": "Drag"
 
 , "as_is": {
-    "key": "kitchen"
-  , "version": 6
+    "version": 1
   , "parent": "home"
-  , "root": "drag"
+  , "tags": [
+      "kitchen"
+    ]
   , "name": {
       "en": "Kitchen"
     , "fr": "Cuisine"
@@ -15,7 +16,7 @@
 }
 
 , "kitchen": [
-    { "file": "broom.jpg"
+  { "file": "broom.jpg"
     , "text": {
         "en": "broom"
       , "fr": "balai brosse"

@@ -53,9 +53,9 @@ export default class JoinGroup {
     let success = this.joinGroup(group_id, d_code)
 
     if (success) {
-      accountData.view = accountData.restore_all
-                       ? this.getView(group_id, d_code)
-                       : "Activity" /// <<< HARD-CODED
+      accountData.path = accountData.restore_all
+                       ? this.getPath(group_id, d_code)
+                       : [] /// <<< HARD-CODED
       success = this.addUserHistoryItem(group_id, d_code, user_id)
 
       if (success) {
@@ -153,12 +153,12 @@ export default class JoinGroup {
   }
 
 
-  getView(group_id, d_code) {
+  getPath(group_id, d_code) {
     const select = { _id: group_id }
-    const project = { fields: { view: 1 }}
-    const { view } = Groups.findOne(select, project)
+    const project = { fields: { path: 1 }}
+    const { path } = Groups.findOne(select, project)
 
-    return view
+    return path
   }
 
 

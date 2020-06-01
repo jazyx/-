@@ -135,6 +135,19 @@ export default class StartUp {
     // console.log("setSessionData")
 
     const storedData = Storage.get()
+    // console.log("storedData:", storedData)
+    // auto_login:  false
+    // group_id:    "naRRNbnrr2syzEhPz"
+    // language:    "ru"
+    // native:      "en-GB"
+    // q_code:      "3819"
+    // q_color:     "#33cc60"
+    // restore_all: false
+    // teacher:     "aa"
+    // user_id:     "H9uMqxwvkySYt7QtP"
+    // username:    "James"
+    // view:        "Activity"
+
     const keys = Object.keys(storedData)
     const teacher = this.checkURLForTeacherName()
     // TODO: Add test for admin
@@ -151,30 +164,7 @@ export default class StartUp {
 
     } else if (keys.length) {
       Session.set("role", "user")
-
-      // native:      "en-GB"
-      // username:    "James"
-      // language:    "ru"
-      // teacher:     "aa"
-      // q_code:      "3819"
-      // q_color:     "#33cc60"
-      // user_id:     "6oRFpNLZEfkN4HfMj"
-      // group_id:    "4Bd5yhRfstZ77zxAZ"
-      // view:        "Drag"
-      // auto_login:  false
-      // restore_all: false
-
-      for (let key in storedData) {
-        Session.set(key, storedData[key])
-      }
-
-      /// <<< TEMPORARY HACK UNTIL MENU IS WORKING
-      const auto_login  = storedData.auto_login || this.hack
-      const restore_all = storedData.restore_all || this.hack
-
-      Session.set("auto_login", auto_login)
-      Session.set("restore_all", restore_all)
-      /// TEMPORARY HACK >>>
+      this.setSessionDataFrom(storedData, keys)
 
     } else {
       // First time user on this device. No storedData to treat
@@ -186,7 +176,10 @@ export default class StartUp {
     // http://activities.jazyx.com/<teacher_id>
     // http://activities.jazyx.com/?teacher=<teacher_id>
 
-    let id = window.location.pathname.substring(1) // /id => id
+    let id = window.location.getParameter("teacher")
+    if (!id) {
+      id = window.location.pathname.substring(1) // /id => id
+    }
     let teacher = this.getTeacher(id)
 
     if (!teacher) {
@@ -205,6 +198,33 @@ export default class StartUp {
     id = decodeURI(id)
          .replace(/^аа$/, "aa") // Russian а to Latin a for Настя
     return collections["Teachers"].findOne({ id })
+  }
+
+
+  setSessionDataFrom(storedData, keys) {
+    // native:      "en-GB"
+    // username:    "James"
+    // language:    "ru"
+    // teacher:     "aa"
+    // q_code:      "3819"
+    // q_color:     "#33cc60"
+    // user_id:     "6oRFpNLZEfkN4HfMj"
+    // group_id:    "4Bd5yhRfstZ77zxAZ"
+    // view:        "Drag"
+    // auto_login:  false
+    // restore_all: false
+
+    for (let key in storedData) {
+      Session.set(key, storedData[key])
+    }
+
+    /// <<< TEMPORARY HACK UNTIL MENU IS WORKING
+    const auto_login  = storedData.auto_login || this.hack
+    const restore_all = storedData.restore_all || this.hack
+
+    Session.set("auto_login", auto_login)
+    Session.set("restore_all", restore_all)
+    /// TEMPORARY HACK >>>
   }
 
 

@@ -16,8 +16,6 @@ export default class CreateGroup {
 
     // console.log("accountData before CreateGroup:", accountData)
 
-    const view = "Activity" // <<< HARD-CODED default value
-
     const group = {
       owner:      accountData.teacher
     , language:   accountData.language
@@ -29,7 +27,7 @@ export default class CreateGroup {
       , accountData.teacher
       ]
     , logged_in: []
-    , view
+    , path:      []
     // // Will be added by the Client
     // , view_data: {}
     // , view_size: { width, height }

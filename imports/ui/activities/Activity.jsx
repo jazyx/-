@@ -11,7 +11,9 @@ import { localize
        , getElementIndex
        , substitute
        } from '../../tools/utilities'
-import { setView } from '../../api/methods/methods'
+import { setView
+       , setPath
+       } from '../../api/methods/methods'
 
 import { StyledProfile
        , StyledPrompt
@@ -57,15 +59,49 @@ class Activity extends Component {
     }
 
     const activity = this.props.activities[this.state.selected]
-    if (activity) {
-      const view = activity.key
-      setView.call({
-        view
-      , group_id: Session.get("group_id")
-      })
+    console.log("goActivity:", activity)
+    // { _id:         <unique string>
+    // , activity:    <collection\component name>
+    // , version:     <integer>
+    // , name:        { <code>: <string>, ... }
+    //[, description: { <code>: <string>, ... }]
+    // , icon:        "path/to/icon/^0.jpg"
+    //
+    // , parent:      <string>
+    // , tags:        [<string>, ...]
+    // }
 
-      this.props.setView(view)
+
+    if (activity) {
+      if (activity.tags) {
+        this.startActivity(activity)
+
+      } else if (activity.parent) {
+        this.showOptions(activity)
+
+      // } else {
+      //   this.showActivities()
+      }
     }
+  }
+
+
+  showOptions(activity) {
+    const path = Session.get("path")
+    path.push(activity.parent)
+  }
+
+
+  startActivity(activity) {
+    const path = Session.get("path")
+    const view = path[0]
+    path.push(activity.tags)
+    setView.call({
+      view
+    , group_id: Session.get("group_id")
+    })
+
+    this.props.setView(view)
   }
 
 
@@ -111,7 +147,9 @@ class Activity extends Component {
     const activities = this.props.activities.map((activity, index) => {
       const lang        = Session.get("native").replace(/-.*/, "")
       const icon        = substitute(activity.icon, { "^0": lang })
-      const src         = activity.folder + icon
+      const src         = activity.folder
+                        ? activity.folder + icon
+                        : icon
       const name        = this.getPhrase("name", activity)
       const description = this.getPhrase("description", activity)
       const disabled    = !!activity.disabled
