@@ -4,7 +4,9 @@ import React, { Component } from 'react'
 import { withTracker } from 'meteor/react-meteor-data'
 import { Session } from 'meteor/session'
 
-import { L10n
+import collections,
+       { L10n
+       , Groups
        , Activities
        } from '../../api/collections'
 import { localize
@@ -17,8 +19,8 @@ import { setView
 
 import { StyledProfile
        , StyledPrompt
-       , StyledActivity
-       , StyledActivities
+       , StyledChoice
+       , StyledChoices
        , StyledDescription
        , StyledButton
        } from './Styles'
@@ -58,26 +60,28 @@ class Activity extends Component {
       return
     }
 
-    const activity = this.props.activities[this.state.selected]
-    console.log("goActivity:", activity)
+    const choice = this.props.choices[this.state.selected]
+    console.log("goActivity:", choice)
     // { _id:         <unique string>
-    // , activity:    <collection\component name>
     // , version:     <integer>
-    // , name:        { <code>: <string>, ... }
-    //[, description: { <code>: <string>, ... }]
+    // , name:        { <code>: <string>
+    //                , ...
+    //                }
     // , icon:        "path/to/icon/^0.jpg"
-    //
-    // , parent:      <string>
+    // 
+    //[, description: { <code>: <string>, ... }]
+    //  
+    // , key:         <Activity level: collection name
+    // , parent:      <collection name/section name>
     // , tags:        [<string>, ...]
     // }
 
+    if (choice) {
+      if (choice.tags) {
+        this.startActivity(choice)
 
-    if (activity) {
-      if (activity.tags) {
-        this.startActivity(activity)
-
-      } else if (activity.parent) {
-        this.showOptions(activity)
+      } else if (choice.parent) {
+        this.showOptions(choice)
 
       // } else {
       //   this.showActivities()
@@ -86,16 +90,16 @@ class Activity extends Component {
   }
 
 
-  showOptions(activity) {
+  showOptions(choice) {
     const path = Session.get("path")
-    path.push(activity.parent)
+    path.push(choice.parent)
   }
 
 
-  startActivity(activity) {
+  startActivity(choice) {
     const path = Session.get("path")
     const view = path[0]
-    path.push(activity.tags)
+    path.push(choice.tags)
     setView.call({
       view
     , group_id: Session.get("group_id")
@@ -133,7 +137,7 @@ class Activity extends Component {
 
   getPrompt() {
     const code = Session.get("native")
-    const prompt = localize("activities", code, this.props.phrases)
+    const prompt = localize("choices", code, this.props.phrases)
 
     return <StyledPrompt
       aspectRatio={this.props.aspectRatio}
@@ -143,21 +147,21 @@ class Activity extends Component {
   }
 
 
-  getActivities() {
-    const activities = this.props.activities.map((activity, index) => {
+  getChoices() {
+    const choices = this.props.choices.map((choice, index) => {
       const lang        = Session.get("native").replace(/-.*/, "")
-      const icon        = substitute(activity.icon, { "^0": lang })
-      const src         = activity.folder
-                        ? activity.folder + icon
+      const icon        = substitute(choice.icon, { "^0": lang })
+      const src         = choice.folder
+                        ? choice.folder + icon
                         : icon
-      const name        = this.getPhrase("name", activity)
-      const description = this.getPhrase("description", activity)
-      const disabled    = !!activity.disabled
+      const name        = this.getPhrase("name", choice)
+      const description = this.getPhrase("description", choice)
+      const disabled    = !!choice.disabled
       const selected    = this.state.selected === index
       const ref         = selected
                         ? this.scrollTo
                         : ""
-      return <StyledActivity
+      return <StyledChoice
         key={name}
         src={src}
         ref={ref}
@@ -167,14 +171,14 @@ class Activity extends Component {
         aspectRatio={this.props.aspectRatio}
       >
         <p>{name}</p>
-      </StyledActivity>
+      </StyledChoice>
     })
-    return <StyledActivities
-      id="activity-list"
+    return <StyledChoices
+      id="choice-list"
       aspectRatio={this.props.aspectRatio}
     >
-      {activities}
-    </StyledActivities>
+      {choices}
+    </StyledChoices>
   }
 
 
@@ -183,8 +187,8 @@ class Activity extends Component {
     if (this.state.selected < 0) {
       // Nothing is selected
     } else {
-      const activity = this.props.activities[this.state.selected]
-      description = this.getPhrase("description", activity)
+      const choice = this.props.choices[this.state.selected]
+      description = this.getPhrase("description", choice)
     }
 
     return <StyledDescription
@@ -212,16 +216,16 @@ class Activity extends Component {
 
   render() {
     const prompt = this.getPrompt()
-    const activities = this.getActivities()
+    const choices = this.getChoices()
     const description = this.getDescription()
     const button = this.getButton()
 
     return <StyledProfile
-      id="activities"
+      id="choices"
       aspectRatio={this.props.aspectRatio}
     >
       {prompt}
-      {activities}
+      {choices}
       {description}
       {button}
     </StyledProfile>
@@ -253,13 +257,37 @@ export default withTracker(() => {
   }
   const phrases = L10n.find(phraseSelect).fetch()
 
-  // Activities
-  const activitySelect = {}
-  const activities = Activities.find(activitySelect).fetch()
+
+  // Path
+  const pathSelect = {_id: Session.get("group_id") }
+  const project = { fields: { path: 1 }}
+  const { path } = (Groups.findOne(pathSelect, project) || {})
+  let collection
+    , choicesSelect
+
+
+  // Choices
+  if (Array.isArray(path) && path.length) {
+    collection = collections[path[0]]
+    const parent = path[path.length - 1]
+    choicesSelect = { parent }
+
+  } else {
+    collection = Activities
+    choicesSelect = {}
+  }
+
+  const choices = collection.find(choicesSelect).fetch()
+
+  console.log( "db." + collection._name + ".find("
+             , JSON.stringify(choicesSelect)
+             , ") >>> "
+             , "choices:", choices
+             )
 
   const props = {
     phrases
-  , activities
+  , choices
   }
 
   return props

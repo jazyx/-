@@ -293,7 +293,7 @@ const StyledMask = styled.div`
   transition: opacity 3s;
 
   & h1 {
-    font-size: calc(12 * var(--w));
+    font-size: calc(10 * var(--w));
     text-align: center;
     color: #fff;
   }
@@ -684,7 +684,7 @@ class Dragger extends Component {
         opacity={this.state.mask}
         aspectRatio={aspectRatio}
       >
-        <h1>{prompt}!</h1>
+        <h1>{prompt}</h1>
         <button
           onMouseUp={this.newDeal}
         >

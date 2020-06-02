@@ -36,7 +36,7 @@ export const StyledPrompt = styled.h1`
           calc(2.5 * var(--min));
 `
 
-export const StyledActivities = styled.ul`
+export const StyledChoices = styled.ul`
   list-style-type: none;
   width: calc(100 * var(--w));
   margin: 0;
@@ -63,7 +63,7 @@ export const StyledDescription = styled.p`
   overflow-y: auto;
 `
 
-export const StyledActivity = styled.li`
+export const StyledChoice = styled.li`
   position: relative;
   width: calc(50 * var(--w) - 10px);
   height: calc(50 * var(--w) - 10px);
