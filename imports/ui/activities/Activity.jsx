@@ -34,25 +34,21 @@ import { StyledProfile
 // trigger Activity.render() twice, even though there is no change to
 // state or props. On my development machine, the time interval is
 // around 40 ms.
-// 
+//
 // In order to ignore .path on the first significant display (rather
 // than the first render), we need to:
-// 
+//
 // * Check if Session.get("restore_all") is falsy, and if so:
-//   * Check that the instance of Activity is the first one to be
-//     created in this session
 //   * Check that render is being called for the first or second time
-// 
-// If all three of these circumstances occur, then:
-// 
+//
+// If all both of these circumstances occur, then:
+//
 // * The data in Groups .path will be ignored
 // * The list of activities read in from the Activities collection
 //   will be shown instead
-//   
-// 
 
-// var instance = 0
-var render   = 0
+
+var render = 0 // required as described above
 
 
 class Activity extends Component {
@@ -91,16 +87,16 @@ class Activity extends Component {
     }
 
     const choice = this.props.choices[this.state.selected]
-    console.log("goActivity:", choice)
+    // console.log("goActivity:", choice)
     // { _id:         <unique string>
     // , version:     <integer>
     // , name:        { <code>: <string>
     //                , ...
     //                }
     // , icon:        "path/to/icon/^0.jpg"
-    // 
+    //
     //[, description: { <code>: <string>, ... }]
-    //  
+    //
     // , key:         <Activity level: collection name>
     // , parent:      <collection name/section name>
     // , tags:        [<string>, ...]
@@ -113,7 +109,7 @@ class Activity extends Component {
     //   }
     // , icon: "activities/drag/icon/^0.jpg"
     // , key: "Drag"
-    // 
+    //
     // , name: {
     //     en: "Drag"
     //   , fr: "Glisser"
@@ -295,7 +291,7 @@ class Activity extends Component {
   }
 
 
-  componentDidUpdate(prevProps, prevState) { 
+  componentDidUpdate(prevProps, prevState) {
     if (this.scrollFlag) {
       setTimeout(this.scrollIntoView, 1000) // <<< HARD-CODED
       this.scrollFlag = false
@@ -310,11 +306,10 @@ class Activity extends Component {
 }
 
 
-// The first time withTracker is called, there is no instance of the 
-// Activity class. 
+
 export default withTracker(() => {
-  console.log("withTracker render:", render)
-   
+  // console.log("withTracker render:", render)
+
   const ignorePath = (2 > render++) && !Session.get("restore_all")
 
   // Phrases

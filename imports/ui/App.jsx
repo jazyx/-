@@ -181,8 +181,6 @@ export class App extends Component {
 
 
   render() {
-    console.log("this.state:", JSON.stringify(this.state))
-    console.log("this.props:", JSON.stringify(this.props))
     // The Share component needs to be rendered in order for
     // this.state.units to be set, so the first render will have no
     // content

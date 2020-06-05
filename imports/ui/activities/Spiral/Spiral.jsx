@@ -14,7 +14,6 @@ const thin  = (100 - thick)
 
 
 const StyledMain = styled.main`
-  ${props => console.log(props)}
   position: relative;
   border: 1px solid #fff;
   box-sizing: border-box;
@@ -349,7 +348,7 @@ class App extends Component {
 
 export default withTracker(() => {
   const groupSelect = { _id: Session.get("group_id") }
-  let project = { 
+  let project = {
     fields: {
       path: 1
     , view_data: 1

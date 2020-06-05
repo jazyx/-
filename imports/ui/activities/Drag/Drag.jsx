@@ -755,7 +755,7 @@ export default withTracker(() => {
   }
 
   const groupSelect = { _id: Session.get("group_id") }
-  let project       = { 
+  let project       = {
     fields: {
       path: 1
     , view_data: 1
@@ -768,34 +768,34 @@ export default withTracker(() => {
   , logged_in
   } = Groups.findOne(groupSelect, project)
 
-  console.log( "path:", path
-             , "view_data:", view_data
-             , "logged_in:", logged_in
+  // console.log( "path:", path
+  //            , "view_data:", view_data
+  //            , "logged_in:", logged_in
 
-             , "db.groups.findOne("
-             + JSON.stringify(groupSelect)
-             + ","
-             + JSON.stringify(project)
-             + ")"
-             )
+  //            , "db.groups.findOne("
+  //            + JSON.stringify(groupSelect)
+  //            + ","
+  //            + JSON.stringify(project)
+  //            + ")"
+  //            )
 
   // Images
   const tag          = path[path.length - 1][0]
   let imageSelect    = { type: { $eq: tag }}
   const folderSelect = { tag }
-  const items        = Drag.find(imageSelect).fetch()  
+  const items        = Drag.find(imageSelect).fetch()
   const code         = Session.get("language").replace(/-\w*/, "")
 
   const images = items.map(document => [ document.file
                                        , document.text[code]
                                        ]
                           )
-  console.log( "db.drag.findOne("
-             + JSON.stringify(folderSelect)
-             + ")"
-             , Drag.findOne(folderSelect)
-             )
-  
+  // console.log( "db.drag.findOne("
+  //            + JSON.stringify(folderSelect)
+  //            + ")"
+  //            , Drag.findOne(folderSelect)
+  //            )
+
   const folder = Drag.findOne(folderSelect).folder
 
   // view_data
