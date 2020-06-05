@@ -424,6 +424,11 @@ export const setPath = {
 , validate(setPathData) {
     new SimpleSchema({
       path:     { type: Array } // [<string>, ..., <string|array>]
+    , "path.$": SimpleSchema.oneOf(
+        { type: String }
+      , { type: Array }
+      )
+    , "path.$.$": { type: String }
     , group_id: { type: String }
     }).validate(setPathData)
   }

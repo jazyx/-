@@ -25,6 +25,10 @@ export const StyledProfile = styled.div`
                      };
 `
 
+// StyledPrompt:      10vmin + 5vmin margin => 15
+// StyledChoices:     50vmin
+// StyledDescription: 18vmin + 2vmin margin => 20
+// StyledButton:      15vmin                => 15
 export const StyledPrompt = styled.h1`
   display: flex;
   align-items: center;
@@ -39,6 +43,7 @@ export const StyledPrompt = styled.h1`
 export const StyledChoices = styled.ul`
   list-style-type: none;
   width: calc(100 * var(--w));
+  height: calc(100 * var(--h) - 50 * var(--min));
   margin: 0;
   padding: 0;
   text-align: center;
@@ -46,7 +51,6 @@ export const StyledChoices = styled.ul`
 
   ${props => (props.aspectRatio > 1)
            ? `white-space: nowrap;
-              height: calc(50 * var(--h));
              `
            : ""
   }
@@ -114,7 +118,7 @@ export const StyledButton = styled.button`
   border-radius: 10vh;
   padding: 0.1em 1em;
   color: #fff;
-  height: calc(16 * var(--w));
+  height: calc(15 * var(--min));
   width: calc(70 * var(--min));
   font-size: calc(5.25 * var(--min));
   ${props => props.disabled
@@ -126,10 +130,5 @@ export const StyledButton = styled.button`
 
   &:active {
     background: ${colors.active};
-  }
-
-  ${props => (props.aspectRatio > 1)
-           ? `height: calc(15 * var(--h));`
-           : ""
   }
 `

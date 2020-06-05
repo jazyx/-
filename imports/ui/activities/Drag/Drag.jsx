@@ -41,6 +41,7 @@ import { Session } from 'meteor/session'
 
 import { Drag
        , L10n
+       , Groups
        } from '../../../api/collections'
 import { shuffle
        , getXY
@@ -753,23 +754,51 @@ export default withTracker(() => {
     return "" + completed
   }
 
+  const groupSelect = { _id: Session.get("group_id") }
+  let project       = { 
+    fields: {
+      path: 1
+    , view_data: 1
+    , logged_in: 1
+    }
+  }
+  const {
+    path
+  , view_data
+  , logged_in
+  } = Groups.findOne(groupSelect, project)
+
+  console.log( "path:", path
+             , "view_data:", view_data
+             , "logged_in:", logged_in
+
+             , "db.groups.findOne("
+             + JSON.stringify(groupSelect)
+             + ","
+             + JSON.stringify(project)
+             + ")"
+             )
+
   // Images
-  const key          = "furniture"
+  const tag          = path[path.length - 1][0]
+  let imageSelect    = { type: { $eq: tag }}
+  const folderSelect = { tag }
+  const items        = Drag.find(imageSelect).fetch()  
   const code         = Session.get("language").replace(/-\w*/, "")
-  let imageSelect    = { type: { $eq: key }}
-  const folderSelect = { key:  { $eq: key }}
-  const items        = Drag.find(imageSelect).fetch()
 
   const images = items.map(document => [ document.file
                                        , document.text[code]
                                        ]
                           )
+  console.log( "db.drag.findOne("
+             + JSON.stringify(folderSelect)
+             + ")"
+             , Drag.findOne(folderSelect)
+             )
+  
   const folder = Drag.findOne(folderSelect).folder
 
   // view_data
-  const select  = { _id: Session.get("group_id") }
-  const project = { fields: { view_data: 1, logged_in: 1 } }
-  const { view_data, logged_in } = Groups.findOne(select, project)
   const completed = view_data
                   ? turnCompleted(view_data.show)
                   : false

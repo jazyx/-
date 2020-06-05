@@ -3,9 +3,7 @@
 , "as_is": {
     "version": 1
   , "parent": "Cloze"
-  , "tags": [
-      "one"
-    ]
+  , "tag": "one"
   , "name": {
       "en": "one"
     , "fr": "un"

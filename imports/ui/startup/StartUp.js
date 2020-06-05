@@ -276,7 +276,10 @@ export default class StartUp {
 
   callback(error, data) {
     Session.set("isMaster", data.isMaster || false)
-    this.go = data.view
+    const path = data.path
+    this.go = Array.isArray(path) && path.length
+            ? path[0]
+            : "Activity"
     this.hideSplash()
   }
 

@@ -348,24 +348,28 @@ class App extends Component {
 
 
 export default withTracker(() => {
-  const type = "anning"
+  const groupSelect = { _id: Session.get("group_id") }
+  let project = { 
+    fields: {
+      path: 1
+    , view_data: 1
+    , logged_in: 1
+    }
+  }
+  const {
+    path
+  , view_data
+  , logged_in
+  } = Groups.findOne(groupSelect, project)
 
-  const typeSelect = { type }
-  const images = Spiral.find(typeSelect).fetch()
-  const total  = images.length
+  const tag          = path[path.length - 1][0]
 
-  const folderSelect = { key: type }
-  const { folder } = Spiral.findOne(folderSelect)
+  const typeSelect   = { type: { $eq: tag } }
+  const images       = Spiral.find(typeSelect).fetch()
+  const total        = images.length
 
-  // console.log( "set: " + images.length + " images <<< db.spiral.find("
-  //            + JSON.stringify(typeSelect)
-  //            + ")"
-  //            )
-
-   // view_data
-  const select  = { _id: Session.get("group_id") }
-  const project = { fields: { view_data: 1, logged_in: 1 } }
-  const { view_data, logged_in } = Groups.findOne(select, project)
+  const folderSelect = { tag }
+  const { folder }   = Spiral.findOne(folderSelect)
 
   const isMaster  = logged_in
                   ? logged_in[0] === Session.get("d_code")

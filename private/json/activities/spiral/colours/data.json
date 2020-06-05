@@ -1,11 +1,9 @@
 { "collection": "Spiral"
 
 , "as_is": {
-    "version": 1
+    "version": 2
   , "parent": "Spiral"
-  , "tags": [
-      "colours"
-    ]
+  , "tag": "colours"
   , "name": {
       "en": "Colours"
     , "fr": "Couleurs"

@@ -79,7 +79,9 @@ class CollectJSON {
 
     let version
     if (version = this._versionIsNewer(collection, json.as_is)) {
-      this._deleteOlderItems(collection, json.as_is.key, version)
+      const key = json.as_is.key // CollectionName | Subset
+      const tag = json.as_is.tag // image type
+      this._deleteOlderItems(collection, key, tag, version)
       this._insertNewItems(collection, json, version)
     }
   }
@@ -87,6 +89,7 @@ class CollectJSON {
 
   _versionIsNewer(collection, as_is) {
     let key
+      , tag
       , version
 
     // Refuse to import documents unless:
@@ -103,7 +106,14 @@ class CollectJSON {
       versionSelect = {
         $and: [
           versionSelect
-        , { key: { $eq: key }}
+        , { key }
+        ]
+      }
+    } else if (tag = as_is.tag) {
+      versionSelect = {
+        $and: [
+          versionSelect
+        , { tag }
         ]
       }
     }
@@ -126,16 +136,24 @@ class CollectJSON {
   }
 
 
-  _deleteOlderItems(collection, key, version) {
+  _deleteOlderItems(collection, key, tag, version) {
     let deleteSelect = { version: { $lt: version } }
 
     if (key) {
       deleteSelect = {
        $and: [
           deleteSelect
+        , { key }
+        ]
+      }
+
+    } else if (tag) {
+      deleteSelect = {
+       $and: [
+          deleteSelect
         , { $or: [
-              { key: { $eq: key }}   // deletes as_is entry
-            , { type: { $eq: key }}  // deletes all associated images
+              { tag }                // deletes as_is entry
+            , { type: { $eq: tag }}  // deletes all associated images
             ]
           }
         ]

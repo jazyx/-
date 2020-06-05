@@ -75,7 +75,7 @@ const publishQueries = {
 // **** ADD COLLECTIONS FOR NEW ACTIVITIES HERE ...
 , Drag:       { $or: [
                   { file: { $exists: true } }
-                , { folder: { $exists: true } }
+                , { icon: { $exists: true } }
                 ]
               }
 , Spiral:     {}

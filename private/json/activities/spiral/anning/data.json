@@ -1,17 +1,16 @@
 { "collection": "Spiral"
 
 , "as_is": {
-    "version": 1
+    "version": 2
   , "parent": "Spiral"
-  , "tags": [
-      "anning"
-    ]
+  , "tag": "anning"
   , "name": {
       "en": "Mary Anning"
     , "fr": "Mary Anning"
     , "ru": "Мэри Эннинг"
     }
-  , "icon": "activities/spiral/MaryAnning/icon.jpg"
+  , "folder": "activities/spiral/MaryAnning/"
+  , "icon": "icon.jpg"
   }
 
 , "anning": [

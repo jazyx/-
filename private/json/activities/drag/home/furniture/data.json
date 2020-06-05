@@ -1,11 +1,9 @@
 { "collection": "Drag"
 
 , "as_is": {
-    "version": 1
+    "version": 2
   , "parent": "home"
-  , "tags": [
-      "furniture"
-    ]
+  , "tag": "furniture"
   , "name": {
       "en": "Furniture"
     , "fr": "Mobilier"

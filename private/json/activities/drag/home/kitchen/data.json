@@ -1,19 +1,17 @@
 { "collection": "Drag"
 
 , "as_is": {
-    "version": 1
+    "version": 4
   , "parent": "home"
-  , "tags": [
-      "kitchen"
-    ]
+  , "tag": "kitchen"
   , "name": {
       "en": "Kitchen"
     , "fr": "Cuisine"
     , "ru": "Кухня"
-  , "folder": "activities/drag/home/furniture"
-  , "icon": "icon.jpg"
+    }
+  , "folder": "activities/drag/home/furniture/"
+  , "icon": "kitchen.jpg"
   }
-}
 
 , "kitchen": [
   { "file": "broom.jpg"
