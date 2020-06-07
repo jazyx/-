@@ -230,7 +230,7 @@ export class App extends Component {
         points={this.pointMethod}
       />
       <Menu
-        hide={this.state.view === "Profile"}
+        hide={this.state.view === "Profile_"}
         setView={this.setView}
         aspectRatio={aspectRatio}
       />

@@ -54,7 +54,7 @@ class Pointers extends Component {
     , width: "100vw"
     , height: "100vh"
     , pointerEvents: "none"
-    , backgroundColor: "rgba(0,0,255, 0.15)"
+    // , backgroundColor: "rgba(0,0,255, 0.15)"
     }
 
     document.body.addEventListener("touchmove", this.trackPoint,false)
@@ -304,15 +304,7 @@ class Pointers extends Component {
 
     return <div
       id="points"
-      style={{
-        position: "absolute"
-      , height: "100%"
-      , width: "100%"
-      , top: "0"
-      , left: "0"
-      , backgroundColor: "rgba(204, 0, 204, 0.1)"
-      , pointerEvents: "none"
-      }}
+      style={this.style}
     >
       {status}
       {points}
