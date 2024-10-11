@@ -10,7 +10,7 @@
   "dependencies": {
     "@babel/runtime": "^7.9.6",
     "bcrypt": "^4.0.1",
-    "meteor-node-stubs": "^1.0.0",
+    "meteor-node-stubs": "^1.2.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "simpl-schema": "^1.7.0",
